@@ -1,9 +1,10 @@
 package ru.onehalf.japancrossword.view
 
-import javax.swing.JPanel
+import javax.swing.{UIManager, JPanel}
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import java.awt.{Font, Color, Dimension, Graphics}
 import javax.swing.text.Style
+import java.awt.event.{MouseEvent, MouseListener}
 
 /**
  * <p/>
@@ -30,6 +31,25 @@ class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
 
   setPreferredSize(new Dimension(right + CELL_SIZE, bottom + CELL_SIZE))
 
+  def determineCellCoordinate(x: Int, y: Int) = {
+    ((x - left) / CELL_SIZE, (y - top) / CELL_SIZE)
+  }
+
+  addMouseListener(new MouseListener {
+    def mouseExited(e: MouseEvent) {}
+    def mouseClicked(e: MouseEvent) {}
+    def mouseEntered(e: MouseEvent) {}
+    def mousePressed(e: MouseEvent) {}
+    def mouseReleased(e: MouseEvent) {
+      if (e.getX < left || e.getX > right || e.getY < top || e.getY > bottom) {
+        return
+      }
+
+      val coordinates = determineCellCoordinate(e.getX, e.getY)
+      model.board(coordinates._1)(coordinates._2) ^= true
+      repaint()
+    }
+  })
 
   override def paint(g: Graphics) {
 
@@ -48,6 +68,9 @@ class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
         }
       }
     }
+
+    g.setColor(Color.WHITE)
+    g.fillRect(left, top, model.columnNumber * CELL_SIZE,  model.rowNumber * CELL_SIZE)
 
     g.setColor(Color.BLACK)
     g.setFont(new Font("Courier New", Font.BOLD, 16))

@@ -1,9 +1,8 @@
 package ru.onehalf.japancrossword.view
 
-import javax.swing.{UIManager, JPanel}
+import javax.swing.JPanel
 import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
 import java.awt.{Font, Color, Dimension, Graphics}
-import javax.swing.text.Style
 import java.awt.event.{MouseEvent, MouseListener}
 
 /**
@@ -20,9 +19,7 @@ class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
   val maxHorizonOffset = toOffset(model.verticalLine)
   val maxVerticalOffset = toOffset(model.horizonLine)
 
-  def toOffset(line: Array[Array[Int]]): Int = {
-    (line.map(_.size).max + 1) * CELL_SIZE
-  }
+  def toOffset(line: Array[Array[Int]]): Int = (line.map(_.size).max + 1) * CELL_SIZE
 
   val left = maxHorizonOffset
   val top = maxVerticalOffset
@@ -31,9 +28,7 @@ class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
 
   setPreferredSize(new Dimension(right + CELL_SIZE, bottom + CELL_SIZE))
 
-  def determineCellCoordinate(x: Int, y: Int) = {
-    ((x - left) / CELL_SIZE, (y - top) / CELL_SIZE)
-  }
+  def determineCellCoordinate(x: Int, y: Int) = ((x - left) / CELL_SIZE, (y - top) / CELL_SIZE)
 
   addMouseListener(new MouseListener {
     def mouseExited(e: MouseEvent) {}

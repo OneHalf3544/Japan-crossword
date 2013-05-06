@@ -12,5 +12,5 @@ class JapanCrosswordModel(val horizonLine : Array[Array[Int]], val verticalLine 
   val columnNumber = horizonLine.size
   val rowNumber = verticalLine.size
 
-  val board: Array[Array[Boolean]] = Array.ofDim[Boolean](columnNumber, rowNumber)
+  val board: Array[Array[Cell.Cell]] = Array.fill(columnNumber, rowNumber)(Cell.NOT_KNOWN)
 }

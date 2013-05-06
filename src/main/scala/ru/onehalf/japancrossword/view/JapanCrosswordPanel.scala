@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword.view
 
 import javax.swing.{UIManager, JPanel}
-import ru.onehalf.japancrossword.model.JapanCrosswordModel
+import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
 import java.awt.{Font, Color, Dimension, Graphics}
 import javax.swing.text.Style
 import java.awt.event.{MouseEvent, MouseListener}
@@ -46,7 +46,12 @@ class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
       }
 
       val coordinates = determineCellCoordinate(e.getX, e.getY)
-      model.board(coordinates._1)(coordinates._2) ^= true
+      val current = model.board(coordinates._1)(coordinates._2)
+      model.board(coordinates._1)(coordinates._2) = (current, e.getButton) match {
+        case (Cell.NOT_KNOWN, MouseEvent.BUTTON1) => Cell.FILLED
+        case (Cell.NOT_KNOWN, MouseEvent.BUTTON3) => Cell.CLEARED
+        case (_, _) => Cell.NOT_KNOWN
+      }
       repaint()
     }
   })
@@ -94,9 +99,23 @@ class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
 
     g.setColor(Color.BLACK)
     g.setPaintMode()
+
+    def drawCell(x: Int, y: Int) {
+      model.board(x)(y) match {
+        case Cell.FILLED => g.fillRect(left + x * CELL_SIZE, top + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        case Cell.CLEARED => {
+          val x1 = left + x * CELL_SIZE
+          val y1 = top + y * CELL_SIZE
+          g.drawLine(x1, y1, x1 + CELL_SIZE, y1 + CELL_SIZE)
+          g.drawLine(x1 + CELL_SIZE, y1, x1, y1 + CELL_SIZE)
+        }
+      }
+    }
+
     for (x <- 0 to model.columnNumber - 1)
       for (y <- 0 to model.rowNumber - 1)
-        if (model.board(x)(y))
-          g.fillRect(left + x * CELL_SIZE, top + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        if (model.board(x)(y) != Cell.NOT_KNOWN)
+          drawCell(x, y)
   }
+
 }

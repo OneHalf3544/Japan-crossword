@@ -18,9 +18,9 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
   def initializeComponents() {
 
     setContentPane(new JapanCrosswordPanel(model))
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 
     pack()
-
     setVisible(true)
   }
 }

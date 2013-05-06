@@ -2,6 +2,7 @@ package ru.onehalf.japancrossword
 
 import view.JapanCrosswordFrame
 import model.JapanCrosswordModel
+import javax.swing.JFrame
 
 /**
  * <p/>
@@ -17,10 +18,6 @@ object Main {
   def parseLine(string: String) : Array[Array[Int]] = (string split ",\\s+").map(parseParams(_))
 
   def main(args: Array[String]) {
-
-    def concat(a: String, b: String) = a + ", " + b
-
-    def printArrayFunction(x: Array[Int]) = "[" + x.map(_.toString).reduce(concat) + "]"
 
     val horizonLine = parseLine(
       "2, 4, 4 2 3, 1 3 1 2, 1 2 2 2, 2 2 2 5, 2 1 2 7, 2 4 5, 2 3, 3 1 2 3, " +

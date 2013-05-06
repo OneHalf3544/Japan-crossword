@@ -16,8 +16,8 @@ class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
 
   val CELL_SIZE = 30
 
-  val maxHorizonOffset = toOffset(model.horizonLine)
-  val maxVerticalOffset = toOffset(model.verticalLine)
+  val maxHorizonOffset = toOffset(model.verticalLine)
+  val maxVerticalOffset = toOffset(model.horizonLine)
 
   def toOffset(line: Array[Array[Int]]): Int = {
     (line.map(_.size).max + 1) * CELL_SIZE
@@ -55,12 +55,19 @@ class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
     drawMarks(model.horizonLine, (s, i, j) => i, (s, i, j) => j - s)
     drawMarks(model.verticalLine, (s, i, j) => j - s, (s, i, j) => i)
 
-    g.setColor(Color.BLACK)
-    g.drawRect(left, top, CELL_SIZE * model.columnNumber, CELL_SIZE * model.rowNumber)
+    val drawVerticalLine = (x: Int) => g.drawLine(left + x * CELL_SIZE, top, left + x * CELL_SIZE, bottom)
+    val drawHorizonLine = (y: Int) => g.drawLine(left, top + y * CELL_SIZE, right, top + y * CELL_SIZE)
 
     g.setColor(Color.LIGHT_GRAY)
-    1 to (model.columnNumber - 1) foreach (x => g.drawLine(left + x * CELL_SIZE, top, left + x * CELL_SIZE, bottom))
-    1 to (model.rowNumber - 1) foreach (y => g.drawLine(left, top + y * CELL_SIZE, right, top + y * CELL_SIZE))
+    1 to (model.columnNumber - 1) foreach drawVerticalLine
+    1 to (model.rowNumber - 1) foreach drawHorizonLine
+
+    g.setColor(Color.BLACK)
+    5.to(model.columnNumber - 1, 5) foreach drawVerticalLine
+    5.to(model.rowNumber - 1, 5) foreach drawHorizonLine
+
+    g.setColor(Color.BLACK)
+    g.drawRect(left, top, CELL_SIZE * model.columnNumber, CELL_SIZE * model.rowNumber)
 
     g.setColor(Color.BLACK)
     g.setPaintMode()

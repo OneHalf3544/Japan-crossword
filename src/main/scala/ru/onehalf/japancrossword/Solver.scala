@@ -31,19 +31,19 @@ class Solver(model: JapanCrosswordModel) {
   }
 
   def fitRemainder(remainderCellCount: Int, remainder: Array[Int]): Array[List[Cell.Cell]] = {
-    var lines: Array[List[Cell.Cell]] = Array.empty[List[Cell.Cell]]
+    println(remainderCellCount)
+    if (remainder.isEmpty) {
+      return Array(List.fill[Cell.Cell](remainderCellCount)(Cell.CLEARED))
+    }
 
+    var lines: Array[List[Cell.Cell]] = Array.empty[List[Cell.Cell]]
     for (i <- 0 to remainderCellCount - 1) {
-      if (remainder.isEmpty) {
-        return Array(List(Cell.CLEARED))
-      }
 
       val newRemainderCount = remainderCellCount - i - remainder(0)
 
       if (newRemainderCount >= 0) {
         var lineStart: List[Cell.Cell] =
-          List.fill[Cell.Cell](i)(Cell.CLEARED) :::
-            List.fill[Cell.Cell](remainder(0))(Cell.FILLED)
+          List.fill[Cell.Cell](i)(Cell.CLEARED) ::: List.fill[Cell.Cell](remainder(0))(Cell.FILLED)
 
         if (newRemainderCount > 0) {
           lineStart = lineStart ::: List.fill[Cell.Cell](1)(Cell.CLEARED)

@@ -12,13 +12,25 @@ import model.{Cell, JapanCrosswordModel}
 class Solver(model: JapanCrosswordModel) {
 
   def fillLine(setCell: (Int, Cell.Cell) => Unit, lineLength: Int, metadata: Array[Int]) {
-    // Все возможные способы заполнения:
-    val line: Array[List[Cell.Cell]] = fitRemainder(lineLength, metadata)
 
-    for (i <- 1 to lineLength) {
-      if (!line.isEmpty) {
-        setCell(i-1, line(0)(i-1))
+    def reduceLines(line1: List[Cell.Cell], line2: List[Cell.Cell]): List[Cell.Cell] = {
+      var result = List.fill[Cell.Cell](lineLength)(Cell.NOT_KNOWN)
+      for (i <- 0 to lineLength -1) {
+        if (line1(i) == line2(i))
+          result = result.updated(i, line1(i))
+        else
+          result = result.updated(i,  Cell.NOT_KNOWN)
       }
+      result
+    }
+
+
+    // Все возможные способы заполнения:
+    val lines: Array[List[Cell.Cell]] = fitRemainder(lineLength, metadata)
+
+    val compromiss: List[Cell.Cell] = lines.reduce(reduceLines)
+    for (i <- 1 to lineLength) {
+      setCell(i-1, compromiss(i-1))
     }
   }
 
@@ -31,7 +43,7 @@ class Solver(model: JapanCrosswordModel) {
   }
 
   def fitRemainder(remainderCellCount: Int, remainder: Array[Int]): Array[List[Cell.Cell]] = {
-    println(remainderCellCount)
+
     if (remainder.isEmpty) {
       return Array(List.fill[Cell.Cell](remainderCellCount)(Cell.CLEARED))
     }
@@ -53,7 +65,6 @@ class Solver(model: JapanCrosswordModel) {
       }
     }
 
-    //println(lines(0))
     lines
   }
 }

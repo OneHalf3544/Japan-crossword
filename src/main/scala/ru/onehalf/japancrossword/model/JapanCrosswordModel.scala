@@ -22,6 +22,6 @@ class JapanCrosswordModel(val horizonLine : Array[Array[Int]], val verticalLine 
     board(x)(y) = c
   }
 
-  def getColumn(x: Int) = getCell(x, _)
-  def getRow(y: Int) = getCell(_, y)
+  def getColumn(x: Int) = getCell(x, _: Int)
+  def getRow(y: Int) = getCell(_: Int, y)
 }

@@ -29,6 +29,16 @@ object Main {
       "2 1 1 1 4, 2 6 2, 2 2, 2 1, 1 1 1 1, 1 4 1, 1 6 1, 1 6 1, 1 4 1, " +
       "3 1 1 1 1 3, 2 4 1 1 4 2, 1 3 4 3 1, 3 5 5 4, 25, 4 10 4")
 
-    val frame = new JapanCrosswordFrame(new JapanCrosswordModel(horizonLine, verticalLine))
+    val model = new JapanCrosswordModel(horizonLine, verticalLine)
+    val frame = new JapanCrosswordFrame(model)
+
+    val solver = new Solver(model)
+    for (x <- 1 to model.columnNumber) {
+      solver.fillColumn(x-1)
+    }
+    for (y <- 1 to model.rowNumber) {
+      solver.fillRows(y-1)
+    }
+    frame.repaint()
   }
 }

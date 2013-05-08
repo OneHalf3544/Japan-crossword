@@ -21,7 +21,7 @@ class Solver(model: JapanCrosswordModel) {
 
   /**
    * Заполнить строки
-   * @param x Номер строки (с нуля)
+   * @param y Номер строки (с нуля)
    */
   def fillRows(y: Int) {
     fillLine(model.setCell(_: Int, y, _: Cell.Cell), model.columnNumber, model.verticalLine(y), model.getCell(_:Int, y))
@@ -36,11 +36,11 @@ class Solver(model: JapanCrosswordModel) {
    */
   def fillLine(setCell: (Int, Cell.Cell) => Unit, lineLength: Int, metadata: Array[Int], getLineData: (Int) => Cell.Cell) {
 
-    def addDataToModel(compromiss: List[Cell.Cell]) = {
+    def addDataToModel(compromise: List[Cell.Cell]) {
       for (i <- 0 to lineLength-1) {
         val cell = getLineData(i)
         if (cell == Cell.NOT_KNOWN)
-          setCell(i, compromiss(i))
+          setCell(i, compromise(i))
         else
           setCell(i, cell)
       }
@@ -83,8 +83,7 @@ class Solver(model: JapanCrosswordModel) {
     // Все возможные способы заполнения:
     val lines: Array[List[Cell.Cell]] = fitRemainder(lineLength, metadata).filter(notCompatibleToCurrentData)
 
-    val compromiss: List[Cell.Cell] = lines.reduce(reduceLines)
-    addDataToModel(compromiss)
+    addDataToModel(lines.reduce(reduceLines))
   }
 
   /**

@@ -11,7 +11,17 @@ import model.{Cell, JapanCrosswordModel}
  */
 class Solver(model: JapanCrosswordModel) {
 
-  def fillLine(setCell: (Int, Cell.Cell) => Unit, lineLength: Int, metadata: Array[Int]) {
+  def fillLine(setCell: (Int, Cell.Cell) => Unit, lineLength: Int, metadata: Array[Int], getLineData: (Int) => Cell.Cell) {
+
+    def addDataToModel(compromiss: List[Cell.Cell]) = {
+      for (i <- 0 to lineLength-1) {
+        val cell = getLineData(i)
+        if (cell == Cell.NOT_KNOWN)
+          setCell(i, compromiss(i))
+        else
+          setCell(i, cell)
+      }
+    }
 
     def reduceLines(line1: List[Cell.Cell], line2: List[Cell.Cell]): List[Cell.Cell] = {
       var result = List.fill[Cell.Cell](lineLength)(Cell.NOT_KNOWN)
@@ -24,22 +34,19 @@ class Solver(model: JapanCrosswordModel) {
       result
     }
 
-
     // Все возможные способы заполнения:
     val lines: Array[List[Cell.Cell]] = fitRemainder(lineLength, metadata)
 
     val compromiss: List[Cell.Cell] = lines.reduce(reduceLines)
-    for (i <- 1 to lineLength) {
-      setCell(i-1, compromiss(i-1))
-    }
+    addDataToModel(compromiss)
   }
 
   def fillColumn(x: Int) {
-    fillLine(model.setCell(x, _: Int, _: Cell.Cell), model.rowNumber, model.horizonLine(x))
+    fillLine(model.setCell(x, _: Int, _: Cell.Cell), model.rowNumber, model.horizonLine(x), model.getCell(x, _:Int))
   }
 
   def fillRows(y: Int) {
-    fillLine(model.setCell(_: Int, y, _: Cell.Cell), model.columnNumber, model.verticalLine(y))
+    fillLine(model.setCell(_: Int, y, _: Cell.Cell), model.columnNumber, model.verticalLine(y), model.getCell(_:Int, y))
   }
 
   def fitRemainder(remainderCellCount: Int, remainder: Array[Int]): Array[List[Cell.Cell]] = {

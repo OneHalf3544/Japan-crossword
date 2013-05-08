@@ -37,13 +37,7 @@ class Solver(model: JapanCrosswordModel) {
   def fillLine(setCell: (Int, Cell.Cell) => Unit, lineLength: Int, metadata: Array[Int], getLineData: (Int) => Cell.Cell) {
 
     def addDataToModel(compromise: List[Cell.Cell]) {
-      for (i <- 0 to lineLength-1) {
-        val cell = getLineData(i)
-        if (cell == Cell.NOT_KNOWN)
-          setCell(i, compromise(i))
-        else
-          setCell(i, cell)
-      }
+      0 to lineLength-1 filter (getLineData(_) == Cell.NOT_KNOWN) foreach(i => setCell(i, compromise(i)))
     }
 
     /**
@@ -55,11 +49,8 @@ class Solver(model: JapanCrosswordModel) {
      */
     def reduceLines(line1: List[Cell.Cell], line2: List[Cell.Cell]): List[Cell.Cell] = {
       var result = List.fill[Cell.Cell](lineLength)(Cell.NOT_KNOWN)
-      for (i <- 0 to lineLength -1) {
-        if (line1(i) == line2(i))
-          result = result.updated(i, line1(i))
-        else
-          result = result.updated(i,  Cell.NOT_KNOWN)
+      for (i <- 0 to lineLength -1; if line1(i) == line2(i)) {
+        result = result.updated(i, line1(i))
       }
       result
     }
@@ -70,14 +61,7 @@ class Solver(model: JapanCrosswordModel) {
      * @return true, если вариант приемлим
      */
     def notCompatibleToCurrentData(supposeLine: List[Cell.Cell]): Boolean = {
-      for(i <- 0 to lineLength-1) {
-        if (getLineData(i) != Cell.NOT_KNOWN) {
-          if (getLineData(i) != supposeLine(i)) {
-            return false
-          }
-        }
-      }
-      true
+      0 to lineLength-1 forall (i => getLineData(i) == Cell.NOT_KNOWN || getLineData(i) == supposeLine(i))
     }
 
     // Все возможные способы заполнения:

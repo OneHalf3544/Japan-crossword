@@ -12,7 +12,16 @@ class JapanCrosswordModel(val horizonLine : Array[Array[Int]], val verticalLine 
   val columnNumber = horizonLine.size
   val rowNumber = verticalLine.size
 
-  private val board: Array[Array[Cell.Cell]] = Array.fill(columnNumber, rowNumber)(Cell.NOT_KNOWN)
+  private var listeners: Array[()=>Unit] = Array()
+
+  private var board: Array[Array[Cell.Cell]] = null
+
+  clear()
+
+  def clear() {
+    board = Array.fill(columnNumber, rowNumber)(Cell.NOT_KNOWN)
+    listeners.foreach(_())
+  }
 
   def getCell(x: Int, y: Int) = {
     board(x)(y)
@@ -20,8 +29,13 @@ class JapanCrosswordModel(val horizonLine : Array[Array[Int]], val verticalLine 
 
   def setCell(x: Int, y: Int, c: Cell.Cell) {
     board(x)(y) = c
+    listeners.foreach(_())
   }
 
   def getColumn(x: Int) = getCell(x, _: Int)
   def getRow(y: Int) = getCell(_: Int, y)
+
+  def addListener(f :() => Unit) {
+    listeners = listeners :+ f
+  }
 }

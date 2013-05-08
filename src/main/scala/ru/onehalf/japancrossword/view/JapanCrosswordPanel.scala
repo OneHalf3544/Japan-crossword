@@ -15,6 +15,7 @@ import java.awt.event.{MouseEvent, MouseListener}
 class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
 
   val CELL_SIZE = 30
+  val FONT_SIZE = 16
 
   val maxHorizonOffset = toOffset(model.verticalLine)
   val maxVerticalOffset = toOffset(model.horizonLine)
@@ -48,8 +49,6 @@ class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
         case (Cell.NOT_KNOWN, MouseEvent.BUTTON3) => Cell.CLEARED
         case (_, _) => Cell.NOT_KNOWN
       })
-
-      repaint()
     }
   })
 
@@ -75,7 +74,7 @@ class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
     g.fillRect(left, top, model.columnNumber * CELL_SIZE,  model.rowNumber * CELL_SIZE)
 
     g.setColor(Color.BLACK)
-    g.setFont(new Font("Courier New", Font.BOLD, 16))
+    g.setFont(new Font("Courier New", Font.BOLD, FONT_SIZE))
 
     drawMarks(model.horizonLine, (s, i, j) => i, (s, i, j) => j - s)
     drawMarks(model.verticalLine, (s, i, j) => j - s, (s, i, j) => i)

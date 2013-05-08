@@ -31,7 +31,5 @@ object Main {
 
     val model = new JapanCrosswordModel(horizonLine, verticalLine)
     val frame = new JapanCrosswordFrame(model)
-
-    frame.repaint()
   }
 }

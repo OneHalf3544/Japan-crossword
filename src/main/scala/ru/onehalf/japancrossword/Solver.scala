@@ -11,6 +11,14 @@ import model.{Cell, JapanCrosswordModel}
  */
 class Solver(model: JapanCrosswordModel) {
 
+  def fillColumn(x: Int) {
+    fillLine(model.setCell(x, _: Int, _: Cell.Cell), model.rowNumber, model.horizonLine(x), model.getCell(x, _:Int))
+  }
+
+  def fillRows(y: Int) {
+    fillLine(model.setCell(_: Int, y, _: Cell.Cell), model.columnNumber, model.verticalLine(y), model.getCell(_:Int, y))
+  }
+
   def fillLine(setCell: (Int, Cell.Cell) => Unit, lineLength: Int, metadata: Array[Int], getLineData: (Int) => Cell.Cell) {
 
     def addDataToModel(compromiss: List[Cell.Cell]) = {
@@ -34,19 +42,22 @@ class Solver(model: JapanCrosswordModel) {
       result
     }
 
+    def notCompatibleToCurrentData(supposeLine: List[Cell.Cell]): Boolean = {
+      for(i <- 0 to lineLength-1) {
+        if (getLineData(i) != Cell.NOT_KNOWN) {
+          if (getLineData(i) != supposeLine(i)) {
+            return false
+          }
+        }
+      }
+      return true
+    }
+
     // Все возможные способы заполнения:
-    val lines: Array[List[Cell.Cell]] = fitRemainder(lineLength, metadata)
+    val lines: Array[List[Cell.Cell]] = fitRemainder(lineLength, metadata).filter(notCompatibleToCurrentData)
 
     val compromiss: List[Cell.Cell] = lines.reduce(reduceLines)
     addDataToModel(compromiss)
-  }
-
-  def fillColumn(x: Int) {
-    fillLine(model.setCell(x, _: Int, _: Cell.Cell), model.rowNumber, model.horizonLine(x), model.getCell(x, _:Int))
-  }
-
-  def fillRows(y: Int) {
-    fillLine(model.setCell(_: Int, y, _: Cell.Cell), model.columnNumber, model.verticalLine(y), model.getCell(_:Int, y))
   }
 
   def fitRemainder(remainderCellCount: Int, remainder: Array[Int]): Array[List[Cell.Cell]] = {

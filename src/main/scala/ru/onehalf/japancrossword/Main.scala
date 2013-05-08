@@ -32,16 +32,6 @@ object Main {
     val model = new JapanCrosswordModel(horizonLine, verticalLine)
     val frame = new JapanCrosswordFrame(model)
 
-    val solver = new Solver(model)
-
-    for (abc <- 1 to 2) {
-      for (x <- 1 to model.columnNumber) {
-        solver.fillColumn(x-1)
-      }
-      for (y <- 1 to model.rowNumber) {
-        solver.fillRows(y-1)
-      }
-    }
     frame.repaint()
   }
 }

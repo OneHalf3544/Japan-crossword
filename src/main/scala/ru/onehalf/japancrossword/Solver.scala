@@ -1,6 +1,7 @@
 package ru.onehalf.japancrossword
 
 import model.{Cell, JapanCrosswordModel}
+import solver.Orientation
 
 /**
  * Логика решения кроссворда
@@ -17,6 +18,17 @@ class Solver(model: JapanCrosswordModel) {
    */
   def solve() {
 
+    val columnVariants: Array[LineVariants] = (0 to model.columnNumber-1).par.map(fillColumn(_)).toArray
+    val rowVariants: Array[LineVariants] = (0 to model.rowNumber-1).par.map(fillRow(_)).toArray
+
+    /**
+     * Один цикл подбора вариантов
+     */
+    def oneSolveCycle() {
+      (0 to model.columnNumber-1).par.foreach(columnVariants(_).addDataToModel())
+      (0 to model.rowNumber-1).par.foreach(rowVariants(_).addDataToModel())
+    }
+
     val start = System.currentTimeMillis()
 
     var oldUnresolvedCount = model.totalUnresolvedCount() + 1
@@ -32,70 +44,40 @@ class Solver(model: JapanCrosswordModel) {
     println("millis: " + (System.currentTimeMillis() - start))
   }
 
-  /**
-   * Один цикл подбора вариантов
-   */
-  def oneSolveCycle() {
-    (1 to model.columnNumber).par.foreach(x => fillColumn(x - 1))
-    (1 to model.rowNumber).par.foreach(y => fillRows(y - 1))
-  }
 
   /**
-   * Заполнить столбцы
+   * Заполнить столбец
    * @param x Номер столбца (с нуля)
    */
-  def fillColumn(x: Int) {
-    fillLine(model.setCell(x, _: Int, _: Cell.Cell), model.rowNumber, model.horizonLine(x), model.getCell(x, _:Int))
+  def fillColumn(x: Int): LineVariants = {
+    fillLine(
+      x, Orientation.VERTICAL, model.setCell(x, _: Int, _: Cell.Cell),
+      model.rowNumber, model.horizonLine(x), model.getCell(x, _:Int))
   }
 
   /**
-   * Заполнить строки
+   * Заполнить строку
    * @param y Номер строки (с нуля)
    */
-  def fillRows(y: Int) {
-    fillLine(model.setCell(_: Int, y, _: Cell.Cell), model.columnNumber, model.verticalLine(y), model.getCell(_:Int, y))
+  def fillRow(y: Int): LineVariants = {
+    fillLine(
+      y, Orientation.HORIZONTAL, model.setCell(_: Int, y, _: Cell.Cell),
+      model.columnNumber, model.verticalLine(y), model.getCell(_:Int, y))
   }
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
+   * @param orientation Тип расположения линии
    * @param setCell Метод установки значения по индексу
    * @param lineLength Размер линии
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param getLineData Метод получения данных из линии по индексу
    */
-  def fillLine(setCell: (Int, Cell.Cell) => Unit, lineLength: Int, metadata: Array[Int], getLineData: (Int) => Cell.Cell) {
-
-    def addDataToModel(compromise: List[Cell.Cell]) {
-      0 to lineLength-1 filter (getLineData(_) == Cell.NOT_KNOWN) foreach(i => setCell(i, compromise(i)))
-    }
-
-    /**
-     * Схлопывание линий в одну. Если во всех вариантах какие-либо ячейки совпадают,
-     * то результирующая линия будет содержать эти значения. Иначе в ячейку попадет Cell.NOT_KNOWN
-     * @param line1 Линия 1
-     * @param line2 Линия 2
-     * @return Сезультат схлопывания
-     */
-    def reduceLines(line1: List[Cell.Cell], line2: List[Cell.Cell]): List[Cell.Cell] = {
-      val result = Array.fill[Cell.Cell](lineLength)(Cell.NOT_KNOWN)
-
-      0 to lineLength -1 filter ((i) => line1(i) == line2(i)) foreach(i => result(i) = line1(i))
-      result.toList
-    }
-
-    /**
-     * Проверка, не противоречит ли предлагаемое значение текущим данным
-     * @param supposeLine Предлагаемая линия
-     * @return true, если вариант приемлим
-     */
-    def notCompatibleToCurrentData(supposeLine: List[Cell.Cell]): Boolean = {
-      0 to lineLength-1 forall (i => getLineData(i) == Cell.NOT_KNOWN || getLineData(i) == supposeLine(i))
-    }
+  def fillLine(lineIndex: Int, orientation : Orientation.Orientation, setCell: (Int, Cell.Cell) => Unit,
+               lineLength: Int, metadata: Array[Int], getLineData: (Int) => Cell.Cell): LineVariants = {
 
     // Все возможные способы заполнения:
-    val lines: Array[List[Cell.Cell]] = fitRemainder(lineLength, metadata).filter(notCompatibleToCurrentData)
-
-    addDataToModel(lines.reduce(reduceLines))
+    new LineVariants(lineIndex, orientation, fitRemainder(lineLength, metadata), model)
   }
 
   /**

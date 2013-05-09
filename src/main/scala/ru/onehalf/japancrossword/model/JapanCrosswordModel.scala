@@ -45,5 +45,5 @@ class JapanCrosswordModel(val horizonLine : Array[Array[Int]], val verticalLine 
 
   def maxTotalUnresolvedCount = columnNumber * rowNumber
 
-  def isSolved() = totalUnresolvedCount == maxTotalUnresolvedCount
+  def isSolved = totalUnresolvedCount == maxTotalUnresolvedCount
 }

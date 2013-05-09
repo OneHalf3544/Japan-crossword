@@ -24,10 +24,9 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
 
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
-    val solver = new Solver(model)
     val solveButton = new JButton(new AbstractAction("Решить") {
       def actionPerformed(e: ActionEvent) {
-        solver.solve()
+        new Solver(model).solve()
       }
     })
 

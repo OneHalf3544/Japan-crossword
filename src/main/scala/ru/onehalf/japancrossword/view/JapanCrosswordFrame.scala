@@ -3,10 +3,10 @@ package ru.onehalf.japancrossword.view
 import java.awt._
 import javax.swing._
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
-import ru.onehalf.japancrossword.Solver
 import javax.swing.event._
 import java.awt.event.ActionListener
 import java.awt.event.ActionEvent
+import ru.onehalf.japancrossword.solver.Solver
 
 /**
  * <p/>

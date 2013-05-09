@@ -1,7 +1,6 @@
-package ru.onehalf.japancrossword
+package ru.onehalf.japancrossword.solver
 
-import model.{Cell, JapanCrosswordModel}
-import solver.Orientation
+import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
 
 /**
  * Логика решения кроссворда

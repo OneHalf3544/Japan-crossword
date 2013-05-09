@@ -17,18 +17,27 @@ class Solver(model: JapanCrosswordModel) {
    */
   def solve() {
 
+    val start = System.currentTimeMillis()
+
     var oldUnresolvedCount = model.totalUnresolvedCount() + 1
 
-    1 to model.columnNumber foreach (x => fillColumn(x - 1))
-    1 to model.rowNumber foreach (y => fillRows(y - 1))
+    oneSolveCycle()
 
     // Продолжаем подбирать варианты, пока решение не зайдет в тупик, либо не завершится успехом
     while (!model.isSolved && oldUnresolvedCount != model.totalUnresolvedCount) {
       oldUnresolvedCount = model.totalUnresolvedCount()
-
-      1 to model.columnNumber foreach (x => fillColumn(x - 1))
-      1 to model.rowNumber foreach (y => fillRows(y - 1))
+      oneSolveCycle()
     }
+
+    println("millis: " + (System.currentTimeMillis() - start))
+  }
+
+  /**
+   * Один цикл подбора вариантов
+   */
+  def oneSolveCycle() {
+    (1 to model.columnNumber).par.foreach(x => fillColumn(x - 1))
+    (1 to model.rowNumber).par.foreach(y => fillRows(y - 1))
   }
 
   /**

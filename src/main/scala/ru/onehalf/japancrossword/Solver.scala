@@ -29,8 +29,6 @@ class Solver(model: JapanCrosswordModel) {
       (0 to model.rowNumber-1).par.foreach(rowVariants(_).addDataToModel())
     }
 
-    val start = System.currentTimeMillis()
-
     var oldUnresolvedCount = model.totalUnresolvedCount() + 1
 
     oneSolveCycle()
@@ -40,8 +38,6 @@ class Solver(model: JapanCrosswordModel) {
       oldUnresolvedCount = model.totalUnresolvedCount()
       oneSolveCycle()
     }
-
-    println("millis: " + (System.currentTimeMillis() - start))
   }
 
 
@@ -50,9 +46,7 @@ class Solver(model: JapanCrosswordModel) {
    * @param x Номер столбца (с нуля)
    */
   def fillColumn(x: Int): LineVariants = {
-    fillLine(
-      x, Orientation.VERTICAL, model.setCell(x, _: Int, _: Cell.Cell),
-      model.rowNumber, model.horizonLine(x), model.getCell(x, _:Int))
+    fillLine(x, Orientation.VERTICAL, model.rowNumber, model.horizonLine(x))
   }
 
   /**
@@ -60,23 +54,18 @@ class Solver(model: JapanCrosswordModel) {
    * @param y Номер строки (с нуля)
    */
   def fillRow(y: Int): LineVariants = {
-    fillLine(
-      y, Orientation.HORIZONTAL, model.setCell(_: Int, y, _: Cell.Cell),
-      model.columnNumber, model.verticalLine(y), model.getCell(_:Int, y))
+    fillLine(y, Orientation.HORIZONTAL, model.columnNumber, model.verticalLine(y))
   }
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param orientation Тип расположения линии
-   * @param setCell Метод установки значения по индексу
    * @param lineLength Размер линии
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
-   * @param getLineData Метод получения данных из линии по индексу
    */
-  def fillLine(lineIndex: Int, orientation : Orientation.Orientation, setCell: (Int, Cell.Cell) => Unit,
-               lineLength: Int, metadata: Array[Int], getLineData: (Int) => Cell.Cell): LineVariants = {
-
-    // Все возможные способы заполнения:
+  def fillLine(lineIndex: Int, orientation : Orientation.Orientation, lineLength: Int,
+               metadata: Array[Int]): LineVariants = {
+    // Все возможные способы заполнения: линии
     new LineVariants(lineIndex, orientation, fitRemainder(lineLength, metadata), model)
   }
 

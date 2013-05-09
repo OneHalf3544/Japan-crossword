@@ -38,4 +38,12 @@ class JapanCrosswordModel(val horizonLine : Array[Array[Int]], val verticalLine 
   def addListener(f :() => Unit) {
     listeners = listeners :+ f
   }
+
+  def totalUnresolvedCount() = {
+    board.map(_.filter(_ == Cell.NOT_KNOWN).size).sum
+  }
+
+  def maxTotalUnresolvedCount = columnNumber * rowNumber
+
+  def isSolved() = totalUnresolvedCount == maxTotalUnresolvedCount
 }

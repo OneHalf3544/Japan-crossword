@@ -14,7 +14,7 @@ import java.awt.event.{MouseEvent, MouseListener}
  */
 class JapanCrosswordPanel(model: JapanCrosswordModel) extends JPanel {
 
-  val CELL_SIZE = 30
+  val CELL_SIZE = 25
   val FONT_SIZE = 16
 
   val maxHorizonOffset = toOffset(model.verticalLine)

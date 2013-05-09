@@ -27,12 +27,7 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
     val solver = new Solver(model)
     val solveButton = new JButton(new AbstractAction("Решить") {
       def actionPerformed(e: ActionEvent) {
-        for (x <- 1 to model.columnNumber) {
-          solver.fillColumn(x-1)
-        }
-        for (y <- 1 to model.rowNumber) {
-          solver.fillRows(y-1)
-        }
+        solver.solve()
       }
     })
 
@@ -45,7 +40,7 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
     }))
 
     val contentPane = new JPanel(new BorderLayout())
-    contentPane.add(new JapanCrosswordPanel(model), BorderLayout.CENTER)
+    contentPane.add(new JScrollPane(new JapanCrosswordPanel(model)), BorderLayout.CENTER)
     contentPane.add(controlPanel, BorderLayout.PAGE_END)
     setContentPane(contentPane)
 

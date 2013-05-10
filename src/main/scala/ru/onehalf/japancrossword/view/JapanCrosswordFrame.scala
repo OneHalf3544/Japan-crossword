@@ -32,11 +32,18 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
 
     val controlPanel = new JPanel(new FlowLayout())
     controlPanel.add(solveButton)
+    controlPanel.add(new JButton(new AbstractAction("Редактирование") {
+      def actionPerformed(e: ActionEvent) {
+        val dialog = new JDialog(JapanCrosswordFrame.this, "Редактировать данные кроссворда", true)
+        dialog.setContentPane(new MetadataEditorPanel)
+        dialog.setVisible(true)
+      }
+    }))
     controlPanel.add(new JButton(new AbstractAction("Очистить") {
       def actionPerformed(e: ActionEvent) {
         model.clear()
       }
-    }))
+      }))
 
     val contentPane = new JPanel(new BorderLayout())
     contentPane.add(new JScrollPane(new JapanCrosswordPanel(model)), BorderLayout.CENTER)

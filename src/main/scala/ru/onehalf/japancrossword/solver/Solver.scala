@@ -24,8 +24,8 @@ class Solver(model: JapanCrosswordModel) {
      * Один цикл подбора вариантов
      */
     def oneSolveCycle() {
-      (0 to model.columnNumber-1).par.foreach(columnVariants(_).addDataToModel())
-      (0 to model.rowNumber-1).par.foreach(rowVariants(_).addDataToModel())
+      (0 to model.columnNumber-1).foreach(columnVariants(_).addDataToModel())
+      (0 to model.rowNumber-1).foreach(rowVariants(_).addDataToModel())
     }
 
     var oldUnresolvedCount = model.totalUnresolvedCount() + 1
@@ -37,8 +37,11 @@ class Solver(model: JapanCrosswordModel) {
       oldUnresolvedCount = model.totalUnresolvedCount()
       oneSolveCycle()
     }
-  }
+    if (model.isSolved) {
+      return
+    }
 
+  }
 
   /**
    * Заполнить столбец

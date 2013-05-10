@@ -47,6 +47,7 @@ class LineVariants(lineIndex: Int, orientation: Orientation.Orientation,
    * @return Общий вариант расположения ячеек
    */
   def consistentVariant() = {
+    if (variants.isEmpty) throw new IllegalStateException("cannot resolve crossword")
     variants.reduce(reduceLines)
   }
 

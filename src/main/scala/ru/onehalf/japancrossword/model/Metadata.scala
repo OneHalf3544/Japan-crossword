@@ -4,6 +4,7 @@ import scala.Array
 import ru.onehalf.japancrossword.solver.Orientation
 
 /**
+ * Сигнатуры рядов.
  * <p/>
  * <p/>
  * Created: 11.05.13 12:56

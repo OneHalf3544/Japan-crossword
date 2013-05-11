@@ -6,6 +6,7 @@ import ru.onehalf.japancrossword.model.{JapanCrosswordModel, Cell}
 import javax.swing.JPanel
 
 /**
+ * Панель с сеткой кроссворда. Реагирует на клики изменением модели
  * <p/>
  * <p/>
  * Created: 11.05.13 11:25

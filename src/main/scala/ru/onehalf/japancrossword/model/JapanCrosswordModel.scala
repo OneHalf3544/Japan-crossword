@@ -25,7 +25,7 @@ class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadat
     listeners.foreach(_())
   }
 
-  def getCell(x: Int, y: Int) = {
+  def apply(x: Int, y: Int) = {
     board(x)(y)
   }
 
@@ -34,8 +34,8 @@ class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadat
     listeners.foreach(_())
   }
 
-  def getColumn(x: Int) = getCell(x, _: Int)
-  def getRow(y: Int) = getCell(_: Int, y)
+  def getColumn(x: Int) = apply(x, _: Int)
+  def getRow(y: Int) = apply(_: Int, y)
 
   def addListener(f :() => Unit) {
     listeners = listeners :+ f

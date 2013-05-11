@@ -32,7 +32,7 @@ class GridPanel(model: JapanCrosswordModel, CELL_SIZE: Int) extends JPanel {
     def mousePressed(e: MouseEvent) {}
     def mouseReleased(e: MouseEvent) {
       val coordinates = determineCellCoordinate(e.getX, e.getY)
-      val current = model.getCell(coordinates._1, coordinates._2)
+      val current = model.apply(coordinates._1, coordinates._2)
 
       model.setCell(coordinates._1, coordinates._2, (current, e.getButton) match {
         case (Cell.NOT_KNOWN, MouseEvent.BUTTON1) => Cell.FILLED
@@ -66,7 +66,7 @@ class GridPanel(model: JapanCrosswordModel, CELL_SIZE: Int) extends JPanel {
     g.setPaintMode()
 
     def drawCell(x: Int, y: Int) {
-      model.getCell(x, y) match {
+      model.apply(x, y) match {
         case Cell.FILLED => g.fillRect(left + x * CELL_SIZE, top + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
         case Cell.CLEARED => {
           val x1 = left + x * CELL_SIZE
@@ -79,7 +79,7 @@ class GridPanel(model: JapanCrosswordModel, CELL_SIZE: Int) extends JPanel {
 
     for (x <- 0 to model.columnNumber - 1)
       for (y <- 0 to model.rowNumber - 1)
-        if (model.getCell(x, y) != Cell.NOT_KNOWN)
+        if (model(x, y) != Cell.NOT_KNOWN)
           drawCell(x, y)
   }
 

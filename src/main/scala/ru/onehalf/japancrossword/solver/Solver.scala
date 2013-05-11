@@ -1,7 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
-import java.util
 
 /**
  * Логика решения кроссворда
@@ -18,15 +17,14 @@ class Solver(model: JapanCrosswordModel) {
    */
   def solve() {
 
-    val columnVariants: Array[LineVariants] = (0 to model.columnNumber-1).par.map(fillColumn(_)).toArray
-    val rowVariants: Array[LineVariants] = (0 to model.rowNumber-1).par.map(fillRow(_)).toArray
-
     /**
      * Один цикл подбора вариантов
      */
     def oneSolveCycle() {
-      (0 to model.columnNumber-1).foreach(columnVariants(_).addDataToModel())
-      (0 to model.rowNumber-1).foreach(rowVariants(_).addDataToModel())
+      // todo Запускать строки/стробцы паралельно, в порядке от простых вариантов к сложным
+      // todo (чтобы при подборе вариантов ячейки накладывались уточнялили перебор соседним потокам другими линиями)
+      (0 to model.columnNumber-1).toList.sortBy(model.horizonLine(_) .sum).reverse.take(4).par.map(fillColumn(_)).foreach(_.addDataToModel())
+      (0 to model.rowNumber-1)   .toList.sortBy(model.verticalLine(_).sum).reverse.take(4).par.map(fillRow(_))   .foreach(_.addDataToModel())
     }
 
     var oldUnresolvedCount = model.totalUnresolvedCount() + 1
@@ -38,18 +36,6 @@ class Solver(model: JapanCrosswordModel) {
       oldUnresolvedCount = model.totalUnresolvedCount()
       oneSolveCycle()
     }
-
-    if (!model.isSolved) {
-      val rowCounts: Array[Int] = rowVariants.map(_.variantsCount())
-      val columnCounts: Array[Int] = columnVariants.map(_.variantsCount())
-
-      println("rowsVariant: " + rowCounts.mkString(", "))
-      println("columnVariant: " + columnCounts.mkString(", "))
-
-      println("min: " + rowCounts.filter(_ > 1).min(Ordering.Int).toString)
-      println("min: " + columnCounts.filter(_ > 1).min(Ordering.Int).toString)
-    }
-
   }
 
   /**
@@ -57,7 +43,8 @@ class Solver(model: JapanCrosswordModel) {
    * @param x Номер столбца (с нуля)
    */
   def fillColumn(x: Int): LineVariants = {
-    fillLine(x, Orientation.VERTICAL, model.rowNumber, model.horizonLine(x))
+    val currentData = (0 to model.rowNumber - 1) map (model(x, _))
+    fillLine(x, Orientation.VERTICAL, model.horizonLine(x), currentData.toList)
   }
 
   /**
@@ -65,53 +52,91 @@ class Solver(model: JapanCrosswordModel) {
    * @param y Номер строки (с нуля)
    */
   def fillRow(y: Int): LineVariants = {
-    fillLine(y, Orientation.HORIZONTAL, model.columnNumber, model.verticalLine(y))
+    val currentData = (0 to model.columnNumber - 1) map (model(_, y))
+    fillLine(y, Orientation.HORIZONTAL, model.verticalLine(y), currentData.toList)
   }
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param orientation Тип расположения линии
-   * @param lineLength Размер линии
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
+   * @param currentData Текущие данные
    */
-  def fillLine(lineIndex: Int, orientation : Orientation.Orientation, lineLength: Int,
-               metadata: Array[Int]): LineVariants = {
+  def fillLine(lineIndex: Int, orientation : Orientation.Orientation,
+               metadata: Array[Int], currentData: List[Cell.Cell]): LineVariants = {
     // Все возможные способы заполнения: линии
-    new LineVariants(lineIndex, orientation, fitRemainder(lineLength, metadata), model)
+    new LineVariants(lineIndex, orientation, Array(fitRemainder(metadata, currentData).get), model)
   }
 
   /**
    * Заполнение линии согласно переданным в функцию метаданным.
    * Функция рекурсивно вызывает саму себя. Выставляет первый элемент,
    * и для заполнения остатка линии вы зывает этот же метод
-   * @param remainderCellCount Число ячеек, которые нужно заполнить
-   * @param remainder Метаданные для линии
+   * @param metadata Метаданные для линии
+   * @param currentData текущее содержимое линии
    * @return Список линий, подходящих под указанные метаданные
    */
-  def fitRemainder(remainderCellCount: Int, remainder: Array[Int]): Array[List[Cell.Cell]] = {
+  def fitRemainder(metadata: Array[Int], currentData: List[Cell.Cell]): Option[List[Cell.Cell]] = {
 
-    if (remainder.isEmpty) {
+    if (metadata.isEmpty) {
       // Нету больше метаданных? Значит остаток строки пустой
-      return Array(List.fill[Cell.Cell](remainderCellCount)(Cell.CLEARED))
+      if (currentData.forall(_ != Cell.FILLED)) return Option(List.fill[Cell.Cell](currentData.size)(Cell.CLEARED))
+      else return Option.empty // В случае противоречий говорим, что решения нет
     }
 
-    var lines: Array[List[Cell.Cell]] = Array.empty[List[Cell.Cell]]
-    for (i <- 0 to remainderCellCount - 1) {
+    val chunkLength = metadata.head
+    val expectedLength = currentData.size
 
-      val newRemainderCount = remainderCellCount - i - remainder(0)
+    var result: Option[List[Cell.Cell]] = Option.empty
 
-      if (newRemainderCount >= 0) {
-        var lineStart: List[Cell.Cell] =
-          List.fill[Cell.Cell](i)(Cell.CLEARED) ::: List.fill[Cell.Cell](remainder(0))(Cell.FILLED)
+    (0 to currentData.size - 1).filter(_ + chunkLength <= expectedLength).foreach(i => {
 
-        if (newRemainderCount > 0) {
-          lineStart = lineStart ::: List.fill[Cell.Cell](1)(Cell.CLEARED)
-        }
+      // Заполнение отступом + заполненный участок
+      var lineStart: List[Cell.Cell] =
+        List.fill[Cell.Cell](i)(Cell.CLEARED) ::: List.fill[Cell.Cell](chunkLength)(Cell.FILLED)
 
-        fitRemainder(newRemainderCount - 1, remainder.tail).foreach(p => {lines = lines :+ (lineStart ::: p)})
+      // Параметр для повтороного вызова метода
+      var newCurrentData = currentData.drop(lineStart.size)
+
+      // Если какая-то часть строки еще остается, добавляем разделительную ячейку
+      if (newCurrentData.nonEmpty) {
+        lineStart = lineStart ::: List(Cell.CLEARED)
+        newCurrentData = newCurrentData.drop(1)
       }
-    }
 
-    lines
+      // Доподбираем оставшуюся часть строки
+      val subResult = fitRemainder(metadata.tail, newCurrentData)
+      if (subResult.isDefined)
+        // Сохраняем найденный вариант в акумулятор
+        if (compatibleToCurrentData(newCurrentData, subResult.get)) {
+          if (result.isEmpty)
+            result = Option(lineStart ::: subResult.get)
+          else
+            result = Option(reduceLines(result.get, (lineStart ::: subResult.get)))
+        }
+    })
+
+    result
+  }
+
+  private def reduceLines(line1: List[Cell.Cell], line2: List[Cell.Cell]): List[Cell.Cell] = {
+    assert(line1.size == line2.size, "lines: " + line1.size + ", " + line2.size)
+    val lineLength = line1.size
+
+    val result = Array.fill[Cell.Cell](lineLength)(Cell.NOT_KNOWN)
+
+    0 to lineLength -1 filter ((i) => line1(i) == line2(i)) foreach(i => result(i) = line1(i))
+    result.toList
+  }
+
+  /**
+   * Проверка, не противоречит ли предлагаемое значение текущим данным
+   * @param supposeLine Предлагаемая линия
+   * @return true, если вариант приемлим
+   */
+  def compatibleToCurrentData(currentData: List[Cell.Cell], supposeLine: List[Cell.Cell]): Boolean = {
+    assert(currentData.size == supposeLine.size)
+
+    0 to supposeLine.size-1 forall (i => currentData(i) == Cell.NOT_KNOWN || currentData(i) == supposeLine(i) || supposeLine(i) == Cell.NOT_KNOWN)
   }
 }

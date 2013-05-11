@@ -2,8 +2,10 @@ package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model.{JapanCrosswordModel, Cell}
 
+// todo Выпилить класс, или переделать в сторону использования одной строки
 /**
  * Варианты выставления
+ *
  * <p/>
  * <p/>
  * Created: 09.05.13 13:47
@@ -38,7 +40,7 @@ class LineVariants(lineIndex: Int, orientation: Orientation.Orientation,
    * @return true, если вариант приемлим
    */
   def compatibleToCurrentData(supposeLine: List[Cell.Cell]): Boolean = {
-    0 to supposeLine.size-1 forall (i => getLineData(i) == Cell.NOT_KNOWN || getLineData(i) == supposeLine(i))
+    0 to supposeLine.size-1 forall (i => getLineData(i) == Cell.NOT_KNOWN || getLineData(i) == supposeLine(i) || supposeLine(i) == Cell.NOT_KNOWN)
   }
 
   /**
@@ -48,6 +50,7 @@ class LineVariants(lineIndex: Int, orientation: Orientation.Orientation,
    */
   def consistentVariant() = {
     if (variants.isEmpty) throw new IllegalStateException("cannot resolve crossword")
+
     variants.reduce(reduceLines)
   }
 
@@ -59,8 +62,8 @@ class LineVariants(lineIndex: Int, orientation: Orientation.Orientation,
 
   def getLineData(cellIndex: Int) = {
     orientation match {
-      case Orientation.HORIZONTAL => model.getCell(cellIndex, lineIndex)
-      case Orientation.VERTICAL => model.getCell(lineIndex, cellIndex)
+      case Orientation.HORIZONTAL => model.apply(cellIndex, lineIndex)
+      case Orientation.VERTICAL => model.apply(lineIndex, cellIndex)
     }
   }
 

@@ -13,6 +13,9 @@ import ru.onehalf.japancrossword.solver.Orientation
  */
 class Metadata(val orientation: Orientation.Orientation,  content: Array[Array[Int]]) {
 
+  /**
+   * Число рядов, описываемых данным классом
+   */
   val size: Int = content.size
 
   val maxPartsCount: Int = content.map(_.size).max

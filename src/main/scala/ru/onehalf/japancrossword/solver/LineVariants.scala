@@ -70,4 +70,12 @@ class LineVariants(lineIndex: Int, orientation: Orientation.Orientation,
       case Orientation.VERTICAL => model.setCell(lineIndex, cellIndex, cell)
     }
   }
+
+  def variantsCount() = {
+    variants.size
+  }
+
+  override def toString: String = {
+    "count: " + variants.size
+  }
 }

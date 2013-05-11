@@ -1,6 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
+import java.util
 
 /**
  * Логика решения кроссворда
@@ -37,8 +38,16 @@ class Solver(model: JapanCrosswordModel) {
       oldUnresolvedCount = model.totalUnresolvedCount()
       oneSolveCycle()
     }
-    if (model.isSolved) {
-      return
+
+    if (!model.isSolved) {
+      val rowCounts: Array[Int] = rowVariants.map(_.variantsCount())
+      val columnCounts: Array[Int] = columnVariants.map(_.variantsCount())
+
+      println("rowsVariant: " + rowCounts.mkString(", "))
+      println("columnVariant: " + columnCounts.mkString(", "))
+
+      println("min: " + rowCounts.filter(_ > 1).min(Ordering.Int).toString)
+      println("min: " + columnCounts.filter(_ > 1).min(Ordering.Int).toString)
     }
 
   }

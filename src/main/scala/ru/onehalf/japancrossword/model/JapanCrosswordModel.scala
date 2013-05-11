@@ -11,6 +11,7 @@ class JapanCrosswordModel(val horizonLine : Array[Array[Int]], val verticalLine 
 
   val columnNumber = horizonLine.size
   val rowNumber = verticalLine.size
+  val maxTotalUnresolvedCount = columnNumber * rowNumber
 
   private var listeners: Array[()=>Unit] = Array()
 
@@ -43,7 +44,7 @@ class JapanCrosswordModel(val horizonLine : Array[Array[Int]], val verticalLine 
     board.map(_.filter(_ == Cell.NOT_KNOWN).size).sum
   }
 
-  def maxTotalUnresolvedCount = columnNumber * rowNumber
-
-  def isSolved = totalUnresolvedCount == maxTotalUnresolvedCount
+  def isSolved = {
+    totalUnresolvedCount() == 0
+  }
 }

@@ -3,12 +3,11 @@ package ru.onehalf.japancrossword.view
 import java.awt._
 import javax.swing._
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
-import javax.swing.event._
-import java.awt.event.ActionListener
 import java.awt.event.ActionEvent
 import ru.onehalf.japancrossword.solver.Solver
 
 /**
+ * Окошко с кроссвордом
  * <p/>
  * <p/>
  * Created: 02.05.13 0:16
@@ -24,38 +23,49 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
 
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
-    val solveButton = new JButton(new AbstractAction("Решить") {
-      def actionPerformed(e: ActionEvent) {
-        new Solver(model).solve()
-      }
-    })
-
-    val controlPanel = new JPanel(new FlowLayout())
-    controlPanel.add(solveButton)
-    controlPanel.add(new JButton(new AbstractAction("Редактирование") {
-      def actionPerformed(e: ActionEvent) {
-        val dialog = new JDialog(JapanCrosswordFrame.this, "Редактировать данные кроссворда", true)
-        dialog.setContentPane(new MetadataEditorPanel)
-        dialog.setVisible(true)
-      }
-    }))
-    controlPanel.add(new JButton(new AbstractAction("Очистить") {
-      def actionPerformed(e: ActionEvent) {
-        model.clear()
-      }
-      }))
-
     val CELL_SIZE = 25
     val FONT_SIZE = 16
 
-    val contentPane = new JPanel(new BorderLayout())
-    contentPane.add(new JScrollPane(new JapanCrosswordPanel(model, CELL_SIZE, FONT_SIZE)), BorderLayout.CENTER)
-    contentPane.add(controlPanel, BorderLayout.PAGE_END)
-    setContentPane(contentPane)
+    setContentPane(contentPane(CELL_SIZE, FONT_SIZE))
 
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 
     pack()
-    setVisible(true)
   }
+
+
+  def contentPane(CELL_SIZE: Int, FONT_SIZE: Int): JPanel = {
+    val contentPane = new JPanel(new BorderLayout())
+    contentPane.add(new JScrollPane(new JapanCrosswordPanel(model, CELL_SIZE, FONT_SIZE)), BorderLayout.CENTER)
+    contentPane.add(controlPanel, BorderLayout.PAGE_END)
+    contentPane
+  }
+
+  def controlPanel: JPanel = {
+    val controlPanel = new JPanel(new FlowLayout())
+    controlPanel.add(solveButton)
+    controlPanel.add(editButton)
+    controlPanel.add(clearButton)
+    controlPanel
+  }
+
+  def clearButton: JButton = new JButton(new AbstractAction("Очистить") {
+    def actionPerformed(e: ActionEvent) {
+      model.clear()
+    }
+  })
+
+  def editButton: JButton = new JButton(new AbstractAction("Редактирование") {
+      def actionPerformed(e: ActionEvent) {
+        // todo
+      }
+    })
+
+  def solveButton = new JButton(new AbstractAction("Решить") {
+    def actionPerformed(e: ActionEvent) {
+      new Solver(model).solve()
+    }
+  })
+
+
 }

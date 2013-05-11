@@ -7,7 +7,7 @@ package ru.onehalf.japancrossword.model
  * <p/>
  * @author OneHalf
  */
-class JapanCrosswordModel(val horizonLine : Array[Array[Int]], val verticalLine : Array[Array[Int]]) {
+class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadata) {
 
   val columnNumber = horizonLine.size
   val rowNumber = verticalLine.size

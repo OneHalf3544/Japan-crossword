@@ -45,8 +45,11 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
       }
       }))
 
+    val CELL_SIZE = 25
+    val FONT_SIZE = 16
+
     val contentPane = new JPanel(new BorderLayout())
-    contentPane.add(new JScrollPane(new JapanCrosswordPanel(model)), BorderLayout.CENTER)
+    contentPane.add(new JScrollPane(new JapanCrosswordPanel(model, CELL_SIZE, FONT_SIZE)), BorderLayout.CENTER)
     contentPane.add(controlPanel, BorderLayout.PAGE_END)
     setContentPane(contentPane)
 

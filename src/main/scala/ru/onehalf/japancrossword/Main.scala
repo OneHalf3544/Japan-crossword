@@ -1,7 +1,8 @@
 package ru.onehalf.japancrossword
 
+import solver.Orientation
 import view.JapanCrosswordFrame
-import model.JapanCrosswordModel
+import model.{Metadata, JapanCrosswordModel}
 import javax.swing.JFrame
 
 /**
@@ -15,7 +16,9 @@ object Main {
 
   def parseParams(param: String): Array[Int] = (param split " ").map (_.toInt)
 
-  def parseLine(string: String) : Array[Array[Int]] = (string split ",\\s+").map(parseParams(_))
+  def parseLine(orientation: Orientation.Orientation, string: String) : Metadata = {
+    new Metadata(orientation, (string split ",\\s+").map(parseParams(_)))
+  }
 
   def main(args: Array[String]) {
 
@@ -31,8 +34,8 @@ object Main {
       "3 1 1 1 1 3, 2 4 1 1 4 2, 1 3 4 3 1, 3 5 5 4, 25, 4 10 4")
 */
 
-    val horizonLine = parseLine("1 1, 8, 4 3, 3 1 3, 3 6, 3 1, 3 1, 4, 8, 1 1")
-    val verticalLine = parseLine ("2, 4, 6, 3 3, 3 3, 8, 1 1 1, 1 1 1, 4 1, 4 1, 5 2")
+    val horizonLine = parseLine(Orientation.HORIZONTAL, "1 1, 8, 4 3, 3 1 3, 3 6, 3 1, 3 1, 4, 8, 1 1")
+    val verticalLine = parseLine(Orientation.VERTICAL, "2, 4, 6, 3 3, 3 3, 8, 1 1 1, 1 1 1, 4 1, 4 1, 5 2")
 
 
 /*

@@ -5,6 +5,8 @@ import javax.swing._
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import java.awt.event.ActionEvent
 import ru.onehalf.japancrossword.solver.Solver
+import concurrent.{ExecutionContext, future}
+import ExecutionContext.Implicits.global
 
 /**
  * Окошко с кроссвордом
@@ -16,15 +18,20 @@ import ru.onehalf.japancrossword.solver.Solver
  */
 class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японский кроссворд") {
 
-  model addListener (() => repaint())
+  model addListener (() => SwingUtilities.invokeLater(new Runnable {
+    def run() {
+      repaint()
+    }
+  }))
+
   initializeComponents()
 
   def initializeComponents() {
 
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
-    val CELL_SIZE = 20
-    val FONT_SIZE = 12
+    val CELL_SIZE = 25
+    val FONT_SIZE = 16
 
     setContentPane(contentPane(CELL_SIZE, FONT_SIZE))
 
@@ -63,7 +70,9 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
 
   def solveButton = new JButton(new AbstractAction("Решить") {
     def actionPerformed(e: ActionEvent) {
-      new Solver(model).solve()
+      future {
+        new Solver(model).solve()
+      }
     }
   })
 

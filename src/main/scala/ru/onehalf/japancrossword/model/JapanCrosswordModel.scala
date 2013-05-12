@@ -25,12 +25,14 @@ class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadat
     listeners.foreach(_())
   }
 
-  def apply(x: Int, y: Int) = {
+  def apply(x: Int, y: Int) = synchronized {
     board(x)(y)
   }
 
   def setCell(x: Int, y: Int, c: Cell.Cell) {
-    board(x)(y) = c
+    synchronized[Unit] {
+      board(x)(y) = c
+    }
     listeners.foreach(_())
   }
 

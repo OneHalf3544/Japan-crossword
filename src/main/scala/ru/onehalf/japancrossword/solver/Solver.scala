@@ -1,6 +1,10 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Metadata, Cell, JapanCrosswordModel}
+import concurrent._
+import duration.Duration
+import ExecutionContext.Implicits.global
+import swing.SwingWorker
 
 /**
  * Логика решения кроссворда
@@ -23,8 +27,20 @@ class Solver(model: JapanCrosswordModel) {
     def oneSolveCycle() {
       // todo Запускать строки/стробцы паралельно, в порядке от простых вариантов к сложным
       // todo (чтобы при подборе вариантов ячейки накладывались уточнялили перебор соседним потокам другими линиями)
-      (0 to model.columnNumber-1).toList.sortBy(model.horizonLine(_) .sum).reverse.take(4).par.map(fillColumn(_)).foreach(_.addDataToModel())
-      (0 to model.rowNumber-1)   .toList.sortBy(model.verticalLine(_).sum).reverse.take(4).par.map(fillRow(_))   .foreach(_.addDataToModel())
+
+      println("one solve cycle start")
+
+      val columnFuture = future {
+        futureRun(model.columnNumber, model.horizonLine, fillColumn)
+      }
+      val rowFuture = future {
+        futureRun(model.rowNumber, model.verticalLine, fillRow)
+      }
+
+      Await.ready(columnFuture, Duration.Inf)
+      Await.ready(rowFuture,    Duration.Inf)
+
+      println("one solve cycle ended")
     }
 
     var oldUnresolvedCount = model.totalUnresolvedCount() + 1
@@ -36,13 +52,19 @@ class Solver(model: JapanCrosswordModel) {
       oldUnresolvedCount = model.totalUnresolvedCount()
       oneSolveCycle()
     }
+    println("solve ended")
+  }
+
+
+  def futureRun(number: Int, metadata: Metadata, fillLine: (Int) => LineVariant) {
+    (0 to number - 1).toList.sortBy(metadata(_).sum).reverse.foreach(fillLine(_).addDataToModel())
   }
 
   /**
    * Заполнить столбец
    * @param x Номер столбца (с нуля)
    */
-  def fillColumn(x: Int): LineVariants = {
+  def fillColumn(x: Int): LineVariant = {
     val currentData = (0 to model.rowNumber - 1) map (model(x, _))
     fillLine(x, Orientation.VERTICAL, model.horizonLine(x), currentData.toList)
   }
@@ -51,7 +73,7 @@ class Solver(model: JapanCrosswordModel) {
    * Заполнить строку
    * @param y Номер строки (с нуля)
    */
-  def fillRow(y: Int): LineVariants = {
+  def fillRow(y: Int): LineVariant = {
     val currentData = (0 to model.columnNumber - 1) map (model(_, y))
     fillLine(y, Orientation.HORIZONTAL, model.verticalLine(y), currentData.toList)
   }
@@ -63,9 +85,8 @@ class Solver(model: JapanCrosswordModel) {
    * @param currentData Текущие данные
    */
   def fillLine(lineIndex: Int, orientation : Orientation.Orientation,
-               metadata: Array[Int], currentData: List[Cell.Cell]): LineVariants = {
-    // Все возможные способы заполнения: линии
-    new LineVariants(lineIndex, orientation, Array(fitRemainder(metadata, currentData).get), model)
+               metadata: Array[Int], currentData: List[Cell.Cell]): LineVariant = {
+    new LineVariant(lineIndex, orientation, fitRemainder(metadata, currentData).get, model)
   }
 
   /**
@@ -85,22 +106,28 @@ class Solver(model: JapanCrosswordModel) {
     }
 
     val chunkLength = metadata.head
+    val chunk = List.fill[Cell.Cell](chunkLength)(Cell.FILLED)
     val expectedLength = currentData.size
+    val separator = List(Cell.CLEARED)
+
+    if (expectedLength == chunkLength) {
+      // Оставшаяся длина совпадает в оставшимся куском
+      return Option(chunk)
+    }
 
     var result: Option[List[Cell.Cell]] = Option.empty
 
-    (0 to currentData.size - 1).filter(_ + chunkLength <= expectedLength).foreach(i => {
+    (0 to currentData.size - 1).filter(_ + chunkLength <= expectedLength).foreach(offset => {
 
       // Заполнение отступом + заполненный участок
-      var lineStart: List[Cell.Cell] =
-        List.fill[Cell.Cell](i)(Cell.CLEARED) ::: List.fill[Cell.Cell](chunkLength)(Cell.FILLED)
+      var lineStart: List[Cell.Cell] = List.fill[Cell.Cell](offset)(Cell.CLEARED) ::: chunk
 
       // Параметр для повтороного вызова метода
       var newCurrentData = currentData.drop(lineStart.size)
 
       // Если какая-то часть строки еще остается, добавляем разделительную ячейку
       if (newCurrentData.nonEmpty) {
-        lineStart = lineStart ::: List(Cell.CLEARED)
+        lineStart = lineStart ::: separator
         newCurrentData = newCurrentData.drop(1)
       }
 

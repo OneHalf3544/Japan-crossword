@@ -16,6 +16,8 @@ class Line(lineIndex: Int, orientation: Orientation.Orientation, model: JapanCro
     this(lineIndex, orientation, model, 0)
 
   def apply(cellIndex: Int) = {
+    assert(cellIndex < size)
+
     orientation match {
       case Orientation.HORIZONTAL => model(cellIndex + fromIndex, lineIndex)
       case Orientation.VERTICAL => model(lineIndex, cellIndex + fromIndex)
@@ -23,6 +25,8 @@ class Line(lineIndex: Int, orientation: Orientation.Orientation, model: JapanCro
   }
 
   def update(cellIndex: Int, cell: Cell.Cell) {
+    assert(cellIndex < size)
+
     orientation match {
       case Orientation.HORIZONTAL => model(cellIndex + fromIndex, lineIndex) = cell
       case Orientation.VERTICAL => model(lineIndex, cellIndex + fromIndex) = cell

@@ -1,5 +1,7 @@
 package ru.onehalf.japancrossword.model
 
+import java.util.concurrent.locks.{ReentrantReadWriteLock, ReadWriteLock}
+
 /**
  * Модель японского кроссворда. Содержит метаданные и содержимое сетки
  * <p/>
@@ -9,6 +11,8 @@ package ru.onehalf.japancrossword.model
  * @author OneHalf
  */
 class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadata) {
+
+  private val readWriteLock = new ReentrantReadWriteLock()
 
   val columnNumber = horizonLine.size
   val rowNumber = verticalLine.size
@@ -21,23 +25,26 @@ class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadat
   clear()
 
   def clear() {
-    board = Array.fill(columnNumber, rowNumber)(Cell.NOT_KNOWN)
-    listeners.foreach(_())
-  }
-
-  // todo Запилить Read/Write lock
-  def apply(x: Int, y: Int) = synchronized {
-    board(x)(y)
-  }
-
-  def update(x: Int, y: Int, c: Cell.Cell) {
-    synchronized[Unit] {
-      board(x)(y) = c
+    readWriteLock.writeLock().lock()
+    try {
+      board = Array.fill(columnNumber, rowNumber)(Cell.NOT_KNOWN)
+    }
+    finally {
+      readWriteLock.writeLock().unlock()
     }
     listeners.foreach(_())
   }
 
+  def apply(x: Int, y: Int): Cell.Cell = {
+    read[Cell.Cell](() => board(x)(y))
+  }
+
+  def update(x: Int, y: Int, c: Cell.Cell) {
+    writeAndNotify(() =>  board(x)(y) = c)
+  }
+
   def getColumn(x: Int) = apply(x, _: Int)
+
   def getRow(y: Int) = apply(_: Int, y)
 
   def addListener(f :() => Unit) {
@@ -50,5 +57,22 @@ class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadat
 
   def isSolved = {
     totalUnresolvedCount() == 0
+  }
+
+  def read[T](func: () => T) = {
+    readWriteLock.readLock().lock()
+    try
+      func()
+
+    finally readWriteLock.readLock().unlock()
+  }
+
+  def writeAndNotify(func: () => Unit) {
+    readWriteLock.writeLock().lock()
+    try
+      func()
+
+    finally readWriteLock.writeLock().unlock()
+    listeners.foreach(_())
   }
 }

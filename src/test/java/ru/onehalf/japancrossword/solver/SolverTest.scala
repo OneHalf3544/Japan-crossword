@@ -81,7 +81,7 @@ class SolverTest extends FlatSpec with ShouldMatchers {
     assert(result === List(Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED))
   }
 
-  it should "fill space between two cell" in {
+  it should "fill space between two cells" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "4")
     val model = new JapanCrosswordModel(

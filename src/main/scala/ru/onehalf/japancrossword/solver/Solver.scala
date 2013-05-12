@@ -127,7 +127,6 @@ class Solver(model: JapanCrosswordModel) {
     for (offset <- 0 to expectedLength - chunkLength) {
 
       // Заполнение отступом + заполненный участок
-      // todo Сразу проверить на противоречие
       var lineStart: List[Cell.Cell] = List.fill[Cell.Cell](offset)(Cell.CLEARED) ::: chunk
 
       // Параметр для повтороного вызова метода
@@ -139,13 +138,17 @@ class Solver(model: JapanCrosswordModel) {
         newCurrentData = newCurrentData.drop(1)
       }
 
-      // Доподбираем оставшуюся часть строки
-      val subResult = fitRemainder(metadata.tail, newCurrentData)
-      if (subResult.isDefined && compatibleToCurrentData(newCurrentData, subResult.get)) {
-        if (result.isEmpty)
-          result = Option(lineStart ::: subResult.get)
-        else
-          result = Option(reduceLines(result.get, (lineStart ::: subResult.get)))
+      // Сразу проверяем на противоречие модели
+      if (compatibleToCurrentData(currentData.toList.take(lineStart.size), lineStart)) {
+
+        // Доподбираем оставшуюся часть строки
+        val subResult = fitRemainder(metadata.tail, newCurrentData)
+        if (subResult.isDefined && compatibleToCurrentData(newCurrentData, subResult.get)) {
+          if (result.isEmpty)
+            result = Option(lineStart ::: subResult.get)
+          else
+            result = Option(reduceLines(result.get, (lineStart ::: subResult.get)))
+        }
       }
     }
 
@@ -170,6 +173,16 @@ class Solver(model: JapanCrosswordModel) {
    * @return true, если вариант приемлим
    */
   def compatibleToCurrentData(currentData: Line, supposeLine: List[Cell.Cell]): Boolean = {
+    compatibleToCurrentData(currentData.toList, supposeLine)
+  }
+
+  /**
+   * Проверка, не противоречит ли предлагаемое значение текущим данным
+   * @param currentData Текущие данные в модели
+   * @param supposeLine Предлагаемая линия (Может содержать NOT_KNOWN)
+   * @return true, если вариант приемлим
+   */
+  def compatibleToCurrentData(currentData: List[Cell.Cell], supposeLine: List[Cell.Cell]): Boolean = {
 
     def cellIsCompatible(i: Int): Boolean = {
       currentData(i) == supposeLine(i) || currentData(i) == Cell.NOT_KNOWN || supposeLine(i) == Cell.NOT_KNOWN

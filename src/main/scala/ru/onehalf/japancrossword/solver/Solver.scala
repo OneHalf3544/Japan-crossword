@@ -4,7 +4,6 @@ import ru.onehalf.japancrossword.model.{Line, Metadata, Cell, JapanCrosswordMode
 import concurrent._
 import duration.Duration
 import ExecutionContext.Implicits.global
-import swing.SwingWorker
 
 /**
  * Логика решения кроссворда
@@ -63,10 +62,10 @@ class Solver(model: JapanCrosswordModel) {
       0 to variant.size-1 filter (line(_) == Cell.NOT_KNOWN) foreach(i => line(i) = variant(i))
     }
 
-    for (v <- (0 to number - 1).toList.sortBy(metadata(_).sum).reverse) {
+    (0 to number - 1).toList.sortBy(metadata(_).sum).reverse.par.foreach(v => {
       val line = new Line(v, orientation, model)
       addDataToModel(fillLine(v, line), line)
-    }
+    })
   }
 
   /**

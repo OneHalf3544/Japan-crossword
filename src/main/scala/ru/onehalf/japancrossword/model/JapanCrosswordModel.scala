@@ -25,6 +25,7 @@ class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadat
     listeners.foreach(_())
   }
 
+  // todo Запилить Read/Write lock
   def apply(x: Int, y: Int) = synchronized {
     board(x)(y)
   }

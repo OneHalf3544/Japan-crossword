@@ -30,8 +30,8 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
 
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
-    val CELL_SIZE = 20
-    val FONT_SIZE = 12
+    val CELL_SIZE = 15
+    val FONT_SIZE = 8
 
     setContentPane(contentPane(CELL_SIZE, FONT_SIZE))
 
@@ -51,7 +51,7 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
   def controlPanel: JPanel = {
     val controlPanel = new JPanel(new FlowLayout())
     controlPanel.add(solveButton)
-    controlPanel.add(editButton)
+    //controlPanel.add(editButton)
     controlPanel.add(clearButton)
     controlPanel
   }

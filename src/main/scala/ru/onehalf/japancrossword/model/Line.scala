@@ -34,8 +34,10 @@ class Line(lineIndex: Int, orientation: Orientation.Orientation, model: JapanCro
     case Orientation.VERTICAL => model.rowNumber - fromIndex
   }
 
+  val indexes = 0 to size - 1
+
   def forall(predicate: (Cell.Cell) => Boolean) = {
-    (0 to size -1) forall(cellIndex => predicate(apply(cellIndex)))
+    indexes forall(cellIndex => predicate(apply(cellIndex)))
   }
 
   def drop(i: Int) = {
@@ -44,5 +46,9 @@ class Line(lineIndex: Int, orientation: Orientation.Orientation, model: JapanCro
 
   def nonEmpty() = {
     size != 0
+  }
+
+  override def toString = {
+    indexes.map(apply(_)).mkString("[", ", ", "]")
   }
 }

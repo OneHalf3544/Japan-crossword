@@ -122,7 +122,7 @@ class Solver(model: JapanCrosswordModel) {
 
     var result: Option[List[Cell.Cell]] = Option.empty
 
-    (0 to currentData.size - 1).filter(_ + chunkLength <= expectedLength).foreach(offset => {
+    for (offset <- 0 to expectedLength - chunkLength) {
 
       // Заполнение отступом + заполненный участок
       // todo Сразу проверить на противоречие
@@ -132,14 +132,14 @@ class Solver(model: JapanCrosswordModel) {
       var newCurrentData = currentData.drop(lineStart.size)
 
       // Если какая-то часть строки еще остается, добавляем разделительную ячейку
-      if (newCurrentData.nonEmpty) {
+      if (newCurrentData.nonEmpty()) {
         lineStart = lineStart ::: separator
         newCurrentData = newCurrentData.drop(1)
       }
 
       // Доподбираем оставшуюся часть строки
       val subResult = fitRemainder(metadata.tail, newCurrentData)
-      if (subResult.isDefined)
+      if (subResult.isDefined) {
         // Сохраняем найденный вариант в акумулятор
         if (compatibleToCurrentData(newCurrentData, subResult.get)) {
           if (result.isEmpty)
@@ -147,7 +147,8 @@ class Solver(model: JapanCrosswordModel) {
           else
             result = Option(reduceLines(result.get, (lineStart ::: subResult.get)))
         }
-    })
+      }
+    }
 
     result
   }

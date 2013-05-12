@@ -22,6 +22,7 @@ object Main {
 
   def main(args: Array[String]) {
 
+/*
     // Джек воробей
     val horizonLine = parseLine(Orientation.HORIZONTAL,
       "4, 2 3, 3 2 2, 4 2 4 4 2, 4 4 2 17 5, 6 2 28, 22 12 7 3 4, 27 11 5 14, 16 2 3 38, " +
@@ -51,15 +52,20 @@ object Main {
       "1 7 4 3 1 11 8 3 8, 7 3 10 15 11 4 4, 7 15 14 8 2 1 2, 7 8 6 9 6 1 2 3 1 2 1, 2 4 8 5 3 5 6 1 3 2 3 1, " +
       "2 4 6 2 4 2 5 6 2 3 2 3 1, 1 5 5 2 4 2 3 7 1 2 2 5, 6 5 2 4 1 4 2 4 1 2 2 1 1 1, 3 8 2 3 1 3 4 4 2 2 4 3, " +
       "3 4 5 2 2 3 3 2 1 7 1, 3 3 3 1 1 3 2 2 2 3 1 2 1")
+*/
 
-/*    val horizonLine = parseLine(Orientation.HORIZONTAL,
+/*
+    // Собачка в профиль
+    val horizonLine = parseLine(Orientation.HORIZONTAL,
       "7, 4 2, 3 1 1, 1 1 1, 3 1 2, 1 1 1, 1 1 1, 1 2 1, 1 1 1, 3 1 1, 1 1 1 1 1, 1 1 1, 1 3 1 2, " +
       "1 4, 3 2, 11 2, 12 2, 11 2, 11 2, 9 2")
 
     val verticalLine = parseLine(Orientation.VERTICAL,
-      "2 6, 3 1 5, 7 1 1 6, 2 1 1 2 1 5, 1 1 2 1 5, 1 2 5, 1 5, 1 5, 2 2 5, 1 2 2 5, 1 3 5, 2 5 3, 5 1, 8, 8")*/
-/*
+      "2 6, 3 1 5, 7 1 1 6, 2 1 1 2 1 5, 1 1 2 1 5, 1 2 5, 1 5, 1 5, 2 2 5, 1 2 2 5, 1 3 5, 2 5 3, 5 1, 8, 8")
+*/
 
+/*
+    // Пиратский флаг
     val horizonLine = parseLine(Orientation.HORIZONTAL,
       "2, 10, 13, 5 1, 1 2, 12, 12, 12, 6 1 1, 7 1 2, 2 2 4, 1 1 1 4, 1 1 1 4, 1 1 2 3, " +
       "2 3 3, 7 1 2, 7 1 1, 12, 3 6, 2 2")
@@ -82,11 +88,9 @@ object Main {
       "3 1 1 1 1 3, 2 4 1 1 4 2, 1 3 4 3 1, 3 5 5 4, 25, 4 10 4")
 */
 
-/*
     // Домик
     val horizonLine = parseLine(Orientation.HORIZONTAL, "1 1, 8, 4 3, 3 1 3, 3 6, 3 1, 3 1, 4, 8, 1 1")
     val verticalLine = parseLine(Orientation.VERTICAL, "2, 4, 6, 3 3, 3 3, 8, 1 1 1, 1 1 1, 4 1, 4 1, 5 2")
-*/
 
 
 /*

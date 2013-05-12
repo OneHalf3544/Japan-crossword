@@ -30,8 +30,8 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
 
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
-    val CELL_SIZE = 25
-    val FONT_SIZE = 16
+    val CELL_SIZE = 20
+    val FONT_SIZE = 12
 
     setContentPane(contentPane(CELL_SIZE, FONT_SIZE))
 
@@ -75,6 +75,4 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
       }
     }
   })
-
-
 }

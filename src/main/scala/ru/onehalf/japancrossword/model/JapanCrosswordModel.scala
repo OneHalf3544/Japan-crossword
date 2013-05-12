@@ -29,7 +29,7 @@ class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadat
     board(x)(y)
   }
 
-  def setCell(x: Int, y: Int, c: Cell.Cell) {
+  def update(x: Int, y: Int, c: Cell.Cell) {
     synchronized[Unit] {
       board(x)(y) = c
     }

@@ -34,7 +34,7 @@ class GridPanel(model: JapanCrosswordModel, CELL_SIZE: Int) extends JPanel {
       val coordinates = determineCellCoordinate(e.getX, e.getY)
       val current = model.apply(coordinates._1, coordinates._2)
 
-      model.setCell(coordinates._1, coordinates._2, (current, e.getButton) match {
+      model.update(coordinates._1, coordinates._2, (current, e.getButton) match {
         case (Cell.NOT_KNOWN, MouseEvent.BUTTON1) => Cell.FILLED
         case (Cell.NOT_KNOWN, MouseEvent.BUTTON3) => Cell.CLEARED
         case (_, _) => Cell.NOT_KNOWN

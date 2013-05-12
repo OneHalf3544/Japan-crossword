@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{Metadata, Cell, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Line, Metadata, Cell, JapanCrosswordModel}
 import concurrent._
 import duration.Duration
 import ExecutionContext.Implicits.global
@@ -31,10 +31,10 @@ class Solver(model: JapanCrosswordModel) {
       println("one solve cycle start")
 
       val columnFuture = future {
-        futureRun(model.columnNumber, model.horizonLine, fillColumn)
+        futureRun(model.columnNumber, model.horizonLine, fillColumn, Orientation.VERTICAL)
       }
       val rowFuture = future {
-        futureRun(model.rowNumber, model.verticalLine, fillRow)
+        futureRun(model.rowNumber, model.verticalLine, fillRow, Orientation.HORIZONTAL)
       }
 
       Await.ready(columnFuture, Duration.Inf)
@@ -56,37 +56,42 @@ class Solver(model: JapanCrosswordModel) {
   }
 
 
-  def futureRun(number: Int, metadata: Metadata, fillLine: (Int) => LineVariant) {
-    (0 to number - 1).toList.sortBy(metadata(_).sum).reverse.foreach(fillLine(_).addDataToModel())
+  def futureRun(number: Int, metadata: Metadata, fillLine: (Int, Line) => List[Cell.Cell],
+                orientation: Orientation.Orientation) {
+
+    def addDataToModel(variant: List[Cell.Cell], line: Line) {
+      0 to variant.size-1 filter (line(_) == Cell.NOT_KNOWN) foreach(i => line(i) = variant(i))
+    }
+
+    for (v <- (0 to number - 1).toList.sortBy(metadata(_).sum).reverse) {
+      val line = new Line(v, orientation, model)
+      addDataToModel(fillLine(v, line), line)
+    }
   }
 
   /**
    * Заполнить столбец
    * @param x Номер столбца (с нуля)
    */
-  def fillColumn(x: Int): LineVariant = {
-    val currentData = (0 to model.rowNumber - 1) map (model(x, _))
-    fillLine(x, Orientation.VERTICAL, model.horizonLine(x), currentData.toList)
+  def fillColumn(x: Int, currentData: Line) = {
+    fillLine(model.horizonLine(x), currentData)
   }
 
   /**
    * Заполнить строку
    * @param y Номер строки (с нуля)
    */
-  def fillRow(y: Int): LineVariant = {
-    val currentData = (0 to model.columnNumber - 1) map (model(_, y))
-    fillLine(y, Orientation.HORIZONTAL, model.verticalLine(y), currentData.toList)
+  def fillRow(y: Int, currentData: Line) = {
+    fillLine(model.verticalLine(y), currentData)
   }
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
-   * @param orientation Тип расположения линии
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  def fillLine(lineIndex: Int, orientation : Orientation.Orientation,
-               metadata: Array[Int], currentData: List[Cell.Cell]): LineVariant = {
-    new LineVariant(lineIndex, orientation, fitRemainder(metadata, currentData).get, model)
+  def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell] = {
+    fitRemainder(metadata, currentData).get
   }
 
   /**
@@ -97,7 +102,7 @@ class Solver(model: JapanCrosswordModel) {
    * @param currentData текущее содержимое линии
    * @return Список линий, подходящих под указанные метаданные
    */
-  def fitRemainder(metadata: Array[Int], currentData: List[Cell.Cell]): Option[List[Cell.Cell]] = {
+  def fitRemainder(metadata: Array[Int], currentData: Line): Option[List[Cell.Cell]] = {
 
     if (metadata.isEmpty) {
       // Нету больше метаданных? Значит остаток строки пустой
@@ -120,6 +125,7 @@ class Solver(model: JapanCrosswordModel) {
     (0 to currentData.size - 1).filter(_ + chunkLength <= expectedLength).foreach(offset => {
 
       // Заполнение отступом + заполненный участок
+      // todo Сразу проверить на противоречие
       var lineStart: List[Cell.Cell] = List.fill[Cell.Cell](offset)(Cell.CLEARED) ::: chunk
 
       // Параметр для повтороного вызова метода
@@ -161,7 +167,7 @@ class Solver(model: JapanCrosswordModel) {
    * @param supposeLine Предлагаемая линия
    * @return true, если вариант приемлим
    */
-  def compatibleToCurrentData(currentData: List[Cell.Cell], supposeLine: List[Cell.Cell]): Boolean = {
+  def compatibleToCurrentData(currentData: Line, supposeLine: List[Cell.Cell]): Boolean = {
     assert(currentData.size == supposeLine.size)
 
     0 to supposeLine.size-1 forall (i => currentData(i) == Cell.NOT_KNOWN || currentData(i) == supposeLine(i) || supposeLine(i) == Cell.NOT_KNOWN)

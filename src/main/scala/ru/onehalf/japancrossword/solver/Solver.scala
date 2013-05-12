@@ -120,6 +120,8 @@ class Solver(model: JapanCrosswordModel) {
       return Option(chunk)
     }
 
+    // todo Выпилить использование Option, либо проверять здесь согласованность данных,
+    // для проверки, что текущее содержимое модели не нарушает условий
     var result: Option[List[Cell.Cell]] = Option.empty
 
     for (offset <- 0 to expectedLength - chunkLength) {
@@ -139,14 +141,11 @@ class Solver(model: JapanCrosswordModel) {
 
       // Доподбираем оставшуюся часть строки
       val subResult = fitRemainder(metadata.tail, newCurrentData)
-      if (subResult.isDefined) {
-        // Сохраняем найденный вариант в акумулятор
-        if (compatibleToCurrentData(newCurrentData, subResult.get)) {
-          if (result.isEmpty)
-            result = Option(lineStart ::: subResult.get)
-          else
-            result = Option(reduceLines(result.get, (lineStart ::: subResult.get)))
-        }
+      if (subResult.isDefined && compatibleToCurrentData(newCurrentData, subResult.get)) {
+        if (result.isEmpty)
+          result = Option(lineStart ::: subResult.get)
+        else
+          result = Option(reduceLines(result.get, (lineStart ::: subResult.get)))
       }
     }
 
@@ -159,18 +158,20 @@ class Solver(model: JapanCrosswordModel) {
 
     val result = Array.fill[Cell.Cell](lineLength)(Cell.NOT_KNOWN)
 
-    0 to lineLength -1 filter ((i) => line1(i) == line2(i)) foreach(i => result(i) = line1(i))
+    // Сохряняем в результат только совпадающие данные
+    0 to lineLength -1 filter ((i) => line1(i) == line2(i)) foreach(i => result(i) = line2(i))
     result.toList
   }
 
   /**
    * Проверка, не противоречит ли предлагаемое значение текущим данным
+   * @param currentData Текущие данные в модели
    * @param supposeLine Предлагаемая линия
    * @return true, если вариант приемлим
    */
   def compatibleToCurrentData(currentData: Line, supposeLine: List[Cell.Cell]): Boolean = {
     assert(currentData.size == supposeLine.size)
 
-    0 to supposeLine.size-1 forall (i => currentData(i) == Cell.NOT_KNOWN || currentData(i) == supposeLine(i) || supposeLine(i) == Cell.NOT_KNOWN)
+    0 to supposeLine.size-1 forall (i => currentData(i) == Cell.NOT_KNOWN || currentData(i) == supposeLine(i))
   }
 }

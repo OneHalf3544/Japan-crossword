@@ -49,6 +49,10 @@ class Line(lineIndex: Int, orientation: Orientation.Orientation, model: JapanCro
   }
 
   override def toString = {
-    indexes.map(apply(_)).mkString("[", ", ", "]")
+    toList.mkString("[", ", ", "]")
+  }
+
+  def toList = {
+    indexes.map(apply(_)).toList
   }
 }

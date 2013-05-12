@@ -166,12 +166,16 @@ class Solver(model: JapanCrosswordModel) {
   /**
    * Проверка, не противоречит ли предлагаемое значение текущим данным
    * @param currentData Текущие данные в модели
-   * @param supposeLine Предлагаемая линия
+   * @param supposeLine Предлагаемая линия (Может содержать NOT_KNOWN)
    * @return true, если вариант приемлим
    */
   def compatibleToCurrentData(currentData: Line, supposeLine: List[Cell.Cell]): Boolean = {
-    assert(currentData.size == supposeLine.size)
 
-    0 to supposeLine.size-1 forall (i => currentData(i) == Cell.NOT_KNOWN || currentData(i) == supposeLine(i))
+    def cellIsCompatible(i: Int): Boolean = {
+      currentData(i) == supposeLine(i) || currentData(i) == Cell.NOT_KNOWN || supposeLine(i) == Cell.NOT_KNOWN
+    }
+
+    assert(currentData.size == supposeLine.size)
+    0 to supposeLine.size-1 forall (cellIsCompatible(_))
   }
 }

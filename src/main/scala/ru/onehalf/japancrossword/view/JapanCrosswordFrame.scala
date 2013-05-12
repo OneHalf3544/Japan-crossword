@@ -4,7 +4,7 @@ import java.awt._
 import javax.swing._
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import java.awt.event.ActionEvent
-import ru.onehalf.japancrossword.solver.Solver
+import ru.onehalf.japancrossword.solver.{FastPreSolver, Solver}
 import concurrent.{ExecutionContext, future}
 import ExecutionContext.Implicits.global
 
@@ -16,7 +16,7 @@ import ExecutionContext.Implicits.global
  * <p/>
  * @author OneHalf
  */
-class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японский кроссворд") {
+class JapanCrosswordFrame(model: JapanCrosswordModel, CELL_SIZE: Int, FONT_SIZE: Int) extends JFrame("Японский кроссворд") {
 
   model addListener (() => SwingUtilities.invokeLater(new Runnable {
     def run() {
@@ -29,9 +29,6 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
   def initializeComponents() {
 
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
-
-    val CELL_SIZE = 15
-    val FONT_SIZE = 8
 
     setContentPane(contentPane(CELL_SIZE, FONT_SIZE))
 
@@ -71,6 +68,7 @@ class JapanCrosswordFrame(model: JapanCrosswordModel) extends JFrame("Японс
   def solveButton = new JButton(new AbstractAction("Решить") {
     def actionPerformed(e: ActionEvent) {
       future {
+        new FastPreSolver(model).solve()
         new Solver(model).solve()
       }
     }

@@ -87,7 +87,7 @@ object Main {
 */
 
 /*
-    // Инкогнито по венециански
+    // Девочка
     val horizonLine = parseLine(Orientation.HORIZONTAL,
       "1 3 3 2, 1 6 1 2 1 1, 1 8 3 6 1 2, 1 6 1 2 1 1 2 3, 1 1 1 3 3 2 2 1, " +
       "1 1 4 1 1 1 1 2 1 3, 8 5 3 2, 6 8 1, 1 1 1 5 1 1 2 1 2, 1 5 3 2 1, 2 8 1 2 1 2, " +
@@ -142,6 +142,8 @@ object Main {
       "2 4 2 3 2 2 1 2, 3 4 3 6 2, 9 3 3 4, 3 1 2 3 3 2, 3 2 1 1 3, 5 3, 3 2, 1 1")*/
 
 
-    new JapanCrosswordFrame(new JapanCrosswordModel(horizonLine, verticalLine)).setVisible(true)
+    val CELL_SIZE = 15
+    val FONT_SIZE = 9
+    new JapanCrosswordFrame(new JapanCrosswordModel(horizonLine, verticalLine), CELL_SIZE, FONT_SIZE).setVisible(true)
   }
 }

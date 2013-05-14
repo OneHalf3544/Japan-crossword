@@ -13,7 +13,7 @@ import ru.onehalf.japancrossword.Main.parseLine
  * <p/>
  * @author OneHalf
  */
-class SolverTest extends FlatSpec with ShouldMatchers {
+class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers {
 
   it should "resolve center cells in line" in {
 
@@ -24,7 +24,7 @@ class SolverTest extends FlatSpec with ShouldMatchers {
 
     val line = new Line(0, Orientation.HORIZONTAL, model)
 
-    val result = new Solver(model).fitRemainder(metadata(0), line).get
+    val result = new VariantsEnumerationSolver(model).fitRemainder(metadata(0), line).get
 
     assert(result.size === 10)
     assert(result(0) === Cell.NOT_KNOWN)
@@ -43,7 +43,7 @@ class SolverTest extends FlatSpec with ShouldMatchers {
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 1, 1, 0, 0"),  // 10 cells
       metadata)
 
-    new Solver(model).solve()
+    new VariantsEnumerationSolver(model).solve()
 
     assert(model.isSolved)
   }
@@ -60,7 +60,7 @@ class SolverTest extends FlatSpec with ShouldMatchers {
     line(1) = Cell.FILLED // Закрашиваем две клетки:          _X_______X
     line(9) = Cell.FILLED // После подбора строки должно быть _X_...XXXX
 
-    val result = new Solver(model).fitRemainder(metadata(0), line).get
+    val result = new VariantsEnumerationSolver(model).fitRemainder(metadata(0), line).get
 
     assert(result === List(
       Cell.NOT_KNOWN, Cell.FILLED, Cell.NOT_KNOWN, Cell.CLEARED, Cell.CLEARED,
@@ -76,7 +76,7 @@ class SolverTest extends FlatSpec with ShouldMatchers {
 
     val line = new Line(0, Orientation.HORIZONTAL, model)
 
-    val result = new Solver(model).fitRemainder(metadata(0), line).get
+    val result = new VariantsEnumerationSolver(model).fitRemainder(metadata(0), line).get
 
     assert(result === List(Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED))
   }
@@ -94,7 +94,7 @@ class SolverTest extends FlatSpec with ShouldMatchers {
     line(5) = Cell.FILLED // После решения:  .._XXX_.
 
 
-    val result = new Solver(model).fitRemainder(metadata(0), line).get
+    val result = new VariantsEnumerationSolver(model).fitRemainder(metadata(0), line).get
 
     assert(result === List(
       Cell.CLEARED, Cell.CLEARED,
@@ -115,7 +115,7 @@ class SolverTest extends FlatSpec with ShouldMatchers {
     line(3) = Cell.FILLED
     line(5) = Cell.FILLED
 
-    val solver = new Solver(model)
+    val solver = new VariantsEnumerationSolver(model)
 
     def assertCompatible(list: List[Value]) {
       assert(solver.compatibleToCurrentData(line, list), "line " + line + " not compatible to " + list)

@@ -57,6 +57,7 @@ class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model
   def futureRun(number: Int, metadata: Metadata, fillLine: (Int, Line) => List[Cell.Cell],
                 orientation: Orientation.Orientation) {
 
+    // todo Пробовать заполнять строку с обратной стороны
     (0 to number - 1).toList.sortBy(metadata(_).sum).reverse.par.foreach(v => {
       val line = new Line(v, orientation, model)
       addDataToModel(fillLine(v, line), line)
@@ -98,8 +99,6 @@ class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model
       return Option(chunk)
     }
 
-    // todo Выпилить использование Option, либо проверять здесь согласованность данных,
-    // для проверки, что текущее содержимое модели не нарушает условий
     var result: Option[List[Cell.Cell]] = Option.empty
 
     for (offset <- 0 to expectedLength - chunkLength - metadata.tail.map(_ + 1).sum) {

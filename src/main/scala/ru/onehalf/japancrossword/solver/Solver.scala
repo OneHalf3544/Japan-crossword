@@ -102,7 +102,7 @@ class Solver(model: JapanCrosswordModel) extends SolverTrait(model) {
     // для проверки, что текущее содержимое модели не нарушает условий
     var result: Option[List[Cell.Cell]] = Option.empty
 
-    for (offset <- 0 to expectedLength - chunkLength) {
+    for (offset <- 0 to expectedLength - chunkLength - metadata.tail.map(_ + 1).sum) {
 
       // Заполнение отступом + заполненный участок
       var lineStart: List[Cell.Cell] = List.fill[Cell.Cell](offset)(Cell.CLEARED) ::: chunk
@@ -117,6 +117,7 @@ class Solver(model: JapanCrosswordModel) extends SolverTrait(model) {
       }
 
       // Сразу проверяем на противоречие модели
+      // todo проверять почаще, при подборе оставшейся части строки. (Т.к. другие потоки могут уточнить содержимое)
       if (compatibleToCurrentData(currentData.toList.take(lineStart.size), lineStart)) {
 
         // Доподбираем оставшуюся часть строки

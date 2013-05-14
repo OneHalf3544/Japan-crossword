@@ -11,6 +11,8 @@ import ru.onehalf.japancrossword.model.Cell._
  * @author OneHalf
  */
 class FastPreSolver(model: JapanCrosswordModel) extends SolverTrait(model) {
+  // todo Использовать не только при старте решения
+
   /**
    * Запуск решения кроссворда
    */

@@ -10,7 +10,7 @@ import ru.onehalf.japancrossword.model.Cell._
  * <p/>
  * @author OneHalf
  */
-class FastPreSolver(model: JapanCrosswordModel) extends SolverTrait(model) {
+class FastPreSolver(model: JapanCrosswordModel) extends Solver(model) {
   // todo Использовать не только при старте решения
 
   /**

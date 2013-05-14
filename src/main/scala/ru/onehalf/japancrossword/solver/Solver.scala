@@ -9,7 +9,7 @@ import ru.onehalf.japancrossword.model.{JapanCrosswordModel, Line, Cell}
  * <p/>
  * @author OneHalf
  */
-abstract class SolverTrait(model: JapanCrosswordModel) {
+abstract class Solver(model: JapanCrosswordModel) {
 
   /**
    * Запуск решения кроссворда

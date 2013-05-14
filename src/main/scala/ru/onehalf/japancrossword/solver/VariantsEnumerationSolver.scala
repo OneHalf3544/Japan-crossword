@@ -13,7 +13,7 @@ import ExecutionContext.Implicits.global
  * <p/>
  * @author OneHalf
  */
-class VariantsEnumerationSolver(model: JapanCrosswordModel) extends SolverTrait(model) {
+class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model) {
 
   def solve() {
 

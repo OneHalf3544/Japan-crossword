@@ -69,9 +69,16 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
       return currentData.toList
     }
 
+    val filledAfter = nextFilledCount(currentData.toList.drop(begunNotClearedIndex.get + metadata(0)))
+    if (filledAfter > 0) {
+      (1 to filledAfter) map(_ + begunNotClearedIndex.get - 1) foreach (currentData(_) = CLEARED)
+      return currentData.toList
+    }
+
     val chunkStartIndex = (1 to metadata(0))
       .map(_ + begunNotClearedIndex.get - 1)
-      .filter(currentData(_) == FILLED).headOption
+      .filter(currentData(_) == FILLED)
+      .headOption
 
     if (chunkStartIndex.isEmpty) {
       // Нет возможностей для расчета
@@ -79,7 +86,7 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
     }
 
     // Заполняем кусочек линии, который перекрывается при любом варианте
-    if (chunkStartIndex.get == begunNotClearedIndex.get) {
+    if (begunNotClearedIndex.get == chunkStartIndex.get) {
       // Здесь мы сразу знаем кусочек целиком + завершающий индекс
       (1 to metadata(0)).map(_ + begunNotClearedIndex.get - 1).foreach(currentData(_) = FILLED)
       currentData(metadata(0) + begunNotClearedIndex.get) = CLEARED
@@ -94,5 +101,10 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
       .foreach(currentData(_) = FILLED)
 
     currentData.toList
+  }
+
+  def nextFilledCount(list: List[Cell]): Int = {
+    if (list.head != FILLED) 0
+    else 1 + nextFilledCount(list.tail)
   }
 }

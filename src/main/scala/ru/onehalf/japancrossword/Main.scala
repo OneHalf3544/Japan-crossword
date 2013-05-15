@@ -3,7 +3,6 @@ package ru.onehalf.japancrossword
 import solver.Orientation
 import view.JapanCrosswordFrame
 import model.{Metadata, JapanCrosswordModel}
-import javax.swing.JFrame
 
 /**
  * <p/>
@@ -22,7 +21,6 @@ object Main {
 
   def main(args: Array[String]) {
 
-/*
     // Джек воробей
     val horizonLine = parseLine(Orientation.HORIZONTAL,
       "4, 2 3, 3 2 2, 4 2 4 4 2, 4 4 2 17 5, 6 2 28, 22 12 7 3 4, 27 11 5 14, 16 2 3 38, " +
@@ -52,9 +50,9 @@ object Main {
       "1 7 4 3 1 11 8 3 8, 7 3 10 15 11 4 4, 7 15 14 8 2 1 2, 7 8 6 9 6 1 2 3 1 2 1, 2 4 8 5 3 5 6 1 3 2 3 1, " +
       "2 4 6 2 4 2 5 6 2 3 2 3 1, 1 5 5 2 4 2 3 7 1 2 2 5, 6 5 2 4 1 4 2 4 1 2 2 1 1 1, 3 8 2 3 1 3 4 4 2 2 4 3, " +
       "3 4 5 2 2 3 3 2 1 7 1, 3 3 3 1 1 3 2 2 2 3 1 2 1")
-*/
 
 
+/*
     // Земля
     val horizonLine = parseLine(Orientation.HORIZONTAL,
       "40 40, 34 34, 31 11 6 12, 28 28, 26 26, " +
@@ -95,6 +93,7 @@ object Main {
       "12 40 2 12, 13 31 3 13, 2 11 26 3 14, 15 26 3 15, 16 26 2 16, " +
       "18 26 1 12 5, 11 7 25 19, 20 22 21, 22 20 22, 24 17 24, " +
       "26 16 26, 8 19 14 13 14, 31 9 31, 34 2 35, 40 40")
+*/
 
 
     /*

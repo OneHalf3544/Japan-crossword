@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{JapanCrosswordModel, Line, Cell}
+import ru.onehalf.japancrossword.model.{LineTrait, JapanCrosswordModel, Line, Cell}
 
 /**
  * <p/>
@@ -29,7 +29,7 @@ abstract class Solver(model: JapanCrosswordModel) {
    * Заполнить столбец
    * @param x Номер столбца (с нуля)
    */
-  def fillColumn(x: Int, currentData: Line) = {
+  def fillColumn(x: Int, currentData: LineTrait) = {
     fillLine(model.horizonLine(x), currentData)
   }
 
@@ -37,7 +37,7 @@ abstract class Solver(model: JapanCrosswordModel) {
    * Заполнить строку
    * @param y Номер строки (с нуля)
    */
-  def fillRow(y: Int, currentData: Line) = {
+  def fillRow(y: Int, currentData: LineTrait) = {
     fillLine(model.verticalLine(y), currentData)
   }
 
@@ -45,8 +45,9 @@ abstract class Solver(model: JapanCrosswordModel) {
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
+   * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
-  def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell]
+  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell]
 
   /**
    * Схлопывание строки в одну. Если значение в списках не совпадают,
@@ -73,7 +74,7 @@ abstract class Solver(model: JapanCrosswordModel) {
    * @param supposeLine Предлагаемая линия (Может содержать NOT_KNOWN)
    * @return true, если вариант приемлим
    */
-  def compatibleToCurrentData(currentData: Line, supposeLine: List[Cell.Cell]): Boolean = {
+  def compatibleToCurrentData(currentData: LineTrait, supposeLine: List[Cell.Cell]): Boolean = {
     compatibleToCurrentData(currentData.toList, supposeLine)
   }
 

@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{Cell, Line, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{LineTrait, Cell, Line, JapanCrosswordModel}
 import ru.onehalf.japancrossword.model.Cell._
 
 /**
@@ -17,6 +17,8 @@ class FastPreSolver(model: JapanCrosswordModel) extends Solver(model) {
    * Запуск решения кроссворда
    */
   def solve() {
+    println("fast pre solver started")
+
     var oldUnresolvedCount: Int = Int.MaxValue
     do {
       oldUnresolvedCount = model.totalUnresolvedCount()
@@ -29,7 +31,10 @@ class FastPreSolver(model: JapanCrosswordModel) extends Solver(model) {
         val line = new Line(i, Orientation.HORIZONTAL, model)
         addDataToModel(fillRow(i, line), line)
       }
+      println("one pre slover cycle ended")
     } while (!model.isSolved && oldUnresolvedCount != model.totalUnresolvedCount)
+
+    println("fast pre solver ended")
   }
 
   /**
@@ -37,9 +42,11 @@ class FastPreSolver(model: JapanCrosswordModel) extends Solver(model) {
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  def fillLine(metadata: Array[Int], currentData: Line): List[Cell] = {
+  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
+    println("fillLine " + currentData.lineIndex + ", metadata " + metadata.mkString(" "))
+
     val length = metadata.sum + metadata.size - 1
-    assert(currentData.size >= length)
+    assert(currentData.size >= length, "wrong length: " + length)
 
     if (metadata.isEmpty) {
       return List.fill(currentData.size)(CLEARED)

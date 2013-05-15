@@ -1,12 +1,15 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{Line, Metadata, Cell, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model._
 import concurrent._
 import duration.Duration
 import ExecutionContext.Implicits.global
 
 /**
- * Логика решения кроссворда
+ * Логика решения кроссворда перебором содержимого строк и столбцов.
+ * Все линии перебираются независимо (т.е. зависимось одной строки от соседней не прсчитывается)
+ * Тем не менее, строки разной направленности (ряд/столбец) считаются параллельно, используюя одни и те же данные.
+ * В результате определение состояния ячейки в ряду может упростить перебор соответствующего столбца
  * <p/>
  * <p/>
  * Created: 07.05.13 7:28
@@ -69,7 +72,7 @@ class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell] = {
+  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = {
     fitRemainder(metadata, currentData).get
   }
 
@@ -81,7 +84,7 @@ class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model
    * @param currentData текущее содержимое линии
    * @return Список линий, подходящих под указанные метаданные
    */
-  def fitRemainder(metadata: Array[Int], currentData: Line): Option[List[Cell.Cell]] = {
+  def fitRemainder(metadata: Array[Int], currentData: LineTrait): Option[List[Cell.Cell]] = {
 
     if (metadata.isEmpty) {
       // Нету больше метаданных? Значит остаток строки пустой

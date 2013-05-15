@@ -4,7 +4,7 @@ import java.awt._
 import javax.swing._
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import java.awt.event.ActionEvent
-import ru.onehalf.japancrossword.solver.{FastPreSolver, VariantsEnumerationSolver}
+import ru.onehalf.japancrossword.solver.{BorderSolver, FastPreSolver, VariantsEnumerationSolver}
 import concurrent.{ExecutionContext, future}
 import ExecutionContext.Implicits.global
 
@@ -68,7 +68,9 @@ class JapanCrosswordFrame(model: JapanCrosswordModel, CELL_SIZE: Int, FONT_SIZE:
   def solveButton = new JButton(new AbstractAction("Решить") {
     def actionPerformed(e: ActionEvent) {
       future {
+        println("action performed")
         new FastPreSolver(model).solve()
+        new BorderSolver(model).solve()
         new VariantsEnumerationSolver(model).solve()
       }
     }

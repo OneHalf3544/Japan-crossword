@@ -26,6 +26,7 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
   def solve() {
     println("border solve start")
 
+    // todo обернуть кодом логирования. Сейчас не видно исколючений, кинутых из порождаемых потоков
     future {
       do {
         (0 to model.rowNumber - 1).foreach(v => {

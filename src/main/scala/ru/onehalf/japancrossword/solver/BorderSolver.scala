@@ -39,9 +39,9 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
           fillLine(model.horizonLine(v).reverse, line.reverse())
         })
         Thread.sleep(1000)
+        // todo сделать нормальное условие выхода
       } while (!model.isSolved)
     }
-    // todo сделать нормальное условие выхода
     println("border solve end")
   }
 
@@ -59,6 +59,16 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
       return currentData.toList
     }
 
+    val nextCleared = (1 to metadata(0))
+      .map(_ + begunNotClearedIndex.get - 1)
+      .filter(currentData(_) == CLEARED)
+      .headOption
+
+    if (nextCleared.isDefined) {
+      (begunNotClearedIndex.get to nextCleared.get - 1) foreach (currentData(_) = CLEARED)
+      return currentData.toList
+    }
+
     val chunkStartIndex = (1 to metadata(0))
       .map(_ + begunNotClearedIndex.get - 1)
       .filter(currentData(_) == FILLED).headOption
@@ -68,6 +78,7 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
       return currentData.toList
     }
 
+    // Заполняем кусочек линии, который перекрывается при любом варианте
     if (chunkStartIndex.get == begunNotClearedIndex.get) {
       // Здесь мы сразу знаем кусочек целиком + завершающий индекс
       (1 to metadata(0)).map(_ + begunNotClearedIndex.get - 1).foreach(currentData(_) = FILLED)
@@ -76,12 +87,11 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
       return currentData.toList
     }
 
-    // Заполняем кусочек линии, который перекрывается
-    val indexesForFill = (1 to metadata(0))
+    // Заполняем кусочек линии, который перекрывается при любом варианте
+    (1 to metadata(0))
       .map(_ + begunNotClearedIndex.get - 1)
       .filter(_ > chunkStartIndex.get)
-
-    indexesForFill.foreach(currentData(_) = FILLED)
+      .foreach(currentData(_) = FILLED)
 
     currentData.toList
   }

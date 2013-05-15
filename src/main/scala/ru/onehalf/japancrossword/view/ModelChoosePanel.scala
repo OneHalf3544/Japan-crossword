@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent
 import ru.onehalf.japancrossword.solver.{VariantsEnumerationSolver, BorderSolver, FastPreSolver}
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import concurrent.future
-import ExecutionContext.Implicits.global
+import concurrent.ExecutionContext.Implicits.global
 
 /**
  * <p/>

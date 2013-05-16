@@ -69,8 +69,14 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
 
     val firstChunkLength = metadata(0)
 
+    if (firstChunkLength + begunNotClearedIndex.get > currentData.size) {
+      return currentData.toList
+    }
+
     if ((1 to firstChunkLength) map (_ + begunNotClearedIndex.get - 1) forall(currentData(_) == FILLED) ) {
-      currentData(begunNotClearedIndex.get + firstChunkLength) = CLEARED
+      if (begunNotClearedIndex.get + firstChunkLength + 1 < currentData.size)
+        currentData(begunNotClearedIndex.get + firstChunkLength) = CLEARED
+
       fillLine(metadata.tail, currentData.drop(begunNotClearedIndex.get + firstChunkLength))
       return currentData.toList
     }
@@ -85,6 +91,7 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
       return currentData.toList
     }
 
+    // Число закрашенных ячеек после ожидаемого (позволяет закрасить столько же ячеек от начала строки)
     val filledAfter = nextFilledCount(currentData.toList.drop(begunNotClearedIndex.get + firstChunkLength))
     if (filledAfter > 0) {
       (1 to filledAfter) map(_ + begunNotClearedIndex.get - 1) foreach (currentData(_) = CLEARED)
@@ -104,8 +111,14 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
     // Заполняем кусочек линии, который перекрывается при любом варианте
     if (begunNotClearedIndex.get == chunkStartIndex.get) {
       // Здесь мы сразу знаем кусочек целиком + завершающий индекс
-      (1 to firstChunkLength).map(_ + begunNotClearedIndex.get - 1).foreach(currentData(_) = FILLED)
-      currentData(firstChunkLength + begunNotClearedIndex.get) = CLEARED
+      (1 to firstChunkLength)
+        .map(_ + begunNotClearedIndex.get - 1)
+        .filter(_ < currentData.size)
+        .foreach(currentData(_) = FILLED)
+
+      if(firstChunkLength + begunNotClearedIndex.get < currentData.size) {
+        currentData(firstChunkLength + begunNotClearedIndex.get) = CLEARED
+      }
       // todo Пускать решение рекурсивно,
       return currentData.toList
     }
@@ -120,7 +133,7 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
   }
 
   def nextFilledCount(list: List[Cell]): Int = {
-    if (list.head != FILLED) 0
+    if (list.isEmpty || list.head != FILLED) 0
     else 1 + nextFilledCount(list.tail)
   }
 }

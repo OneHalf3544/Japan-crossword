@@ -32,7 +32,7 @@ class Line(val lineIndex: Int, orientation: Orientation.Orientation,
   }
 
   def update(cellIndex: Int, cell: Cell.Cell) {
-    assert(cellIndex < size)
+    assert(cellIndex < size, "cellIndex " + cellIndex + " >= " + size)
 
     orientation match {
       case Orientation.HORIZONTAL => model(cellIndex + fromIndex, lineIndex) = cell

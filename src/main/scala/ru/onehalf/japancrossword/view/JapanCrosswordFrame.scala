@@ -36,8 +36,8 @@ class JapanCrosswordFrame(model: JapanCrosswordModel, CELL_SIZE: Int, FONT_SIZE:
 
   def contentPane(CELL_SIZE: Int, FONT_SIZE: Int): JPanel = {
     val contentPane = new JPanel(new BorderLayout())
+    contentPane.add(new ModelChoosePanel(model), BorderLayout.PAGE_START)
     contentPane.add(new JScrollPane(new JapanCrosswordPanel(model, CELL_SIZE, FONT_SIZE)), BorderLayout.CENTER)
-    contentPane.add(new ModelChoosePanel(model), BorderLayout.PAGE_END)
     contentPane
   }
 }

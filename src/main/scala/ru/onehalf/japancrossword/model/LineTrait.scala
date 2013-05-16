@@ -1,6 +1,5 @@
 package ru.onehalf.japancrossword.model
 
-import collection.immutable.Range.Inclusive
 
 /**
  * <p/>
@@ -20,6 +19,8 @@ trait LineTrait {
   def nonEmpty(): Boolean
 
   def drop(i: Int): LineTrait
+
+  def dropRight(i: Int): LineTrait
 
   def forall(predicate: (Cell.Cell) => Boolean): Boolean
 

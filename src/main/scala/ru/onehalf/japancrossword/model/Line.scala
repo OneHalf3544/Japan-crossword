@@ -10,7 +10,14 @@ import ru.onehalf.japancrossword.solver.Orientation
  * <p/>
  * @author OneHalf
  */
-class Line(val lineIndex: Int, orientation: Orientation.Orientation, model: JapanCrosswordModel, fromIndex: Int) extends LineTrait {
+class Line(val lineIndex: Int, orientation: Orientation.Orientation,
+           model: JapanCrosswordModel, fromIndex: Int, val size :Int) extends LineTrait {
+
+  def this(lineIndex: Int, orientation: Orientation.Orientation, model: JapanCrosswordModel, fromIndex: Int) =
+    this(lineIndex, orientation, model, fromIndex, orientation match {
+      case Orientation.HORIZONTAL => model.columnNumber - fromIndex
+      case Orientation.VERTICAL => model.rowNumber - fromIndex
+    })
 
   def this(lineIndex: Int, orientation: Orientation.Orientation, model: JapanCrosswordModel) =
     this(lineIndex, orientation, model, 0)
@@ -33,11 +40,6 @@ class Line(val lineIndex: Int, orientation: Orientation.Orientation, model: Japa
     }
   }
 
-  val size = orientation match {
-    case Orientation.HORIZONTAL => model.columnNumber - fromIndex
-    case Orientation.VERTICAL => model.rowNumber - fromIndex
-  }
-
   val indexes = 0 to size - 1
 
   def forall(predicate: (Cell.Cell) => Boolean) = {
@@ -45,7 +47,11 @@ class Line(val lineIndex: Int, orientation: Orientation.Orientation, model: Japa
   }
 
   def drop(i: Int) = {
-    new Line(lineIndex, orientation, model, fromIndex + i)
+    new Line(lineIndex, orientation, model, fromIndex + i, size -i)
+  }
+
+  def dropRight(i: Int) = {
+    new Line(lineIndex, orientation, model, fromIndex, size - i)
   }
 
   def nonEmpty() = {
@@ -69,7 +75,11 @@ class Line(val lineIndex: Int, orientation: Orientation.Orientation, model: Japa
     def lineIndex: Int = original.lineIndex
 
     def drop(i: Int): LineTrait = {
-      throw new UnsupportedOperationException("Not implemented yet")
+      original.dropRight(i).reverse()
+    }
+
+    def dropRight(i: Int): LineTrait = {
+      original.drop(i).reverse()
     }
 
     def toList: List[Cell.Cell] = original.toList.reverse

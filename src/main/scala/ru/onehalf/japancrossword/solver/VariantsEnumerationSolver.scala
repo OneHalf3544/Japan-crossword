@@ -45,15 +45,14 @@ class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model
       println("one solve cycle ended")
     }
 
-    var oldUnresolvedCount = model.totalUnresolvedCount() + 1
+    var oldUnresolvedCount = 0
 
-    oneSolveCycle()
-
-    // Продолжаем подбирать варианты, пока решение не зайдет в тупик, либо не завершится успехом
-    while (!model.isSolved && oldUnresolvedCount != model.totalUnresolvedCount) {
+    // Подбираем варианты, пока решение не зайдет в тупик, либо не завершится успехом
+    do {
       oldUnresolvedCount = model.totalUnresolvedCount()
       oneSolveCycle()
-    }
+    } while (!model.isSolved && oldUnresolvedCount != model.totalUnresolvedCount)
+
     println("solve ended")
   }
 

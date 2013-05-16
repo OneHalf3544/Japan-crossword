@@ -66,6 +66,11 @@ class Line(val lineIndex: Int, orientation: Orientation.Orientation,
     new ReverseLine(this)
   }
 
+
+  /**
+   * Декоратор для имитации развернутого списка
+   * @param original
+   */
   class ReverseLine(original: LineTrait) extends LineTrait {
 
     override def reverse(): LineTrait = {

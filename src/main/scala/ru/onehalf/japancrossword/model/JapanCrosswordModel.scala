@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.model
 
-import java.util.concurrent.locks.{ReentrantReadWriteLock, ReadWriteLock}
+import java.util.concurrent.locks.ReentrantReadWriteLock
 
 /**
  * Модель японского кроссворда. Содержит метаданные и содержимое сетки
@@ -25,14 +25,7 @@ class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadat
   clear()
 
   def clear() {
-    readWriteLock.writeLock().lock()
-    try {
-      board = Array.fill(columnNumber, rowNumber)(Cell.NOT_KNOWN)
-    }
-    finally {
-      readWriteLock.writeLock().unlock()
-    }
-    listeners.foreach(_())
+    writeAndNotify(() => board = Array.fill(columnNumber, rowNumber)(Cell.NOT_KNOWN))
   }
 
   def apply(x: Int, y: Int): Cell.Cell = {

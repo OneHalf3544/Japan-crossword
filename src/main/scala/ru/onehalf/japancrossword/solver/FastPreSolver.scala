@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{LineTrait, Cell, Line, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{LineTrait, Line, JapanCrosswordModel}
 import ru.onehalf.japancrossword.model.Cell._
 
 /**
@@ -43,7 +43,7 @@ class FastPreSolver(model: JapanCrosswordModel) extends Solver(model) {
    * @param currentData Текущие данные
    */
   def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
-    println("fillLine " + currentData.lineIndex + ", metadata " + metadata.mkString(" "))
+    println("fast presolver fillLine " + currentData.lineIndex + ", metadata " + metadata.mkString(" "))
 
     val length = metadata.sum + metadata.size - 1
     assert(currentData.size >= length, "wrong length: " + length)

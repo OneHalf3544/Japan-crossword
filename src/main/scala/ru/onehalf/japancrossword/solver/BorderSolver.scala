@@ -50,85 +50,86 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
-   * @param currentData Текущие данные
+   * @param oldCurrentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
   // todo Проверять соответствие модели, для обнаружения некорректных кросвордов
-  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
+  def fillLine(metadata: Array[Int], oldCurrentData: LineTrait): List[Cell] = {
     if (metadata.isEmpty) {
-      (0 to currentData.size - 1).foreach(currentData(_) = CLEARED)
-      currentData.toList
+      (0 to oldCurrentData.size - 1).foreach(oldCurrentData(_) = CLEARED)
+      oldCurrentData.toList
     }
 
-    val begunNotClearedIndex = (0 to currentData.size-1).filterNot(currentData(_) == CLEARED).headOption
+    val begunNotClearedIndex = (0 to oldCurrentData.size-1).filterNot(oldCurrentData(_) == CLEARED).headOption
     if (begunNotClearedIndex.isEmpty) {
       // Строка уже решена
-      return currentData.toList
+      return oldCurrentData.toList
     }
 
+    val currentData = oldCurrentData.drop(begunNotClearedIndex.get)
     val firstChunkLength = metadata(0)
 
-    if (firstChunkLength + begunNotClearedIndex.get > currentData.size) {
-      return currentData.toList
+    if (firstChunkLength > currentData.size) {
+      return oldCurrentData.toList
     }
 
-    if ((1 to firstChunkLength) map (_ + begunNotClearedIndex.get - 1) forall(currentData(_) == FILLED) ) {
-      if (begunNotClearedIndex.get + firstChunkLength + 1 < currentData.size)
-        currentData(begunNotClearedIndex.get + firstChunkLength) = CLEARED
+    if ((0 to firstChunkLength - 1) forall(currentData(_) == FILLED) ) {
+      if (firstChunkLength + 1 < currentData.size)
+        currentData(firstChunkLength) = CLEARED
 
-      fillLine(metadata.tail, currentData.drop(begunNotClearedIndex.get + firstChunkLength))
-      return currentData.toList
+      fillLine(metadata.tail, currentData.drop(firstChunkLength))
+      return oldCurrentData.toList
     }
 
-    val nextCleared = (1 to firstChunkLength)
-      .map(_ + begunNotClearedIndex.get - 1)
+    val nextCleared = (0 to firstChunkLength-1)
       .filter(currentData(_) == CLEARED)
       .headOption
 
     if (nextCleared.isDefined) {
-      (begunNotClearedIndex.get to nextCleared.get - 1) foreach (currentData(_) = CLEARED)
-      return currentData.toList
+      (0 to nextCleared.get - 1) foreach (currentData(_) = CLEARED)
+      return oldCurrentData.toList
+    }
+
+    if (currentData(firstChunkLength) == CLEARED && ((0 to firstChunkLength - 1) exists (currentData(_) == FILLED))) {
+      (1 to firstChunkLength) map (_ - 1) foreach (currentData(_) = FILLED)
     }
 
     // Число закрашенных ячеек после ожидаемого (позволяет закрасить столько же ячеек от начала строки)
-    val filledAfter = nextFilledCount(currentData.toList.drop(begunNotClearedIndex.get + firstChunkLength))
+    val filledAfter = nextFilledCount(currentData.toList.drop(firstChunkLength))
     if (filledAfter > 0) {
-      (1 to filledAfter) map(_ + begunNotClearedIndex.get - 1) foreach (currentData(_) = CLEARED)
-      return currentData.toList
+      (0 to filledAfter-1) foreach (currentData(_) = CLEARED)
+      return oldCurrentData.toList
     }
 
-    val chunkStartIndex = (1 to firstChunkLength)
-      .map(_ + begunNotClearedIndex.get - 1)
+    val chunkStartIndex = (0 to firstChunkLength-1)
       .filter(currentData(_) == FILLED)
       .headOption
 
     if (chunkStartIndex.isEmpty) {
       // Нет возможностей для расчета
-      return currentData.toList
+      return oldCurrentData.toList
     }
 
     // Заполняем кусочек линии, который перекрывается при любом варианте
-    if (begunNotClearedIndex.get == chunkStartIndex.get) {
+    if (chunkStartIndex.get == 0) {
       // Здесь мы сразу знаем кусочек целиком + завершающий индекс
-      (1 to firstChunkLength)
-        .map(_ + begunNotClearedIndex.get - 1)
+      (0 to firstChunkLength-1)
         .filter(_ < currentData.size)
         .foreach(currentData(_) = FILLED)
 
-      if(firstChunkLength + begunNotClearedIndex.get < currentData.size) {
-        currentData(firstChunkLength + begunNotClearedIndex.get) = CLEARED
+      if(firstChunkLength < currentData.size) {
+        currentData(firstChunkLength) = CLEARED
       }
       // todo Пускать решение рекурсивно,
-      return currentData.toList
+      return oldCurrentData.toList
     }
 
     // Заполняем кусочек линии, который перекрывается при любом варианте
-    (1 to firstChunkLength)
-      .map(_ + begunNotClearedIndex.get - 1)
+    (0 to firstChunkLength-1)
       .filter(_ > chunkStartIndex.get)
       .foreach(currentData(_) = FILLED)
 
-    currentData.toList
+    oldCurrentData.toList
   }
 
   def nextFilledCount(list: List[Cell]): Int = {

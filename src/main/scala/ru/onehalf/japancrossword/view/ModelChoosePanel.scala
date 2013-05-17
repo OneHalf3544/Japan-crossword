@@ -17,16 +17,17 @@ import concurrent.ExecutionContext.Implicits.global
  */
 class ModelChoosePanel(models: Array[JapanCrosswordModel], modelChangeListener: ItemListener) extends JPanel(new FlowLayout()) {
 
+  val modelsCombobox: JComboBox[JapanCrosswordModel] = {
+    val comboBox = new JComboBox(models)
+    comboBox.addItemListener(modelChangeListener)
+    comboBox
+  }
+
   add(modelsCombobox)
   add(solveButton)
   add(clearButton)
   //add(editButton)
 
-  def modelsCombobox: JComboBox[JapanCrosswordModel] = {
-    val comboBox = new JComboBox[JapanCrosswordModel](models)
-    comboBox.addItemListener(modelChangeListener)
-    comboBox
-  }
 
   def clearButton: JButton = new JButton(new AbstractAction("Очистить") {
     def actionPerformed(e: ActionEvent) {
@@ -46,6 +47,7 @@ class ModelChoosePanel(models: Array[JapanCrosswordModel], modelChangeListener: 
         println("action performed")
         val model = modelsCombobox.getSelectedItem.asInstanceOf[JapanCrosswordModel]
         println("selected model: " + model)
+        println("selected models: " + modelsCombobox.getSelectedObjects.mkString("[", ", ", "]"))
         new FastPreSolver(model).solve()
         new BorderSolver(model).solve()
         new VariantsEnumerationSolver(model).solve()

@@ -3,7 +3,7 @@ package ru.onehalf.japancrossword.view
 import java.awt._
 import javax.swing._
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
-import java.awt.event.{ActionEvent, ActionListener}
+import java.awt.event.{ItemEvent, ItemListener}
 
 /**
  * Окошко с кроссвордом
@@ -17,40 +17,47 @@ class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FO
 
   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
-  var crosswordPanel: JComponent = new JapanCrosswordPanel(models(0), CELL_SIZE, FONT_SIZE)
-  val modelChoosePanel = new ModelChoosePanel(models, new ActionListener(){
-    def actionPerformed(e: ActionEvent) {
-      //setCrosswordPanel()
-    }
-  })
-
-  models(0) addListener (() => SwingUtilities.invokeLater(new Runnable {
+  val repaintListener = () => SwingUtilities.invokeLater(new Runnable {
     def run() {
       repaint()
     }
-  }))
+  })
 
-  initializeComponents()
+  var crosswordPanel: JComponent = new JScrollPane(new JapanCrosswordPanel(models(0), CELL_SIZE, FONT_SIZE))
 
+  val modelChoosePanel = new ModelChoosePanel(models, new ItemListener(){
+    def itemStateChanged(e: ItemEvent) {
+      val model = e.getItem.asInstanceOf[JapanCrosswordModel]
+      println("event:" + e.getStateChange + ", model: "+ model)
+      e.getStateChange match {
+        case ItemEvent.SELECTED => {
+          model.addListener(repaintListener)
+          setCrosswordPanel(new JScrollPane(new JapanCrosswordPanel(model, CELL_SIZE, FONT_SIZE)))
+        }
+        case ItemEvent.DESELECTED => model.removeListener(repaintListener)
+      }
+    }
+  })
 
+  models(0) addListener (repaintListener)
 
-  def initializeComponents() {
-    setContentPane(contentPane())
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+  setContentPane(contentPane())
+  setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 
-    pack()
-  }
+  pack()
+
   def contentPane(): JPanel = {
-
     val contentPane = new JPanel(new BorderLayout())
     contentPane.add(modelChoosePanel, BorderLayout.PAGE_START)
-    contentPane.add(new JScrollPane(crosswordPanel), BorderLayout.CENTER)
+    contentPane.add(crosswordPanel, BorderLayout.CENTER)
     contentPane
   }
 
-  def setCrosswordPanel(contentPane: JPanel, newCrosswordPanel: JComponent) {
-    contentPane.remove(crosswordPanel)
+  def setCrosswordPanel(newCrosswordPanel: JComponent) {
+    getContentPane.remove(crosswordPanel)
     crosswordPanel = newCrosswordPanel
-    contentPane.add(new JScrollPane(newCrosswordPanel), BorderLayout.CENTER)
+    getContentPane.add(newCrosswordPanel, BorderLayout.CENTER)
+    validate()
+    pack()
   }
 }

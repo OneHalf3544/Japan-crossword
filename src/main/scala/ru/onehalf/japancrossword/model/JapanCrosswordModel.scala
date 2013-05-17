@@ -18,7 +18,7 @@ class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val vert
   val rowNumber = verticalLine.size
   val maxTotalUnresolvedCount = columnNumber * rowNumber
 
-  private var listeners: Array[()=>Unit] = Array()
+  private var listeners: List[()=>Unit] = List()
 
   private var board: Array[Array[Cell.Cell]] = null
 
@@ -42,6 +42,10 @@ class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val vert
 
   def addListener(f :() => Unit) {
     listeners = listeners :+ f
+  }
+
+  def removeListener(f :() => Unit) {
+    listeners = listeners.filterNot(_ == f).toList
   }
 
   def totalUnresolvedCount() = {

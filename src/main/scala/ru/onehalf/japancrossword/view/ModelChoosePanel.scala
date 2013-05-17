@@ -1,8 +1,8 @@
 package ru.onehalf.japancrossword.view
 
-import javax.swing.{AbstractAction, JButton, JPanel}
+import javax.swing.{JComboBox, AbstractAction, JButton, JPanel}
 import java.awt.FlowLayout
-import java.awt.event.ActionEvent
+import java.awt.event.{ActionListener, ActionEvent}
 import ru.onehalf.japancrossword.solver.{VariantsEnumerationSolver, BorderSolver, FastPreSolver}
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import concurrent.future
@@ -15,15 +15,22 @@ import concurrent.ExecutionContext.Implicits.global
  * <p/>
  * @author OneHalf
  */
-class ModelChoosePanel(model: JapanCrosswordModel) extends JPanel(new FlowLayout()) {
+class ModelChoosePanel(models: Array[JapanCrosswordModel], modelChangeListener: ActionListener) extends JPanel(new FlowLayout()) {
 
+  add(modelsCombobox)
   add(solveButton)
-  //add(editButton)
   add(clearButton)
+  //add(editButton)
+
+  def modelsCombobox: JComboBox[JapanCrosswordModel] = {
+    val comboBox = new JComboBox[JapanCrosswordModel](models)
+    comboBox.addActionListener(modelChangeListener)
+    comboBox
+  }
 
   def clearButton: JButton = new JButton(new AbstractAction("Очистить") {
     def actionPerformed(e: ActionEvent) {
-      model.clear()
+      modelsCombobox.getSelectedItem().asInstanceOf[JapanCrosswordModel].clear()
     }
   })
 
@@ -37,6 +44,7 @@ class ModelChoosePanel(model: JapanCrosswordModel) extends JPanel(new FlowLayout
     def actionPerformed(e: ActionEvent) {
       future {
         println("action performed")
+        val model = modelsCombobox.getSelectedItem().asInstanceOf[JapanCrosswordModel]
         new FastPreSolver(model).solve()
         new BorderSolver(model).solve()
         new VariantsEnumerationSolver(model).solve()

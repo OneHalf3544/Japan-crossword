@@ -3,6 +3,7 @@ package ru.onehalf.japancrossword.view
 import java.awt._
 import javax.swing._
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
+import java.awt.event.{ActionEvent, ActionListener}
 
 /**
  * Окошко с кроссвордом
@@ -12,9 +13,18 @@ import ru.onehalf.japancrossword.model.JapanCrosswordModel
  * <p/>
  * @author OneHalf
  */
-class JapanCrosswordFrame(model: JapanCrosswordModel, CELL_SIZE: Int, FONT_SIZE: Int) extends JFrame("Японский кроссворд") {
+class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FONT_SIZE: Int) extends JFrame("Японский кроссворд") {
 
-  model addListener (() => SwingUtilities.invokeLater(new Runnable {
+  UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
+
+  var crosswordPanel: JComponent = new JapanCrosswordPanel(models(0), CELL_SIZE, FONT_SIZE)
+  val modelChoosePanel = new ModelChoosePanel(models, new ActionListener(){
+    def actionPerformed(e: ActionEvent) {
+      //setCrosswordPanel()
+    }
+  })
+
+  models(0) addListener (() => SwingUtilities.invokeLater(new Runnable {
     def run() {
       repaint()
     }
@@ -22,22 +32,25 @@ class JapanCrosswordFrame(model: JapanCrosswordModel, CELL_SIZE: Int, FONT_SIZE:
 
   initializeComponents()
 
+
+
   def initializeComponents() {
-
-    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
-
-    setContentPane(contentPane(CELL_SIZE, FONT_SIZE))
-
+    setContentPane(contentPane())
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 
     pack()
   }
+  def contentPane(): JPanel = {
 
-
-  def contentPane(CELL_SIZE: Int, FONT_SIZE: Int): JPanel = {
     val contentPane = new JPanel(new BorderLayout())
-    contentPane.add(new ModelChoosePanel(model), BorderLayout.PAGE_START)
-    contentPane.add(new JScrollPane(new JapanCrosswordPanel(model, CELL_SIZE, FONT_SIZE)), BorderLayout.CENTER)
+    contentPane.add(modelChoosePanel, BorderLayout.PAGE_START)
+    contentPane.add(new JScrollPane(crosswordPanel), BorderLayout.CENTER)
     contentPane
+  }
+
+  def setCrosswordPanel(contentPane: JPanel, newCrosswordPanel: JComponent) {
+    contentPane.remove(crosswordPanel)
+    crosswordPanel = newCrosswordPanel
+    contentPane.add(new JScrollPane(newCrosswordPanel), BorderLayout.CENTER)
   }
 }

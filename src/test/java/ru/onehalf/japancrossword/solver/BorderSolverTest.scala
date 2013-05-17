@@ -17,7 +17,7 @@ class BorderSolverTest extends FlatSpec with ShouldMatchers {
   it should "set CLEARED cells status to model" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "2 4")
-    val model = new JapanCrosswordModel(
+    val model = new JapanCrosswordModel("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
       metadata)
 

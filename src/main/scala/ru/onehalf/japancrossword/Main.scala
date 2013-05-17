@@ -22,7 +22,7 @@ object Main {
   def main(args: Array[String]) {
 
     // Джек воробей
-    val jackSparrow = new JapanCrosswordModel(
+    val jackSparrow = new JapanCrosswordModel("Джек Воробей",
       parseLine(Orientation.HORIZONTAL,
         "4, 2 3, 3 2 2, 4 2 4 4 2, 4 4 2 17 5, 6 2 28, 22 12 7 3 4, 27 11 5 14, 16 2 3 38, " +
         "15 2 2 1 2 34 1, 6 14 5 4 2 8 15, 5 3 1 7 4 2 3 2 1 12 4, 13 3 1 10 15 1 2 5 3 3, " +
@@ -53,7 +53,7 @@ object Main {
 
 
     // Земля
-    val earthModel = new JapanCrosswordModel(
+    val earthModel = new JapanCrosswordModel("Земля",
       parseLine(Orientation.HORIZONTAL,
         "40 40, 34 34, 31 11 6 12, 28 28, 26 26, " +
         "24 2 24, 22 2 3 22, 20 2 3 20, 19 3 3 15 3, 18 5 2 18, " +
@@ -95,7 +95,7 @@ object Main {
 
 
     // Собачка в профиль
-    val dog = new JapanCrosswordModel(
+    val dog = new JapanCrosswordModel("Собачка",
       parseLine(Orientation.HORIZONTAL,
         "7, 4 2, 3 1 1, 1 1 1, 3 1 2, 1 1 1, 1 1 1, 1 2 1, 1 1 1, 3 1 1, 1 1 1 1 1, 1 1 1, 1 3 1 2, " +
         "1 4, 3 2, 11 2, 12 2, 11 2, 11 2, 9 2"),
@@ -103,7 +103,7 @@ object Main {
         "2 6, 3 1 5, 7 1 1 6, 2 1 1 2 1 5, 1 1 2 1 5, 1 2 5, 1 5, 1 5, 2 2 5, 1 2 2 5, 1 3 5, 2 5 3, 5 1, 8, 8"))
 
     // Пиратский флаг
-    val flag = new JapanCrosswordModel(
+    val flag = new JapanCrosswordModel("Пиратский флаг",
       parseLine(Orientation.HORIZONTAL,
         "2, 10, 13, 5 1, 1 2, 12, 12, 12, 6 1 1, 7 1 2, 2 2 4, 1 1 1 4, 1 1 1 4, 1 1 2 3, " +
         "2 3 3, 7 1 2, 7 1 1, 12, 3 6, 2 2"),
@@ -112,7 +112,7 @@ object Main {
         "2 4 6 3, 2 12 2, 2 1 7, 2"))
 
     // Собачка
-    val dog2 = new JapanCrosswordModel(
+    val dog2 = new JapanCrosswordModel("Собачка",
       parseLine(Orientation.HORIZONTAL,
         "2, 4, 4 2 3, 1 3 1 2, 1 2 2 2, 2 2 2 5, 2 1 2 7, 2 4 5, 2 3, 3 1 2 3, " +
         "1 7 2, 1 4 1 2, 1 4 1 2, 1 7 2, 4 1 2 3, 2 3, 2 2 5 4, 1 2 2 7, 1 3 5, " +
@@ -123,7 +123,7 @@ object Main {
         "3 1 1 1 1 3, 2 4 1 1 4 2, 1 3 4 3 1, 3 5 5 4, 25, 4 10 4"))
 
     // Девочка
-    val girl = new JapanCrosswordModel(
+    val girl = new JapanCrosswordModel("Девочка",
       parseLine(Orientation.HORIZONTAL,
         "1 3 3 2, 1 6 1 2 1 1, 1 8 3 6 1 2, 1 6 1 2 1 1 2 3, 1 1 1 3 3 2 2 1, " +
         "1 1 4 1 1 1 1 2 1 3, 8 5 3 2, 6 8 1, 1 1 1 5 1 1 2 1 2, 1 5 3 2 1, 2 8 1 2 1 2, " +
@@ -137,7 +137,7 @@ object Main {
         "2 4 1 1 2 1, 1 3 3 1 1 1 3, 1 1 7 1 5, 1 1 1 1 1 1 1 4, 4 1 1 3 4, 1 2 2 5 3, 2 5 6 3, 1 1 3 2 3"))
 
     // Инкогнито по венециански
-    val incognito = new JapanCrosswordModel(
+    val incognito = new JapanCrosswordModel("Инкогнито по венециански",
       parseLine(Orientation.HORIZONTAL,
         "5, 4 2 4, 4 1 5 3, 3 3 1 6 3, 2 2 1 2 7 3, 2 5 1 2 7 4, 1 9 3 14 3, 2 9 5 20 1, 3 8 7 8 11 2, " +
         "3 5 3 2 10 2 4, 5 6 4 2 5 6 1, 6 6 3 2 1 1 10, 5 6 1 3 2 10 1, 4 7 4 2 5 4, 3 9 2 2 4 5 2, " +
@@ -155,13 +155,13 @@ object Main {
         "7 1 1 1 1 1 6 2 12, 7 2 2 2 8 1 13, 6 3 8 9 13"))
 
     // Домик
-    val house = new JapanCrosswordModel(
+    val house = new JapanCrosswordModel("Домик",
       parseLine(Orientation.HORIZONTAL, "1 1, 8, 4 3, 3 1 3, 3 6, 3 1, 3 1, 4, 8, 1 1"),
       parseLine(Orientation.VERTICAL, "2, 4, 6, 3 3, 3 3, 8, 1 1 1, 1 1 1, 4 1, 4 1, 5 2"))
 
 
     // Бабочка
-    val butterfly = new JapanCrosswordModel(
+    val butterfly = new JapanCrosswordModel("Бабочка",
       parseLine(Orientation.HORIZONTAL,
         "3 7, 5 2 4, 7 1 5 4, 3 3 1 1 2 1 2 4, 2 4 3 3 1 1 1 1 3, 5 11 1 2 2 3, 2 1 1 5 3 1 5 3, " +
         "2 2 1 3 1 1 1 3 5, 2 2 13 4, 2 4 1 3 2 4, 9 8, 3 1 1 1 1 1 2 8, 15 11, 3 1 3 1 1 2 8, " +
@@ -175,6 +175,6 @@ object Main {
 
     val CELL_SIZE = 10
     val FONT_SIZE = 6
-    new JapanCrosswordFrame(jackSparrow, CELL_SIZE, FONT_SIZE).setVisible(true)
+    new JapanCrosswordFrame(Array(jackSparrow, earthModel, dog, flag, dog2, girl, incognito, house, butterfly), CELL_SIZE, FONT_SIZE).setVisible(true)
   }
 }

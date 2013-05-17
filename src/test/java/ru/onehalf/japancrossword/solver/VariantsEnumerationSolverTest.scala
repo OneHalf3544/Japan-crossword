@@ -18,7 +18,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers {
   it should "resolve center cells in line" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "8")
-    val model = new JapanCrosswordModel(
+    val model = new JapanCrosswordModel("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 1, 1, 0, 0"),  // 10 cells
       metadata)
 
@@ -39,7 +39,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers {
   it should "resolve all cells in line" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "8")
-    val model = new JapanCrosswordModel(
+    val model = new JapanCrosswordModel("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 1, 1, 0, 0"),  // 10 cells
       metadata)
 
@@ -51,7 +51,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers {
   it should "set CLEARED cells status to model" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "2 4")
-    val model = new JapanCrosswordModel(
+    val model = new JapanCrosswordModel("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
       metadata)
 
@@ -70,7 +70,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers {
   it should "fill all line by Cell.FILLED status" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "5")
-    val model = new JapanCrosswordModel(
+    val model = new JapanCrosswordModel("test",
       parseLine(Orientation.HORIZONTAL, "1, 1, 1, 1, 1"),  // 5 cells
       metadata)
 
@@ -84,7 +84,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers {
   it should "fill space between two cells" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "4")
-    val model = new JapanCrosswordModel(
+    val model = new JapanCrosswordModel("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 0, 0"),  // 8 cells
       metadata)
 
@@ -106,7 +106,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers {
 
   "compatibleToCurrentData method" should "filter wrong variants" in {
 
-    val model = new JapanCrosswordModel(
+    val model = new JapanCrosswordModel("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 0, 0"),  // 8 cells
       parseLine(Orientation.VERTICAL, "4"))
 

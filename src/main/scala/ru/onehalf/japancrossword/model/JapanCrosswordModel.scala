@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
  * <p/>
  * @author OneHalf
  */
-class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadata) {
+class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val verticalLine : Metadata) {
 
   private val readWriteLock = new ReentrantReadWriteLock()
 
@@ -29,7 +29,7 @@ class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadat
   }
 
   def apply(x: Int, y: Int): Cell.Cell = {
-    read[Cell.Cell](() => board(x)(y))
+    read(() => board(x)(y))
   }
 
   def update(x: Int, y: Int, c: Cell.Cell) {
@@ -68,4 +68,7 @@ class JapanCrosswordModel(val horizonLine : Metadata, val verticalLine : Metadat
     finally readWriteLock.writeLock().unlock()
     listeners.foreach(_())
   }
+
+  override def toString: String = name + " (" + horizonLine.size + "x" + verticalLine.size + ")"
+
 }

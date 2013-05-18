@@ -16,10 +16,10 @@ import scala.collection.convert.wrapAsScala._
  */
 object CrosswordLoader {
 
-  def parseParams(param: String): Array[Int] = (param split " ").map (_.toInt)
+  def parseParams(param: String): Array[Int] = (param split "\\s+").map (_.toInt)
 
   def parseLine(orientation: Orientation, string: String) : Metadata = {
-    new Metadata(orientation, (string split ",\\s+").map(parseParams(_)))
+    new Metadata(orientation, (string split ",\\s*").map(parseParams(_)))
   }
 
   def loadCrosswords(propertiesFile: String): Array[JapanCrosswordModel] = {
@@ -28,7 +28,8 @@ object CrosswordLoader {
 
     propertiesAsScalaMap(properties)
       .groupBy(tuple => tuple._1.split("\\.")(0))
-      .map(tuple => new JapanCrosswordModel(tuple._2(tuple._1 + ".name"),
+      .map(tuple => new JapanCrosswordModel(
+          tuple._2(tuple._1 + ".name"),
           parseLine(HORIZONTAL, tuple._2(tuple._1 + ".horizontal")),
           parseLine(VERTICAL,   tuple._2(tuple._1 + ".vertical"))))
       .toArray

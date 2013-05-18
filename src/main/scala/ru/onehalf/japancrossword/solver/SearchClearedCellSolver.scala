@@ -47,6 +47,7 @@ class SearchClearedCellSolver(model: JapanCrosswordModel) extends Solver(model) 
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
   def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
+
     List.empty
   }
 }

@@ -33,5 +33,6 @@ object CrosswordLoader {
           parseLine(HORIZONTAL, tuple._2(tuple._1 + ".horizontal")),
           parseLine(VERTICAL,   tuple._2(tuple._1 + ".vertical"))))
       .toArray
+      .sortBy(_.name)
   }
 }

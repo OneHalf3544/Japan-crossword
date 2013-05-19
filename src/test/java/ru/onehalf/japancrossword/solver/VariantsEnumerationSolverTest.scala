@@ -4,7 +4,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import ru.onehalf.japancrossword.model.{Cell, Line, JapanCrosswordModel}
 import ru.onehalf.japancrossword.model.Cell._
-import ru.onehalf.japancrossword.Main.parseLine
+import ru.onehalf.japancrossword.CrosswordLoader.parseLine
 
 /**
  * <p/>

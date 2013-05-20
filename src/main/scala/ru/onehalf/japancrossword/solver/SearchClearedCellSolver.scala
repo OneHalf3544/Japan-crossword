@@ -4,6 +4,7 @@ import concurrent._
 import ru.onehalf.japancrossword.model.{LineTrait, JapanCrosswordModel, Line}
 import ru.onehalf.japancrossword.model.Cell._
 import ExecutionContext.Implicits.global
+import java.util.logging.Logger
 
 /**
  * Поиск пустых ячеек
@@ -14,6 +15,8 @@ import ExecutionContext.Implicits.global
  * @author OneHalf
  */
 class SearchClearedCellSolver(model: JapanCrosswordModel) extends Solver(model) {
+
+  val logger = Logger.getLogger(getClass.getName)
 
   /**
    * Запуск решения кроссворда
@@ -49,13 +52,13 @@ class SearchClearedCellSolver(model: JapanCrosswordModel) extends Solver(model) 
   def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
     val stat: List[(Cell, Int)] = currentData.toList.foldLeft(List.empty[(Cell, Int)])(countCellTypes)
 
-    if (stat.filter(_._1 == NOT_KNOWN).forall(_._2 > metadata.min)) {
-      // Нечего заполнять
-      return currentData.toList
-    }
-
     val indexes: List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
     var preResult = currentData.toList
+
+    if (stat.filter(_._1 == FILLED).corresponds(metadata)((a, b) => a._2 == b)) {
+      // Все уже решено
+      return preResult.map(v => if (v == NOT_KNOWN) CLEARED else v)
+    }
 
     for (i <- stat.indices) {
 
@@ -69,11 +72,33 @@ class SearchClearedCellSolver(model: JapanCrosswordModel) extends Solver(model) 
       }
     }
 
+    for (i <- stat.indices) {
+      if (stat(i)._1 == FILLED && stat(i)._2 == metadata.max) {
+        if (indexes.isDefinedAt(i - 1))
+          preResult = preResult.updated(indexes(i) - 1, CLEARED)
+        if (indexes.isDefinedAt(i + 2))
+          preResult = preResult.updated(indexes(i + 1), CLEARED)
+      }
+    }
+
+    if (metadata.size == 1) {
+      val filledIndexes = preResult.indices.filter(preResult(_) == FILLED)
+      if (filledIndexes.nonEmpty) {
+        val minIndex = filledIndexes.max - metadata(0)
+        val maxIndex = filledIndexes.min + metadata(0)
+
+        preResult =
+          List.fill[Cell](minIndex + 1)(CLEARED) :::
+          preResult.slice(minIndex + 1, maxIndex) :::
+          List.fill[Cell](preResult.size - maxIndex)(CLEARED)
+      }
+    }
+
     val logStat = preResult.foldLeft(List.empty[(Cell, Int)])(countCellTypes)
     if (stat.size != logStat.size) {
-      println("stat:   " + stat)
-      println("result: " + logStat)
-      println("indexes " + indexes)
+      logger.fine("stat:   " + stat)
+      logger.fine("result: " + logStat)
+      logger.fine("indexes " + indexes)
     }
     preResult
   }

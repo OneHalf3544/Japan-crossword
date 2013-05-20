@@ -56,7 +56,7 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
   // todo Проверять соответствие модели, для обнаружения некорректных кросвордов
   def fillLine(metadata: Array[Int], oldCurrentData: LineTrait): List[Cell] = {
     fillLine2(metadata, oldCurrentData)
-    return oldCurrentData.toList
+    oldCurrentData.toList
   }
 
   /**

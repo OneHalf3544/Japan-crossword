@@ -28,8 +28,6 @@ class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FO
   val modelChoosePanel = new ModelChoosePanel(models, new ItemListener(){
     def itemStateChanged(e: ItemEvent) {
       val model = e.getItem.asInstanceOf[JapanCrosswordModel]
-      println("event:" + e.getStateChange + ", model: "+ model)
-      println("selectedItems:" + e.getItemSelectable.getSelectedObjects.mkString(", "))
       e.getStateChange match {
         case ItemEvent.SELECTED => {
           model.addListener(repaintListener)

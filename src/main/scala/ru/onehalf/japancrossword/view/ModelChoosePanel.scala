@@ -3,7 +3,7 @@ package ru.onehalf.japancrossword.view
 import javax.swing.{JComboBox, AbstractAction, JButton, JPanel}
 import java.awt.FlowLayout
 import java.awt.event.{ItemListener, ActionEvent}
-import ru.onehalf.japancrossword.solver.{VariantsEnumerationSolver, BorderSolver, FastPreSolver}
+import ru.onehalf.japancrossword.solver.{SearchClearedCellSolver, VariantsEnumerationSolver, BorderSolver, FastPreSolver}
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import concurrent.future
 import concurrent.ExecutionContext.Implicits.global
@@ -50,6 +50,7 @@ class ModelChoosePanel(models: Array[JapanCrosswordModel], modelChangeListener: 
         println("selected models: " + modelsCombobox.getSelectedObjects.mkString("[", ", ", "]"))
         new FastPreSolver(model).solve()
         new BorderSolver(model).solve()
+        new SearchClearedCellSolver(model).solve()
         new VariantsEnumerationSolver(model).solve()
       }.onFailure({
         case e: Exception => e.printStackTrace()

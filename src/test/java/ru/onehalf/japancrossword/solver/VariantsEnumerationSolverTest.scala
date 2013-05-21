@@ -104,6 +104,25 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers {
       Cell.CLEARED))
   }
 
+  it should "sovle line by sublists" in {
+
+    val metadata = parseLine(Orientation.VERTICAL, "4 4")
+    val model = new JapanCrosswordModel("test",
+      parseLine(Orientation.HORIZONTAL, "0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0"),
+      metadata)
+
+    val line = new Line(0, Orientation.HORIZONTAL, model)
+    line(3) = FILLED
+    line(5) = CLEARED
+    line(7) = FILLED
+
+
+    val result = new VariantsEnumerationSolver(model).fillLine(metadata(0), line)
+
+    assert(result === List(
+      NOT_KNOWN, FILLED, FILLED, FILLED, NOT_KNOWN, CLEARED, NOT_KNOWN, FILLED, FILLED, FILLED, NOT_KNOWN))
+  }
+
   "compatibleToCurrentData method" should "filter wrong variants" in {
 
     val model = new JapanCrosswordModel("test",
@@ -111,7 +130,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers {
       parseLine(Orientation.VERTICAL, "4"))
 
     val line = new Line(0, Orientation.HORIZONTAL, model)
-    line(0) = Cell.CLEARED // .__X_X__
+    line(0) = Cell.CLEARED
     line(3) = Cell.FILLED
     line(5) = Cell.FILLED
 

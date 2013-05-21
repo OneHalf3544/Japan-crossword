@@ -1,6 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model.{LineTrait, JapanCrosswordModel, Line, Cell}
+import ru.onehalf.japancrossword.model.Cell._
 
 /**
  * <p/>
@@ -47,7 +48,40 @@ abstract class Solver(model: JapanCrosswordModel) {
    * @param currentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
-  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell]
+  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = {
+    if (countStat(currentData.toList.filterNot(_ == NOT_KNOWN)).count(_._1 == FILLED) < metadata.size) {
+      return fillSubLine(metadata, currentData)
+    }
+
+    val sublists = divideToSublists(currentData, countStat(currentData))
+    assert(sublists.size == metadata.size)
+    sublists.indices map (v => fillSubLine(Array(metadata(v)), sublists(v))) reduceLeft((a, b) => a ::: b)
+  }
+
+
+  def divideToSublists(line: LineTrait, stat: List[(Cell.Cell, Int)]): List[LineTrait] = {
+    val statIndicies = indicesForStat(stat)
+    var hasFilledCell = false
+
+    for (i <- stat.indices) {
+      if (stat(i)._1 == CLEARED && hasFilledCell) {
+        val splitIndex = statIndicies(i)
+        return line.dropRight(line.size - splitIndex) +: divideToSublists(line.drop(splitIndex), stat.drop(i))
+      }
+      if (stat(i)._1 == FILLED) {
+        hasFilledCell = true
+      }
+    }
+    List(line)
+  }
+
+  /**
+   * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
+   * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
+   * @param currentData Текущие данные
+   * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
+   */
+  def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell]
 
   /**
    * Схлопывание строки в одну. Если значение в списках не совпадают,
@@ -93,4 +127,35 @@ abstract class Solver(model: JapanCrosswordModel) {
     assert(currentData.size == supposeLine.size)
     0 to supposeLine.size-1 forall (cellIsCompatible(_))
   }
+
+  /**
+   *
+   * @param currentData
+   * @return
+   */
+  def countStat(currentData: List[Cell.Cell]): List[(Cell.Cell, Int)] = {
+    currentData.toList.foldLeft(List.empty[(Cell, Int)])(countCellTypes)
+  }
+
+  /**
+   *
+   * @param currentData
+   * @return
+   */
+  def countStat(currentData: LineTrait): List[(Cell.Cell, Int)] = {
+    countStat(currentData.toList)
+  }
+
+  def countCellTypes(a: List[(Cell, Int)], cell: Cell): List[(Cell, Int)] = {
+    if (a.isEmpty) {
+      return List((cell, 1))
+    }
+    if (a.last._1 == cell) {
+      return a.init :+ (cell, a.last._2 + 1)
+    }
+    a :+ (cell, 1)
+  }
+
+  def indicesForStat(stat: List[(Cell.Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
+
 }

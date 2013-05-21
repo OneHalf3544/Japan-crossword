@@ -34,4 +34,12 @@ trait LineTrait {
     toList.mkString("[", ", ", "]")
   }
 
+  override def equals(obj: Any): Boolean = {
+    if (!obj.isInstanceOf[LineTrait]) {
+      return false
+    }
+
+    val o = obj.asInstanceOf[LineTrait]
+    size == o.size && toList.corresponds(o.toList)((cell1, cell2) => cell1 == cell2)
+  }
 }

@@ -35,8 +35,15 @@ class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model
       val columnFuture = future {
         futureRun(model.columnNumber, model.horizonLine, fillColumn, Orientation.VERTICAL)
       }
+      columnFuture.onFailure{
+        case e: Exception => e.printStackTrace()
+      }
+
       val rowFuture = future {
         futureRun(model.rowNumber, model.verticalLine, fillRow, Orientation.HORIZONTAL)
+      }
+      rowFuture.onFailure{
+        case e: Exception => e.printStackTrace()
       }
 
       Await.ready(columnFuture, Duration.Inf)

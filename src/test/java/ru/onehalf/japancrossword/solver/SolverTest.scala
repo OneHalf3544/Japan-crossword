@@ -68,4 +68,32 @@ class SolverTest extends FunSuite {
 
   }
 
+  test("divideToSublist3") {
+
+    val metadata = parseLine(Orientation.VERTICAL, "2 2")
+    val model = new JapanCrosswordModel("test",
+      parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
+      metadata)
+
+    val line = new Line(0, Orientation.HORIZONTAL, model)
+    line(1) = Cell.FILLED
+    line(3) = Cell.CLEARED
+    line(5) = Cell.FILLED
+    line(7) = Cell.CLEARED
+    line(8) = Cell.CLEARED
+    line(9) = Cell.CLEARED
+
+    val solver = new Solver(model) {
+      def solve() {}
+      def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = Nil
+    }
+
+    val result = solver.divideToSublists(line, solver.countStat(line))
+
+    assert(result === List(
+      new Line(0, Orientation.HORIZONTAL, model, 0, 3),
+      new Line(0, Orientation.HORIZONTAL, model, 3, 7)))
+
+  }
+
 }

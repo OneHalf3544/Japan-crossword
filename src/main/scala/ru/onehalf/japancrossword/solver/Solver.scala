@@ -49,12 +49,24 @@ abstract class Solver(model: JapanCrosswordModel) {
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
   def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = {
+    if (metadata.isEmpty) {
+      return currentData.toList
+    }
+
+    if (!currentData.nonEmpty()) {
+      return List.empty
+    }
+
+    if (currentData.forall(_ != NOT_KNOWN)) {
+      return currentData.toList
+    }
+
     if (countStat(currentData.toList.filterNot(_ == NOT_KNOWN)).count(_._1 == FILLED) < metadata.size) {
       return fillSubLine(metadata, currentData)
     }
 
     val sublists = divideToSublists(currentData, countStat(currentData))
-    assert(sublists.size == metadata.size)
+    assert(sublists.size == metadata.size, "size not equals: %s and %s".format(sublists, metadata.mkString("[", ",", "]")))
     sublists.indices map (v => fillSubLine(Array(metadata(v)), sublists(v))) reduceLeft((a, b) => a ::: b)
   }
 
@@ -64,7 +76,7 @@ abstract class Solver(model: JapanCrosswordModel) {
     var hasFilledCell = false
 
     for (i <- stat.indices) {
-      if (stat(i)._1 == CLEARED && hasFilledCell) {
+      if (stat(i)._1 == CLEARED && hasFilledCell && (stat.drop(i).exists(_._1 == FILLED))) {
         val splitIndex = statIndicies(i)
         return line.dropRight(line.size - splitIndex) +: divideToSublists(line.drop(splitIndex), stat.drop(i))
       }

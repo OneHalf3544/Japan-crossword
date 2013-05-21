@@ -53,8 +53,7 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
    * @param oldCurrentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
-  // todo Проверять соответствие модели, для обнаружения некорректных кросвордов
-  def fillLine(metadata: Array[Int], oldCurrentData: LineTrait): List[Cell] = {
+  def fillSubLine(metadata: Array[Int], oldCurrentData: LineTrait): List[Cell] = {
     fillLine2(metadata, oldCurrentData)
     oldCurrentData.toList
   }

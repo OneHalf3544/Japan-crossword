@@ -1,6 +1,8 @@
 package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model._
+import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.solver.Orientation._
 import concurrent._
 import duration.Duration
 import ExecutionContext.Implicits.global
@@ -33,14 +35,14 @@ class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model
       println("one solve cycle start")
 
       val columnFuture = future {
-        futureRun(model.columnNumber, model.horizonLine, fillColumn, Orientation.VERTICAL)
+        futureRun(model.columnNumber, model.horizonLine, fillColumn, VERTICAL)
       }
       columnFuture.onFailure{
         case e: Exception => e.printStackTrace()
       }
 
       val rowFuture = future {
-        futureRun(model.rowNumber, model.verticalLine, fillRow, Orientation.HORIZONTAL)
+        futureRun(model.rowNumber, model.verticalLine, fillRow, HORIZONTAL)
       }
       rowFuture.onFailure{
         case e: Exception => e.printStackTrace()
@@ -64,7 +66,7 @@ class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model
   }
 
   def futureRun(number: Int, metadata: Metadata, fillLine: (Int, Line) => List[Cell.Cell],
-                orientation: Orientation.Orientation) {
+                orientation: Orientation) {
 
     // todo Пробовать заполнять строку с обратной стороны
     (0 to number - 1).toList.sortBy(metadata(_).sum).reverse.par.foreach(v => {
@@ -78,7 +80,7 @@ class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = {
+  def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = {
     fitRemainder(metadata, currentData).get
   }
 
@@ -90,30 +92,30 @@ class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model
    * @param currentData текущее содержимое линии
    * @return Список линий, подходящих под указанные метаданные
    */
-  def fitRemainder(metadata: Array[Int], currentData: LineTrait): Option[List[Cell.Cell]] = {
+  def fitRemainder(metadata: Array[Int], currentData: LineTrait): Option[List[Cell]] = {
 
     if (metadata.isEmpty) {
       // Нету больше метаданных? Значит остаток строки пустой
-      if (currentData.forall(_ != Cell.FILLED)) return Option(List.fill[Cell.Cell](currentData.size)(Cell.CLEARED))
+      if (currentData.forall(_ != FILLED)) return Option(List.fill[Cell](currentData.size)(CLEARED))
       else return Option.empty // В случае противоречий говорим, что решения нет
     }
 
     val chunkLength = metadata.head
-    val chunk = List.fill[Cell.Cell](chunkLength)(Cell.FILLED)
+    val chunk = List.fill[Cell](chunkLength)(FILLED)
     val expectedLength = currentData.size
-    val separator = List(Cell.CLEARED)
+    val separator = List(CLEARED)
 
     if (expectedLength == chunkLength) {
       // Оставшаяся длина совпадает в оставшимся куском
       return Option(chunk)
     }
 
-    var result: Option[List[Cell.Cell]] = Option.empty
+    var result: Option[List[Cell]] = Option.empty
 
     for (offset <- 0 to expectedLength - chunkLength - metadata.tail.map(_ + 1).sum) {
 
       // Заполнение отступом + заполненный участок
-      var lineStart: List[Cell.Cell] = List.fill[Cell.Cell](offset)(Cell.CLEARED) ::: chunk
+      var lineStart: List[Cell] = List.fill[Cell](offset)(CLEARED) ::: chunk
 
       // Параметр для повтороного вызова метода
       var newCurrentData = currentData.drop(lineStart.size)

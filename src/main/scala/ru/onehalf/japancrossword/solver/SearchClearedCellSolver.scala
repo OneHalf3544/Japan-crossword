@@ -49,10 +49,10 @@ class SearchClearedCellSolver(model: JapanCrosswordModel) extends Solver(model) 
    * @param currentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
-  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
-    val stat: List[(Cell, Int)] = currentData.toList.foldLeft(List.empty[(Cell, Int)])(countCellTypes)
+  def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
+    val stat: List[(Cell, Int)] = countStat(currentData)
 
-    val indexes: List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
+    val indexes = indicesForStat(stat)
     var preResult = currentData.toList
 
     if (stat.filter(_._1 == FILLED).corresponds(metadata)((a, b) => a._2 == b)) {
@@ -101,15 +101,5 @@ class SearchClearedCellSolver(model: JapanCrosswordModel) extends Solver(model) 
       logger.fine("indexes " + indexes)
     }
     preResult
-  }
-
-  def countCellTypes(a: List[(Cell, Int)], cell: Cell): List[(Cell, Int)] = {
-    if (a.isEmpty) {
-      return List((cell, 1))
-    }
-    if (a.last._1 == cell) {
-      return a.init :+ (cell, a.last._2 + 1)
-    }
-    a :+ (cell, 1)
   }
 }

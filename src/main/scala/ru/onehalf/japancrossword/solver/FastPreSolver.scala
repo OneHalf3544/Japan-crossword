@@ -42,7 +42,7 @@ class FastPreSolver(model: JapanCrosswordModel) extends Solver(model) {
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
+  def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
     //println("fast presolver fillLine " + currentData.lineIndex + ", metadata " + metadata.mkString(" "))
 
     val length = metadata.sum + metadata.size - 1

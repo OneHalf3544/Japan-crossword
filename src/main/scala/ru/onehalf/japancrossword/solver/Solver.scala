@@ -22,7 +22,7 @@ abstract class Solver(model: JapanCrosswordModel) {
    * @param variant
    * @param line
    */
-  def addDataToModel(variant: List[Cell.Cell], line: Line) {
+  def addDataToModel(variant: List[Cell], line: Line) {
     0 to variant.size-1 filter (line(_) == Cell.NOT_KNOWN) foreach(i => line(i) = variant(i))
   }
 
@@ -46,9 +46,9 @@ abstract class Solver(model: JapanCrosswordModel) {
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
-   * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
+   * @return Предполагаемый вариант линии. Может содержать NOT_KNOWN значения
    */
-  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = {
+  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
     if (metadata.isEmpty) {
       return currentData.toList
     }
@@ -71,7 +71,7 @@ abstract class Solver(model: JapanCrosswordModel) {
   }
 
 
-  def divideToSublists(line: LineTrait, stat: List[(Cell.Cell, Int)]): List[LineTrait] = {
+  def divideToSublists(line: LineTrait, stat: List[(Cell, Int)]): List[LineTrait] = {
     val statIndicies = indicesForStat(stat)
     var hasFilledCell = false
 
@@ -91,23 +91,23 @@ abstract class Solver(model: JapanCrosswordModel) {
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
-   * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
+   * @return Предполагаемый вариант линии. Может содержать NOT_KNOWN значения
    */
-  def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell]
+  def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell]
 
   /**
    * Схлопывание строки в одну. Если значение в списках не совпадают,
-   * то в результате по соответсвующему индексу будет Cell.NOT_KNOWN.
+   * то в результате по соответсвующему индексу будет NOT_KNOWN.
    * В случае совпаднения значений, содержимое попадет в результирующий список
    * @param line1 Строка 1
    * @param line2 Строка 2
    * @return Результат объединения
    */
-  def reduceLines(line1: List[Cell.Cell], line2: List[Cell.Cell]): List[Cell.Cell] = {
+  def reduceLines(line1: List[Cell], line2: List[Cell]): List[Cell] = {
     assert(line1.size == line2.size, "lines: " + line1.size + ", " + line2.size)
     val lineLength = line1.size
 
-    val result = Array.fill[Cell.Cell](lineLength)(Cell.NOT_KNOWN)
+    val result = Array.fill[Cell](lineLength)(NOT_KNOWN)
 
     // Сохряняем в результат только совпадающие данные
     0 to lineLength -1 filter ((i) => line1(i) == line2(i)) foreach(i => result(i) = line2(i))
@@ -120,7 +120,7 @@ abstract class Solver(model: JapanCrosswordModel) {
    * @param supposeLine Предлагаемая линия (Может содержать NOT_KNOWN)
    * @return true, если вариант приемлим
    */
-  def compatibleToCurrentData(currentData: LineTrait, supposeLine: List[Cell.Cell]): Boolean = {
+  def compatibleToCurrentData(currentData: LineTrait, supposeLine: List[Cell]): Boolean = {
     compatibleToCurrentData(currentData.toList, supposeLine)
   }
 
@@ -130,10 +130,10 @@ abstract class Solver(model: JapanCrosswordModel) {
    * @param supposeLine Предлагаемая линия (Может содержать NOT_KNOWN)
    * @return true, если вариант приемлим
    */
-  def compatibleToCurrentData(currentData: List[Cell.Cell], supposeLine: List[Cell.Cell]): Boolean = {
+  def compatibleToCurrentData(currentData: List[Cell], supposeLine: List[Cell]): Boolean = {
 
     def cellIsCompatible(i: Int): Boolean = {
-      currentData(i) == supposeLine(i) || currentData(i) == Cell.NOT_KNOWN || supposeLine(i) == Cell.NOT_KNOWN
+      currentData(i) == supposeLine(i) || currentData(i) == NOT_KNOWN || supposeLine(i) == NOT_KNOWN
     }
 
     assert(currentData.size == supposeLine.size)
@@ -145,7 +145,7 @@ abstract class Solver(model: JapanCrosswordModel) {
    * @param currentData
    * @return
    */
-  def countStat(currentData: List[Cell.Cell]): List[(Cell.Cell, Int)] = {
+  def countStat(currentData: List[Cell]): List[(Cell, Int)] = {
     currentData.toList.foldLeft(List.empty[(Cell, Int)])(countCellTypes)
   }
 
@@ -154,7 +154,7 @@ abstract class Solver(model: JapanCrosswordModel) {
    * @param currentData
    * @return
    */
-  def countStat(currentData: LineTrait): List[(Cell.Cell, Int)] = {
+  def countStat(currentData: LineTrait): List[(Cell, Int)] = {
     countStat(currentData.toList)
   }
 
@@ -168,6 +168,6 @@ abstract class Solver(model: JapanCrosswordModel) {
     a :+ (cell, 1)
   }
 
-  def indicesForStat(stat: List[(Cell.Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
+  def indicesForStat(stat: List[(Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
 
 }

@@ -2,6 +2,7 @@ package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model.{LineTrait, Line, JapanCrosswordModel}
 import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.solver.Orientation._
 
 /**
  * <p/>
@@ -24,11 +25,11 @@ class FastPreSolver(model: JapanCrosswordModel) extends Solver(model) {
       oldUnresolvedCount = model.totalUnresolvedCount()
 
       for (i <- 0 to model.columnNumber - 1) {
-        val line = new Line(i, Orientation.VERTICAL, model)
+        val line = new Line(i, VERTICAL, model)
         addDataToModel(fillColumn(i, line), line)
       }
       for (i <- 0 to model.rowNumber - 1) {
-        val line = new Line(i, Orientation.HORIZONTAL, model)
+        val line = new Line(i, HORIZONTAL, model)
         addDataToModel(fillRow(i, line), line)
       }
       println("one pre slover cycle ended")

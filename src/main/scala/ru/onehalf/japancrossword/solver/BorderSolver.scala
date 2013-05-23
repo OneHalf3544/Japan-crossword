@@ -132,7 +132,6 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
       if(firstChunkLength < currentData.size) {
         currentData(firstChunkLength) = CLEARED
       }
-      // todo Пускать решение рекурсивно,
       return
     }
 

@@ -2,10 +2,6 @@ package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model._
 import ru.onehalf.japancrossword.model.Cell._
-import ru.onehalf.japancrossword.solver.Orientation._
-import concurrent._
-import duration.Duration
-import ExecutionContext.Implicits.global
 
 /**
  * Логика решения кроссворда перебором содержимого строк и столбцов.
@@ -18,62 +14,7 @@ import ExecutionContext.Implicits.global
  * <p/>
  * @author OneHalf
  */
-class VariantsEnumerationSolver(model: JapanCrosswordModel) extends Solver(model) {
-
-  def solve() {
-
-    /**
-     * Один цикл подбора вариантов
-     */
-    def oneSolveCycle() {
-
-      // todo рассинхронизировать циклы по столбцам/строкам.
-      // т.е. сейчас когда обход столбцов законцился, а строк еще нет,
-      // производится ожидание завершения подбора строк,
-      // вместо асинхронного запуска перебора столбцов заново
-
-      println("one solve cycle start")
-
-      val columnFuture = future {
-        futureRun(model.columnNumber, model.horizonLine, fillColumn, VERTICAL)
-      }
-      columnFuture.onFailure{
-        case e: Exception => e.printStackTrace()
-      }
-
-      val rowFuture = future {
-        futureRun(model.rowNumber, model.verticalLine, fillRow, HORIZONTAL)
-      }
-      rowFuture.onFailure{
-        case e: Exception => e.printStackTrace()
-      }
-
-      Await.ready(columnFuture, Duration.Inf)
-      Await.ready(rowFuture,    Duration.Inf)
-
-      println("one solve cycle ended")
-    }
-
-    var oldUnresolvedCount = 0
-
-    // Подбираем варианты, пока решение не зайдет в тупик, либо не завершится успехом
-    do {
-      oldUnresolvedCount = model.totalUnresolvedCount()
-      oneSolveCycle()
-    } while (!model.isSolved && oldUnresolvedCount != model.totalUnresolvedCount)
-
-    println("solve ended")
-  }
-
-  def futureRun(number: Int, metadata: Metadata, fillLine: (Int, Line) => List[Cell.Cell],
-                orientation: Orientation) {
-
-    // todo Пробовать заполнять строку с обратной стороны
-    (0 to number - 1).toList.sortBy(metadata(_).sum).reverse.par.foreach(v => {
-      val line = new Line(v, orientation, model)
-      addDataToModel(fillLine(v, line), line)
-    })
-  }
+object VariantsEnumerationSolver extends LineSolver {
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)

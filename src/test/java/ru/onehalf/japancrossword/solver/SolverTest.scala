@@ -1,8 +1,9 @@
 package ru.onehalf.japancrossword.solver
 
 import org.scalatest.FunSuite
+import queue.SolveLineQueue
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{LineTrait, Cell, Line, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Cell, Line, JapanCrosswordModel}
 
 /**
  * <p/>
@@ -27,10 +28,7 @@ class SolverTest extends FunSuite {
     line(7) = Cell.CLEARED
     line(9) = Cell.FILLED
 
-    val solver = new Solver(model) {
-      def solve() {}
-      def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = Nil
-    }
+    val solver = new SolveLineQueue(model)
 
     val result = solver.divideToSublists(line, solver.countStat(line))
 
@@ -55,10 +53,7 @@ class SolverTest extends FunSuite {
     line(7) = Cell.CLEARED
     line(9) = Cell.FILLED
 
-    val solver = new Solver(model) {
-      def solve() {}
-      def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = Nil
-    }
+    val solver = new SolveLineQueue(model)
 
     val result = solver.divideToSublists(line, solver.countStat(line))
 
@@ -83,10 +78,7 @@ class SolverTest extends FunSuite {
     line(8) = Cell.CLEARED
     line(9) = Cell.CLEARED
 
-    val solver = new Solver(model) {
-      def solve() {}
-      def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = Nil
-    }
+    val solver = new SolveLineQueue(model)
 
     val result = solver.divideToSublists(line, solver.countStat(line))
 

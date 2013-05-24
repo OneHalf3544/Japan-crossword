@@ -26,7 +26,7 @@ class BorderSolverTest extends FlatSpec with ShouldMatchers {
     line(1) = Cell.FILLED // Закрашиваем две клетки:          _X_______X
     line(9) = Cell.FILLED // После подбора строки должно быть _X_...XXXX
 
-    val result = new VariantsEnumerationSolver(model).fitRemainder(metadata(0), line).get
+    val result = VariantsEnumerationSolver.fitRemainder(metadata(0), line).get
 
     assert(result === List(
       Cell.NOT_KNOWN, Cell.FILLED, Cell.NOT_KNOWN, Cell.CLEARED, Cell.CLEARED,

@@ -1,9 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{LineTrait, JapanCrosswordModel, Line}
+import ru.onehalf.japancrossword.model.LineTrait
 import ru.onehalf.japancrossword.model.Cell._
-import concurrent._
-import ExecutionContext.Implicits.global
 
 /**
  * Определение состояния ячеек ближайших к краям.
@@ -19,33 +17,7 @@ import ExecutionContext.Implicits.global
  * <p/>
  * @author OneHalf
  */
-class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
-  /**
-   * Запуск решения кроссворда
-   */
-  def solve() {
-    println("border solve start")
-
-    future {
-      do {
-        (0 to model.rowNumber - 1).foreach(v => {
-          val line = new Line(v, Orientation.HORIZONTAL, model)
-          fillRow(v, line)
-          fillLine(model.verticalLine(v).reverse, line.reverse())
-        })
-        (0 to model.columnNumber - 1).foreach(v => {
-          val line = new Line(v, Orientation.VERTICAL, model)
-          fillColumn(v, line)
-          fillLine(model.horizonLine(v).reverse, line.reverse())
-        })
-        Thread.sleep(100)
-        // todo сделать нормальное условие выхода
-      } while (!model.isSolved)
-      println("border solve end")
-    }.onFailure{
-      case e: Exception => println(e.printStackTrace())
-    }
-  }
+object BorderSolver extends LineSolver {
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
@@ -90,7 +62,7 @@ class BorderSolver(model: JapanCrosswordModel) extends Solver(model) {
         return
 
       currentData(firstChunkLength) = CLEARED
-      fillLine(metadata.tail, currentData.drop(firstChunkLength))
+      fillSubLine(metadata.tail, currentData.drop(firstChunkLength))
       return
     }
 

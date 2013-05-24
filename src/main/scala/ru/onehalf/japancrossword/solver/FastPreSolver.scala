@@ -1,8 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{LineTrait, Line, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.LineTrait
 import ru.onehalf.japancrossword.model.Cell._
-import ru.onehalf.japancrossword.solver.Orientation._
 
 /**
  * <p/>
@@ -11,32 +10,8 @@ import ru.onehalf.japancrossword.solver.Orientation._
  * <p/>
  * @author OneHalf
  */
-class FastPreSolver(model: JapanCrosswordModel) extends Solver(model) {
+object FastPreSolver extends LineSolver {
   // todo Использовать не только при старте решения
-
-  /**
-   * Запуск решения кроссворда
-   */
-  def solve() {
-    println("fast pre solver started")
-
-    var oldUnresolvedCount: Int = Int.MaxValue
-    do {
-      oldUnresolvedCount = model.totalUnresolvedCount()
-
-      for (i <- 0 to model.columnNumber - 1) {
-        val line = new Line(i, VERTICAL, model)
-        addDataToModel(fillColumn(i, line), line)
-      }
-      for (i <- 0 to model.rowNumber - 1) {
-        val line = new Line(i, HORIZONTAL, model)
-        addDataToModel(fillRow(i, line), line)
-      }
-      println("one pre slover cycle ended")
-    } while (!model.isSolved && oldUnresolvedCount != model.totalUnresolvedCount)
-
-    println("fast pre solver ended")
-  }
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
@@ -44,7 +19,6 @@ class FastPreSolver(model: JapanCrosswordModel) extends Solver(model) {
    * @param currentData Текущие данные
    */
   def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
-    //println("fast presolver fillLine " + currentData.lineIndex + ", metadata " + metadata.mkString(" "))
 
     val length = metadata.sum + metadata.size - 1
     assert(currentData.size >= length, "wrong length: " + length)

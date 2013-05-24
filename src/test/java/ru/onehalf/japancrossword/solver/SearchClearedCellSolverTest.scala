@@ -24,7 +24,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
     val line = new Line(0, Orientation.HORIZONTAL, model)
     3 to 6 foreach (line(_) = Cell.FILLED)
 
-    val result = new SearchClearedCellSolver(model).fillLine(metadata(0), line)
+    val result = SearchClearedCellSolver.fillSubLine(metadata(0), line)
 
     assert(result === List(
       Cell.NOT_KNOWN, Cell.NOT_KNOWN,
@@ -44,7 +44,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
     val line = new Line(0, Orientation.HORIZONTAL, model)
     line(4) = Cell.FILLED
 
-    val result = new SearchClearedCellSolver(model).fillLine(metadata(0), line)
+    val result = SearchClearedCellSolver.fillSubLine(metadata(0), line)
 
     assert(result === List(
       CLEARED, CLEARED, CLEARED,
@@ -64,7 +64,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
     line(4) = Cell.FILLED
     line(5) = Cell.FILLED
 
-    val result = new SearchClearedCellSolver(model).fillLine(metadata(0), line)
+    val result = SearchClearedCellSolver.fillSubLine(metadata(0), line)
 
     assert(result === List(
       CLEARED,
@@ -85,7 +85,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
     line(2) = Cell.CLEARED
     line(5) = Cell.CLEARED
 
-    val result = new SearchClearedCellSolver(model).fillLine(metadata(0), line)
+    val result = SearchClearedCellSolver.fillSubLine(metadata(0), line)
 
     assert(result === List(
       CLEARED, CLEARED, CLEARED, CLEARED, CLEARED, CLEARED,

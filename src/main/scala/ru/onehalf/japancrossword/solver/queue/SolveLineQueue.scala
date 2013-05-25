@@ -34,7 +34,7 @@ class SolveLineQueue(model: JapanCrosswordModel) extends LineSolver with Actor {
 
         case SolveQueueTask(metadata, line, solver) => {
           if (!splitLine(metadata, line, solver)) {
-            addDataToModel(fillLine(metadata, line, solver), line)
+            addDataToModel(solver.fillLine(metadata, line), line)
             if (!line.forall(_ != NOT_KNOWN))
               this ! new SolveQueueTask(metadata, line, solver)
           }
@@ -66,17 +66,6 @@ class SolveLineQueue(model: JapanCrosswordModel) extends LineSolver with Actor {
       this ! new SolveQueueTask(metadata.reverse, line.reverse(), s)
     })
   }
-
-  /**
-   * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
-   * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
-   * @param currentData Текущие данные
-   * @return Предполагаемый вариант линии. Может содержать NOT_KNOWN значения
-   */
-  def fillLine(metadata: Array[Int], currentData: LineTrait, solverType: LineSolver): List[Cell.Cell] = {
-    solverType.fillLine(metadata, currentData)
-  }
-
 
   // todo Переделать иерархию классов, убрать это переопределение
   def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = null

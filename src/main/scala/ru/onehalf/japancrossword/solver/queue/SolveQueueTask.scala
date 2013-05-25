@@ -1,6 +1,7 @@
 package ru.onehalf.japancrossword.solver.queue
 
 import ru.onehalf.japancrossword.model.LineTrait
+import ru.onehalf.japancrossword.solver.LineSolver
 
 /**
  * <p/>
@@ -9,4 +10,4 @@ import ru.onehalf.japancrossword.model.LineTrait
  * <p/>
  * @author OneHalf
  */
-case class SolveQueueTask(metadata: Array[Int], line: LineTrait)
+case class SolveQueueTask(metadata: Array[Int], line: LineTrait, solverType: LineSolver )

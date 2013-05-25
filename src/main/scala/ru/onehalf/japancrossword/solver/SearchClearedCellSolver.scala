@@ -22,7 +22,7 @@ object SearchClearedCellSolver extends LineSolver {
    * @param currentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
-  def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
+  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
     val stat: List[(Cell, Int)] = countStat(currentData)
 
     val indexes = indicesForStat(stat)

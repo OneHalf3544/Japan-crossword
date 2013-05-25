@@ -118,7 +118,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers {
     line(7) = FILLED
 
 
-    val result = VariantsEnumerationSolver.fillSubLine(metadata(0), line)
+    val result = VariantsEnumerationSolver.fillLine(metadata(0), line)
 
     assert(result === List(
       NOT_KNOWN, FILLED, FILLED, FILLED, NOT_KNOWN, CLEARED, NOT_KNOWN, FILLED, FILLED, FILLED, NOT_KNOWN))

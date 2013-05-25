@@ -21,21 +21,23 @@ class SolveLineQueue(model: JapanCrosswordModel) extends LineSolver with Actor {
   // систему приоритетов и/млм учитывать, была ли линия изменена после последнего подбора
   // Полностью подобранные линии удалять из очереди.
   // Для линий, подобранныхлиных на концах, можно возвращать в очередь линии меньшей длины.
-  // При возможности разделить линию на части,  добавлять в очередь две задачи,
+  // При возможности разделить линию на части,  добавлять в очередь несколько задач,
   // по одной на каждую часть линии
 
 
   def act() {
-    receive {
-      case SolveQueueTask(metadata, line) if metadata.isEmpty => {
-        addDataToModel(List.fill(line.size)(Cell.CLEARED), line)
-      }
-      case SolveQueueTask(Array(chunkLength), line) =>
-        addDataToModel(fillSubLine(Array(chunkLength), line), line)
+    while (!model.isSolved) {
+      receive {
+        case SolveQueueTask(metadata, line, _) if metadata.isEmpty => {
+          addDataToModel(List.fill(line.size)(Cell.CLEARED), line)
+        }
 
-      case SolveQueueTask(metadata, line) => {
-        if (!splitLine(metadata, line)) {
-          addDataToModel(fillSubLine(metadata, line), line)
+        case SolveQueueTask(metadata, line, solver) => {
+          if (!splitLine(metadata, line, solver)) {
+            addDataToModel(fillLine(metadata, line, solver), line)
+            if (!line.forall(_ != NOT_KNOWN))
+              this ! new SolveQueueTask(metadata, line, solver)
+          }
         }
       }
     }
@@ -45,20 +47,24 @@ class SolveLineQueue(model: JapanCrosswordModel) extends LineSolver with Actor {
    * Запуск решения кроссворда
    */
   def solve() {
-    act()
+    start()
 
     // Добавляем все линии в очредь
     (0 to model.columnNumber - 1).toList.sortBy(model.horizonLine(_).size).par.foreach(v => {
       val line = new Line(v, Orientation.VERTICAL, model)
-      this ! new SolveQueueTask(model.horizonLine(v), line)
-      this ! new SolveQueueTask(model.horizonLine(v).reverse, line.reverse())
+      enqueueLineForAllSolver(line, model.horizonLine(v))
     })
     (0 to model.rowNumber - 1).toList.sortBy(model.verticalLine(_).size).par.foreach(v => {
       val line = new Line(v, Orientation.HORIZONTAL, model)
-      this ! new SolveQueueTask(model.verticalLine(v), line)
-      this ! new SolveQueueTask(model.verticalLine(v).reverse, line.reverse())
+      enqueueLineForAllSolver(line, model.verticalLine(v))
     })
+  }
 
+  def enqueueLineForAllSolver(line: Line, metadata: Array[Int]) {
+    List(FastPreSolver, BorderSolver, SearchClearedCellSolver, VariantsEnumerationSolver).foreach(s => {
+      this ! new SolveQueueTask(metadata, line, s)
+      this ! new SolveQueueTask(metadata.reverse, line.reverse(), s)
+    })
   }
 
   /**
@@ -67,12 +73,13 @@ class SolveLineQueue(model: JapanCrosswordModel) extends LineSolver with Actor {
    * @param currentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать NOT_KNOWN значения
    */
-  def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = {
-    FastPreSolver
-    BorderSolver.fillSubLine(metadata, currentData)
-    SearchClearedCellSolver.fillSubLine(metadata, currentData)
-    VariantsEnumerationSolver.fillSubLine(metadata, currentData)
+  def fillLine(metadata: Array[Int], currentData: LineTrait, solverType: LineSolver): List[Cell.Cell] = {
+    solverType.fillLine(metadata, currentData)
   }
+
+
+  // todo Переделать иерархию классов, убрать это переопределение
+  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = null
 
   /**
    * Копируем данные из массива в модель
@@ -87,9 +94,9 @@ class SolveLineQueue(model: JapanCrosswordModel) extends LineSolver with Actor {
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
-   * @return Предполагаемый вариант линии. Может содержать NOT_KNOWN значения
+   * @return true, если линия разделена
    */
-  def splitLine(metadata: Array[Int], currentData: LineTrait): Boolean = {
+  def splitLine(metadata: Array[Int], currentData: LineTrait, solver: LineSolver): Boolean = {
 
     if (countStat(currentData.toList.filterNot(_ == NOT_KNOWN)).count(_._1 == FILLED) < metadata.size) {
       return false
@@ -97,7 +104,7 @@ class SolveLineQueue(model: JapanCrosswordModel) extends LineSolver with Actor {
 
     val sublists = divideToSublists(currentData, countStat(currentData))
     assert(sublists.size == metadata.size, "size not equals: %s and %s".format(sublists, metadata.mkString("[", ",", "]")))
-    sublists.indices map (v => this ! new SolveQueueTask(Array(metadata(v)), sublists(v)))
+    sublists.indices map (v => this ! new SolveQueueTask(Array(metadata(v)), sublists(v), solver))
 
     true
   }

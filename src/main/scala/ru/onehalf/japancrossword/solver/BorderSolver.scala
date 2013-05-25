@@ -25,7 +25,7 @@ object BorderSolver extends LineSolver {
    * @param oldCurrentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
-  def fillSubLine(metadata: Array[Int], oldCurrentData: LineTrait): List[Cell] = {
+  def fillLine(metadata: Array[Int], oldCurrentData: LineTrait): List[Cell] = {
     fillLine2(metadata, oldCurrentData)
     oldCurrentData.toList
   }
@@ -62,7 +62,7 @@ object BorderSolver extends LineSolver {
         return
 
       currentData(firstChunkLength) = CLEARED
-      fillSubLine(metadata.tail, currentData.drop(firstChunkLength))
+      fillLine(metadata.tail, currentData.drop(firstChunkLength))
       return
     }
 

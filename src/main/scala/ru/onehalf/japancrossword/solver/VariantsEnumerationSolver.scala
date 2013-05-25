@@ -21,7 +21,7 @@ object VariantsEnumerationSolver extends LineSolver {
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = {
+  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell] = {
     fitRemainder(metadata, currentData).get
   }
 

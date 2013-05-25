@@ -1,7 +1,8 @@
 package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model.Cell._
-import ru.onehalf.japancrossword.model.LineTrait
+import ru.onehalf.japancrossword.model.{Cell, LineTrait}
+import ru.onehalf.japancrossword.model.Cell.Cell
 
 /**
  * <p/>
@@ -10,7 +11,9 @@ import ru.onehalf.japancrossword.model.LineTrait
  * <p/>
  * @author OneHalf
  */
-class LineSolver {
+trait LineSolver {
+
+  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell]
 
   def indicesForStat(stat: List[(Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
 

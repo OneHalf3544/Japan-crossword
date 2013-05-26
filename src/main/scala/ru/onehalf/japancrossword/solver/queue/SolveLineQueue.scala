@@ -79,7 +79,10 @@ class SolveLineQueue(model: JapanCrosswordModel) {
   }
 
   def enqueueLineForAllSolver(line: LineImpl, metadata: Array[Int]) {
-    List(FastPreSolver, BorderSolver, SearchClearedCellSolver, VariantsEnumerationSolver).foreach(s => {
+    this ! new SolveQueueTask(metadata, line, FastPreSolver, Int.MaxValue)
+    this ! new SolveQueueTask(metadata, line, SearchClearedCellSolver, Int.MaxValue)
+
+    List(BorderSolver, VariantsEnumerationSolver).foreach(s => {
       this ! new SolveQueueTask(metadata, line, s, Int.MaxValue)
       this ! new SolveQueueTask(metadata.reverse, line.reverse(), s, Int.MaxValue)
     })

@@ -33,23 +33,11 @@ object BorderSolver extends LineSolver {
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
-   * @param oldCurrentData Текущие данные
+   * @param currentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
   // todo Проверять соответствие модели, для обнаружения некорректных кросвордов
-  def fillLine2(metadata: Array[Int], oldCurrentData: Line) {
-    if (metadata.isEmpty) {
-      (0 to oldCurrentData.size - 1).foreach(oldCurrentData(_) = CLEARED)
-      return
-    }
-
-    val begunNotClearedIndex = (0 to oldCurrentData.size-1).filterNot(oldCurrentData(_) == CLEARED).headOption
-    if (begunNotClearedIndex.isEmpty) {
-      // Строка уже решена
-      return
-    }
-
-    val currentData = oldCurrentData.drop(begunNotClearedIndex.get)
+  def fillLine2(metadata: Array[Int], currentData: Line) {
 
     val firstChunkLength = metadata(0)
     if (firstChunkLength > currentData.size) {
@@ -94,7 +82,6 @@ object BorderSolver extends LineSolver {
       return
     }
 
-    // Заполняем кусочек линии, который перекрывается при любом варианте
     if (chunkStartIndex.get == 0) {
       // Здесь мы сразу знаем кусочек целиком + завершающий индекс
       (0 to firstChunkLength-1)

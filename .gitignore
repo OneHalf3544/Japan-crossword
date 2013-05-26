@@ -1,1 +1,6 @@
 workspace.xml
+/target/
+/project/
+/.idea/
+*.iml
+/lib/

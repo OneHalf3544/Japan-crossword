@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.LineTrait
+import ru.onehalf.japancrossword.model.Line
 import ru.onehalf.japancrossword.model.Cell._
 
 /**
@@ -25,7 +25,7 @@ object BorderSolver extends LineSolver {
    * @param oldCurrentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
-  def fillLine(metadata: Array[Int], oldCurrentData: LineTrait): List[Cell] = {
+  def fillLine(metadata: Array[Int], oldCurrentData: Line): List[Cell] = {
     fillLine2(metadata, oldCurrentData)
     oldCurrentData.toList
   }
@@ -37,7 +37,7 @@ object BorderSolver extends LineSolver {
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
   // todo Проверять соответствие модели, для обнаружения некорректных кросвордов
-  def fillLine2(metadata: Array[Int], oldCurrentData: LineTrait) {
+  def fillLine2(metadata: Array[Int], oldCurrentData: Line) {
     if (metadata.isEmpty) {
       (0 to oldCurrentData.size - 1).foreach(oldCurrentData(_) = CLEARED)
       return

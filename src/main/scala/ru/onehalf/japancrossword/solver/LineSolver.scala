@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model.Cell._
-import ru.onehalf.japancrossword.model.{Cell, LineTrait}
+import ru.onehalf.japancrossword.model.{Cell, Line}
 import ru.onehalf.japancrossword.model.Cell.Cell
 
 /**
@@ -13,7 +13,7 @@ import ru.onehalf.japancrossword.model.Cell.Cell
  */
 trait LineSolver {
 
-  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell.Cell]
+  def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell]
 
   def indicesForStat(stat: List[(Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
 
@@ -42,7 +42,7 @@ trait LineSolver {
    * @param supposeLine Предлагаемая линия (Может содержать NOT_KNOWN)
    * @return true, если вариант приемлим
    */
-  def compatibleToCurrentData(currentData: LineTrait, supposeLine: List[Cell]): Boolean = {
+  def compatibleToCurrentData(currentData: Line, supposeLine: List[Cell]): Boolean = {
     compatibleToCurrentData(currentData.toList, supposeLine)
   }
 
@@ -76,7 +76,7 @@ trait LineSolver {
    * @param currentData
    * @return
    */
-  def countStat(currentData: LineTrait): List[(Cell, Int)] = {
+  def countStat(currentData: Line): List[(Cell, Int)] = {
     countStat(currentData.toList)
   }
 
@@ -89,4 +89,6 @@ trait LineSolver {
     }
     a :+ (cell, 1)
   }
+
+  override def toString = getClass.getSimpleName
 }

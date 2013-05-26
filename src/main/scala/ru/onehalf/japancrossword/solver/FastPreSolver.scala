@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.LineTrait
+import ru.onehalf.japancrossword.model.Line
 import ru.onehalf.japancrossword.model.Cell._
 
 /**
@@ -11,14 +11,13 @@ import ru.onehalf.japancrossword.model.Cell._
  * @author OneHalf
  */
 object FastPreSolver extends LineSolver {
-  // todo Использовать не только при старте решения
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
+  def fillLine(metadata: Array[Int], currentData: Line): List[Cell] = {
 
     val length = metadata.sum + metadata.size - 1
     assert(currentData.size >= length, "wrong length: " + length)

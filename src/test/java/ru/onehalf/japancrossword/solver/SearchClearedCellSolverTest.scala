@@ -2,7 +2,7 @@ package ru.onehalf.japancrossword.solver
 
 import org.scalatest.FunSuite
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{Cell, Line, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Cell, LineImpl, JapanCrosswordModel}
 import ru.onehalf.japancrossword.model.Cell._
 
 /**
@@ -21,7 +21,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "1, 0, 0, 1, 1, 1, 1, 0, 0, 1"),  // 10 cells
       metadata)
 
-    val line = new Line(0, Orientation.HORIZONTAL, model)
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
     3 to 6 foreach (line(_) = Cell.FILLED)
 
     val result = SearchClearedCellSolver.fillLine(metadata(0), line)
@@ -41,7 +41,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "0, 0, 0, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
       metadata)
 
-    val line = new Line(0, Orientation.HORIZONTAL, model)
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
     line(4) = Cell.FILLED
 
     val result = SearchClearedCellSolver.fillLine(metadata(0), line)
@@ -59,7 +59,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "0, 1, 0, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
       metadata)
 
-    val line = new Line(0, Orientation.HORIZONTAL, model)
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
     line(1) = Cell.FILLED
     line(4) = Cell.FILLED
     line(5) = Cell.FILLED
@@ -81,7 +81,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "0, 0, 0, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
       metadata)
 
-    val line = new Line(0, Orientation.HORIZONTAL, model)
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
     line(2) = Cell.CLEARED
     line(5) = Cell.CLEARED
 

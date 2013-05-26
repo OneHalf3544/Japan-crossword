@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.LineTrait
+import ru.onehalf.japancrossword.model.Line
 import ru.onehalf.japancrossword.model.Cell._
 
 /**
@@ -19,7 +19,7 @@ abstract class Solver {
    * @param currentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать NOT_KNOWN значения
    */
-  def fillSubLine(metadata: Array[Int], currentData: LineTrait): List[Cell]
+  def fillSubLine(metadata: Array[Int], currentData: Line): List[Cell]
 
 
 

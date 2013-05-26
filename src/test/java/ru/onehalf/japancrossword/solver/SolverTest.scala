@@ -3,7 +3,7 @@ package ru.onehalf.japancrossword.solver
 import org.scalatest.FunSuite
 import queue.SolveLineQueue
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{Cell, Line, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Cell, LineImpl, JapanCrosswordModel}
 
 /**
  * <p/>
@@ -21,21 +21,21 @@ class SolverTest extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "1, 0, 0, 1, 1, 1, 1, 0, 0, 1"),  // 10 cells
       metadata)
 
-    val line = new Line(0, Orientation.HORIZONTAL, model)
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
     line(0) = Cell.FILLED
     line(2) = Cell.CLEARED
     line(5) = Cell.FILLED
     line(7) = Cell.CLEARED
     line(9) = Cell.FILLED
 
-    val solver = new SolveLineQueue(model)
+    val splitter = new SolveLineQueue(model).splitter
 
-    val result = solver.divideToSublists(line, solver.countStat(line))
+    val result = splitter.divideToSublists(line, splitter.countStat(line))
 
     assert(result === List(
-      new Line(0, Orientation.HORIZONTAL, model, 0, 2),
-      new Line(0, Orientation.HORIZONTAL, model, 2, 5),
-      new Line(0, Orientation.HORIZONTAL, model, 7, 3)))
+      new LineImpl(0, Orientation.HORIZONTAL, model, 0, 2),
+      new LineImpl(0, Orientation.HORIZONTAL, model, 2, 5),
+      new LineImpl(0, Orientation.HORIZONTAL, model, 7, 3)))
 
   }
 
@@ -46,20 +46,20 @@ class SolverTest extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "0, 0, 0, 1, 1, 1, 1, 0, 0, 1"),  // 10 cells
       metadata)
 
-    val line = new Line(0, Orientation.HORIZONTAL, model)
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
     line(0) = Cell.CLEARED
     line(2) = Cell.CLEARED
     line(5) = Cell.FILLED
     line(7) = Cell.CLEARED
     line(9) = Cell.FILLED
 
-    val solver = new SolveLineQueue(model)
+    val solver = new SolveLineQueue(model).splitter
 
     val result = solver.divideToSublists(line, solver.countStat(line))
 
     assert(result === List(
-      new Line(0, Orientation.HORIZONTAL, model, 0, 7),
-      new Line(0, Orientation.HORIZONTAL, model, 7, 3)))
+      new LineImpl(0, Orientation.HORIZONTAL, model, 0, 7),
+      new LineImpl(0, Orientation.HORIZONTAL, model, 7, 3)))
 
   }
 
@@ -70,7 +70,7 @@ class SolverTest extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
       metadata)
 
-    val line = new Line(0, Orientation.HORIZONTAL, model)
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
     line(1) = Cell.FILLED
     line(3) = Cell.CLEARED
     line(5) = Cell.FILLED
@@ -78,13 +78,13 @@ class SolverTest extends FunSuite {
     line(8) = Cell.CLEARED
     line(9) = Cell.CLEARED
 
-    val solver = new SolveLineQueue(model)
+    val solver = new SolveLineQueue(model).splitter
 
     val result = solver.divideToSublists(line, solver.countStat(line))
 
     assert(result === List(
-      new Line(0, Orientation.HORIZONTAL, model, 0, 3),
-      new Line(0, Orientation.HORIZONTAL, model, 3, 7)))
+      new LineImpl(0, Orientation.HORIZONTAL, model, 0, 3),
+      new LineImpl(0, Orientation.HORIZONTAL, model, 3, 7)))
 
   }
 

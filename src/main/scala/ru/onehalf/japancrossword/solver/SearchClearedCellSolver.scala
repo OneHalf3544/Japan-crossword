@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.LineTrait
+import ru.onehalf.japancrossword.model.Line
 import ru.onehalf.japancrossword.model.Cell._
 import java.util.logging.Logger
 
@@ -22,7 +22,7 @@ object SearchClearedCellSolver extends LineSolver {
    * @param currentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
-  def fillLine(metadata: Array[Int], currentData: LineTrait): List[Cell] = {
+  def fillLine(metadata: Array[Int], currentData: Line): List[Cell] = {
     val stat: List[(Cell, Int)] = countStat(currentData)
 
     val indexes = indicesForStat(stat)

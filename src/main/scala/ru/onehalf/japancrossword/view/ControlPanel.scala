@@ -15,7 +15,7 @@ import ru.onehalf.japancrossword.solver.queue.SolveLineQueue
  * <p/>
  * @author OneHalf
  */
-class ModelChoosePanel(models: Array[JapanCrosswordModel], modelChangeListener: ItemListener) extends JPanel(new FlowLayout()) {
+class ControlPanel(models: Array[JapanCrosswordModel], modelChangeListener: ItemListener) extends JPanel(new FlowLayout()) {
 
   val modelsCombobox: JComboBox[JapanCrosswordModel] = {
     val comboBox = new JComboBox(models)

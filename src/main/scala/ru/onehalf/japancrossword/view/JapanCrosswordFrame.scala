@@ -26,7 +26,10 @@ class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FO
 
   var crosswordPanel: JComponent = new JScrollPane(new JapanCrosswordPanel(models(0), CELL_SIZE, FONT_SIZE))
 
-  val modelChoosePanel = new ModelChoosePanel(models, new ItemListener(){
+  /**
+   * Панелька с кнопками и комбобоксом
+   */
+  val modelChoosePanel = new ControlPanel(models, new ItemListener(){
     def itemStateChanged(e: ItemEvent) {
       val model = e.getItem.asInstanceOf[JapanCrosswordModel]
       e.getStateChange match {

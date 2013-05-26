@@ -37,21 +37,27 @@ class SolveLineQueue(model: JapanCrosswordModel) {
 
       task match {
 
+        case SolveQueueTask(_, line, _, _) if line.notKnownCount == 0 => {
+          println("line solved");
+        }
+
         case SolveQueueTask(metadata, line, _, _) if metadata.isEmpty => {
           addDataToModel(List.fill(line.size)(CLEARED), line)
         }
-
+        /*
         // todo реализовать пропуск задач, котоорые не изменились с момента прошлого решения
         case SolveQueueTask(metadata, line, solver, remindingCells) if (line.notKnownCount == remindingCells) => {
           this ! new SolveQueueTask(metadata, line, solver, remindingCells)
         }
+        */
 
         case SolveQueueTask(metadata, line, solver, remindingCells) if (!splitter.splitLine(metadata, line, solver)) => {
           addDataToModel(solver.fillLine(metadata, line), line)
           if (!line.forall(_ != NOT_KNOWN))
             this ! new SolveQueueTask(metadata, line, solver)
         }
-        case _ => throw new IllegalStateException("unknown task")
+        // todo Сделать код более явным, не полагаться на side-эффккты
+        case _ => println("строка была поделена ранее")
       }
     }
     println("end: queue empty")

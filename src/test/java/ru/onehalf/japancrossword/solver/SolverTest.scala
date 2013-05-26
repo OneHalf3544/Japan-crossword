@@ -88,4 +88,22 @@ class SolverTest extends FunSuite {
 
   }
 
+  test("dropClearedCellsFromEnds") {
+    val metadata = parseLine(Orientation.VERTICAL, "2 2")
+    val model = new JapanCrosswordModel("test",
+      parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
+      metadata)
+
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    line(0) = Cell.CLEARED
+    line(8) = Cell.CLEARED
+    line(9) = Cell.CLEARED
+
+    val splitter = new SolveLineQueue(model).splitter
+
+    val result = splitter.dropClearedFromEnds(line)
+
+    assert(result === new LineImpl(0, Orientation.HORIZONTAL, model, 1, 7))
+  }
+
 }

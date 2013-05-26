@@ -21,5 +21,5 @@ case class SolveQueueTask(metadata: Array[Int], line: Line, solverType: LineSolv
   def this(metadata: Array[Int], line: Line, solverType: LineSolver) =
     this(metadata: Array[Int], line: Line, solverType: LineSolver, line.toList.count(_ == Cell.NOT_KNOWN))
 
-  override def toString = "Task[" + metadata.mkString(",") + ", NotKnownCount:  " + line.notKnownCount + ", solver:" + solverType + "]"
+  override def toString = "Task[" + metadata.mkString("[", ",", "]") + ", NotKnownCount:  " + line.notKnownCount + ", solver:" + solverType + "]"
 }

@@ -1,9 +1,9 @@
 package ru.onehalf.japancrossword.solver.queue
 
-import ru.onehalf.japancrossword.model.{LineImpl, Cell, Line, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{LineImpl, Line, JapanCrosswordModel}
 import ru.onehalf.japancrossword.solver._
 import ru.onehalf.japancrossword.model.Cell._
-import java.util.concurrent.{LinkedBlockingDeque, BlockingQueue}
+import java.util.concurrent.{LinkedBlockingQueue, BlockingQueue}
 
 /**
  * <p/>
@@ -24,24 +24,24 @@ class SolveLineQueue(model: JapanCrosswordModel) {
   // При возможности разделить линию на части,  добавлять в очередь несколько задач,
   // по одной на каждую часть линии
 
-  val queue: BlockingQueue[SolveQueueTask] =
-    new LinkedBlockingDeque[SolveQueueTask](model.columnNumber + model.rowNumber)
+  val queue: BlockingQueue[SolveQueueTask] = new LinkedBlockingQueue[SolveQueueTask]
 
   val splitter = new LineSplitter(this)
 
   def start() {
     println("queue started")
 
-    while (!model.isSolved && !Thread.currentThread().isInterrupted) {
+    while (!(model.isSolved || Thread.currentThread().isInterrupted)) {
       val task = queue.take()
       println("task: " + task)
 
       task match {
 
         case SolveQueueTask(metadata, line, _, _) if metadata.isEmpty => {
-          addDataToModel(List.fill(line.size)(Cell.CLEARED), line)
+          addDataToModel(List.fill(line.size)(CLEARED), line)
         }
 
+        // todo реализовать пропуск задач, котоорые не изменились с момента прошлого решения
         case SolveQueueTask(metadata, line, solver, remindingCells) if (line.notKnownCount == remindingCells) => {
           this ! new SolveQueueTask(metadata, line, solver, remindingCells)
         }
@@ -51,37 +51,37 @@ class SolveLineQueue(model: JapanCrosswordModel) {
           if (!line.forall(_ != NOT_KNOWN))
             this ! new SolveQueueTask(metadata, line, solver)
         }
-        case _ => throw new IllegalStateException()
+        case _ => throw new IllegalStateException("unknown task")
       }
     }
     println("end: queue empty")
   }
 
   def ! (task: SolveQueueTask) {
-    queue.put(task)
+    queue.add(task)
   }
 
   /**
    * Запуск решения кроссворда
    */
   def solve() {
-    start()
-
     // Добавляем все линии в очредь
-    (0 to model.columnNumber - 1).toList.sortBy(model.horizonLine(_).size).par.foreach(v => {
+    (0 to model.columnNumber - 1).toList.sortBy(model.horizonLine(_).size).foreach(v => {
       val line = new LineImpl(v, Orientation.VERTICAL, model)
       enqueueLineForAllSolver(line, model.horizonLine(v))
     })
-    (0 to model.rowNumber - 1).toList.sortBy(model.verticalLine(_).size).par.foreach(v => {
+    (0 to model.rowNumber - 1).toList.sortBy(model.verticalLine(_).size).foreach(v => {
       val line = new LineImpl(v, Orientation.HORIZONTAL, model)
       enqueueLineForAllSolver(line, model.verticalLine(v))
     })
+
+    start()
   }
 
   def enqueueLineForAllSolver(line: LineImpl, metadata: Array[Int]) {
     List(FastPreSolver, BorderSolver, SearchClearedCellSolver, VariantsEnumerationSolver).foreach(s => {
-      this ! new SolveQueueTask(metadata, line, s)
-      this ! new SolveQueueTask(metadata.reverse, line.reverse(), s)
+      this ! new SolveQueueTask(metadata, line, s, Int.MaxValue)
+      this ! new SolveQueueTask(metadata.reverse, line.reverse(), s, Int.MaxValue)
     })
   }
 
@@ -91,7 +91,7 @@ class SolveLineQueue(model: JapanCrosswordModel) {
    * @param line
    */
   def addDataToModel(variant: List[Cell], line: Line) {
-    0 to variant.size-1 filter (line(_) == Cell.NOT_KNOWN) foreach(i => line(i) = variant(i))
+    0 to variant.size-1 filter (i => line(i) == NOT_KNOWN && variant(i) != NOT_KNOWN) foreach(i => line(i) = variant(i))
   }
 
 }

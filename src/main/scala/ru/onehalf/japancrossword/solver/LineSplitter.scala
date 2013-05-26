@@ -16,7 +16,15 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
 
   def fillLine(metadata: Array[Int], currentData: Line): List[Cell] = {throw new UnsupportedOperationException}
 
-  def dropClearedFromEnds(lineTrait: Line)
+  def dropClearedFromEnds(line: Line): Line = {
+    if (line(0) == CLEARED) {
+      return dropClearedFromEnds(line.drop(1))
+    }
+    if (line.last == CLEARED) {
+      return dropClearedFromEnds(line.dropRight(1))
+    }
+    line
+  }
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
@@ -26,8 +34,12 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
    */
   def splitLine(metadata: Array[Int], currentData: Line, solver: LineSolver): Boolean = {
 
+    if (metadata.size == 1) {
+      return false
+    }
+
     if (currentData(0) == CLEARED || currentData.last == CLEARED) {
-      dropClearedFromEnds(currentData)
+      queue ! new SolveQueueTask(metadata, dropClearedFromEnds(currentData), solver)
       return true
     }
 

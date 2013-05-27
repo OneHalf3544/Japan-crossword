@@ -74,8 +74,8 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
 
           val m = metadata.splitAt(metadata.find(_ == maxLength).get)
 
-          queue ! new SolveQueueTask(m._1, line.dropRight(line.size - indexes(i)), solver)
-          queue ! new SolveQueueTask(m._2.drop(1), line.drop(indexes(i+1)), solver)
+          queue ! new SolveQueueTask(m._1.dropRight(1), line.dropRight(line.size - indexes(i)), solver)
+          queue ! new SolveQueueTask(m._2, line.drop(indexes(i+1)), solver)
 
           return true
         }

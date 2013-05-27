@@ -21,5 +21,23 @@ case class SolveQueueTask(metadata: Array[Int], line: Line, solverType: LineSolv
   def this(metadata: Array[Int], line: Line, solverType: LineSolver) =
     this(metadata: Array[Int], line: Line, solverType: LineSolver, line.toList.count(_ == Cell.NOT_KNOWN))
 
-  override def toString = "Task[" + metadata.mkString("[", ",", "]") + ", NotKnownCount:  " + line.notKnownCount + ", solver:" + solverType + "]"
+
+  override def equals(obj: Any): Boolean = {
+    if (!obj.isInstanceOf[SolveQueueTask]) {
+      return false
+    }
+    val o = obj.asInstanceOf[SolveQueueTask]
+    if (!metadata.corresponds(o.metadata)((a,b) => a == b)) {
+      println("metadata not equals")
+      return false
+    }
+    if (line != o.line) {
+      println("lines not equals")
+      return false
+    }
+    true
+  }
+
+  override def toString = "Task[%s, size:%d, NotKnownCount:%d, solver:%s]"
+    .format(metadata.mkString("[", ",", "]"), line.size, line.notKnownCount, solverType)
 }

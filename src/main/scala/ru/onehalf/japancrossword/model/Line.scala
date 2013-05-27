@@ -38,6 +38,8 @@ trait Line {
     toList.mkString("[", ", ", "]")
   }
 
+  override def hashCode(): Int = 0
+
   override def equals(obj: Any): Boolean = {
     if (!obj.isInstanceOf[Line]) {
       return false

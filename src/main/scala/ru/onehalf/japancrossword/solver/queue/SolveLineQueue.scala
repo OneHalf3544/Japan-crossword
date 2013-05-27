@@ -38,7 +38,7 @@ class SolveLineQueue(model: JapanCrosswordModel) {
       task match {
 
         case SolveQueueTask(_, line, _, _) if line.notKnownCount == 0 => {
-          println("line solved");
+          println("line solved")
         }
 
         case SolveQueueTask(metadata, line, _, _) if metadata.isEmpty => {
@@ -72,23 +72,23 @@ class SolveLineQueue(model: JapanCrosswordModel) {
    */
   def solve() {
     // Добавляем все линии в очредь
-    (0 to model.columnNumber - 1).toList.sortBy(model.horizonLine(_).size).foreach(v => {
-      val line = new LineImpl(v, Orientation.VERTICAL, model)
-      enqueueLineForAllSolver(line, model.horizonLine(v))
-    })
-    (0 to model.rowNumber - 1).toList.sortBy(model.verticalLine(_).size).foreach(v => {
-      val line = new LineImpl(v, Orientation.HORIZONTAL, model)
-      enqueueLineForAllSolver(line, model.verticalLine(v))
-    })
+    val list: List[(Line, Array[Int])] =
+      (0 to model.columnNumber - 1).map(v => (new LineImpl(v, Orientation.VERTICAL, model), model.horizonLine(v))).toList :::
+      (0 to model.rowNumber - 1).map(v => (new LineImpl(v, Orientation.HORIZONTAL, model), model.verticalLine(v))).toList
+
+    // Мешаем вертикальные и горизонтальные линии в одну коллекцию
+    list.sortBy(_._2.size).foreach(v => enqueueLineForAllSolver(v._1, v._2))
 
     start()
   }
 
-  def enqueueLineForAllSolver(line: LineImpl, metadata: Array[Int]) {
-    this ! new SolveQueueTask(metadata, line, FastPreSolver, Int.MaxValue)
-    this ! new SolveQueueTask(metadata, line, SearchClearedCellSolver, Int.MaxValue)
+  def enqueueLineForAllSolver(line: Line, metadata: Array[Int]) {
 
-    List(BorderSolver, VariantsEnumerationSolver).foreach(s => {
+    List(FastPreSolver, SearchClearedCellSolver, VariantsEnumerationSolver).foreach(s => {
+      this ! new SolveQueueTask(metadata, line, s, Int.MaxValue)
+    })
+
+    List(BorderSolver).foreach(s => {
       this ! new SolveQueueTask(metadata, line, s, Int.MaxValue)
       this ! new SolveQueueTask(metadata.reverse, line.reverse(), s, Int.MaxValue)
     })

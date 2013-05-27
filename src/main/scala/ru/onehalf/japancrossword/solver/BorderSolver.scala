@@ -50,7 +50,6 @@ object BorderSolver extends LineSolver {
         return
 
       currentData(firstChunkLength) = CLEARED
-      fillLine(metadata.tail, currentData.drop(firstChunkLength))
       return
     }
 

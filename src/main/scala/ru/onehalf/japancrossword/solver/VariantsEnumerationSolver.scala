@@ -51,6 +51,13 @@ object VariantsEnumerationSolver extends LineSolver {
       return Option(chunk)
     }
 
+    // Не пересчитывать заведомо неопределяемые ячейки
+    val maxSequenceLength = metadata.sum + metadata.size - 1
+    val stat = countStat(currentData)
+    if (stat.forall(_._1 != FILLED) && stat.exists(e => e._1 == NOT_KNOWN && e._2 >= 2 * maxSequenceLength )) {
+      return Option(currentData.toList)
+    }
+
     var result: Option[List[Cell]] = Option.empty
 
     for (offset <- 0 to expectedLength - chunkLength - metadata.tail.map(_ + 1).sum) {

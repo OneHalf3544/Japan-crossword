@@ -43,15 +43,45 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
       return true
     }
 
-    if (countStat(currentData.toList.filterNot(_ == NOT_KNOWN)).count(_._1 == FILLED) < metadata.size) {
+    if (countStat(currentData.toList.filterNot(_ == NOT_KNOWN)).count(_._1 == FILLED) >= metadata.size) {
+      val sublists = divideToSublists(currentData, countStat(currentData))
+      assert(sublists.size == metadata.size, "size not equals: %s and %s".format(sublists, metadata.mkString("[", ",", "]")))
+      sublists.indices map (v => queue ! new SolveQueueTask(Array(metadata(v)), sublists(v), solver))
+      return true
+    }
+
+    splitByFirstMaxLength(currentData, metadata, solver)
+  }
+
+
+  def splitByFirstMaxLength(line: Line, metadata: Array[Int], solver: LineSolver): Boolean = {
+    val stat = countStat(line)
+    val indexes = indicesForStat(stat)
+
+    def isClearedAt(i: Int): Boolean = {
+      (!stat.isDefinedAt(i) || stat(i)._1 == CLEARED)
+    }
+
+    val maxLength = metadata.max
+
+    if (metadata.count(_ == maxLength) != stat.count(_._1 == FILLED)) {
       return false
     }
 
-    val sublists = divideToSublists(currentData, countStat(currentData))
-    assert(sublists.size == metadata.size, "size not equals: %s and %s".format(sublists, metadata.mkString("[", ",", "]")))
-    sublists.indices map (v => queue ! new SolveQueueTask(Array(metadata(v)), sublists(v), solver))
+    for (i <- stat.indices) {
+      if (stat(i)._1 == FILLED && stat(i)._2 == metadata.max) {
+        if (isClearedAt(i - 1) && isClearedAt(i + 1)) {
 
-    true
+          val m = metadata.splitAt(metadata.find(_ == maxLength).get)
+
+          queue ! new SolveQueueTask(m._1, line.dropRight(line.size - indexes(i)), solver)
+          queue ! new SolveQueueTask(m._2.drop(1), line.drop(indexes(i+1)), solver)
+
+          return true
+        }
+      }
+    }
+    false
   }
 
   def divideToSublists(line: Line, stat: List[(Cell, Int)]): List[Line] = {

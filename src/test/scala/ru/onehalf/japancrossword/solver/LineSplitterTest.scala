@@ -125,4 +125,23 @@ class LineSplitterTest extends FunSuite {
     assert(solver.queue.take() === new SolveQueueTask(Array(1), new LineImpl(0, Orientation.HORIZONTAL, model, 0, 4), BorderSolver))
     assert(solver.queue.take() === new SolveQueueTask(Array(1), new LineImpl(0, Orientation.HORIZONTAL, model, 6, 4), BorderSolver))
   }
+
+  test("drop chanks from ends") {
+    val metadata = parseLine(Orientation.VERTICAL, "3 2 1")
+    val model = new JapanCrosswordModel("test",
+      parseLine(Orientation.HORIZONTAL, "1, 1, 1, 0, 1, 1, 0, 1, 0, 0"),  // 10 cells
+      metadata)
+
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    line(0) = Cell.FILLED
+    line(1) = Cell.FILLED
+    line(2) = Cell.FILLED
+    line(3) = Cell.CLEARED
+
+    val solver = new SolveLineQueue(model)
+    solver.splitter.dropChanksFromEnds(metadata(0), line, BorderSolver)
+
+    assert(solver.queue.size() === 1)
+    assert(solver.queue.take() === new SolveQueueTask(Array(2, 1), new LineImpl(0, Orientation.HORIZONTAL, model, 4, 6), BorderSolver))
+  }
 }

@@ -65,7 +65,7 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
 
     if (countStat(currentData.toList.filterNot(_ == NOT_KNOWN)).count(_._1 == FILLED) >= metadata.size) {
       val sublists = divideToSublists(currentData, countStat(currentData))
-      assert(sublists.size == metadata.size, "size not equals: %s and %s".format(sublists, metadata.mkString("[", ",", "]")))
+      assert(sublists.size == metadata.size, "size not equals: %s and %s".format(metadata.mkString("[", ",", "]"), sublists))
       sublists.indices map (v => queue ! new SolveQueueTask(Array(metadata(v)), sublists(v), solver))
       return true
     }
@@ -88,22 +88,26 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
       return false
     }
 
-    for (i <- stat.indices) {
-      if (stat(i) == (FILLED, metadata.max)) {
-        if (isClearedAt(i - 1) && isClearedAt(i + 1)) {
+    stat.indices
+      .find(i => (stat(i) == (FILLED, maxLength) && isClearedAt(i - 1) && isClearedAt(i + 1))) match {
+      case Some(i) => {
+        val m = metadata.splitAt(metadata.find(_ == maxLength).get)
 
-          val m = metadata.splitAt(metadata.find(_ == maxLength).get)
+        queue ! new SolveQueueTask(m._1.dropRight(1), line.dropRight(line.size - indexes(i)), solver)
+        queue ! new SolveQueueTask(m._2, line.drop(indexes(i+1)), solver)
 
-          queue ! new SolveQueueTask(m._1.dropRight(1), line.dropRight(line.size - indexes(i)), solver)
-          queue ! new SolveQueueTask(m._2, line.drop(indexes(i+1)), solver)
-
-          return true
-        }
+        true
       }
+      case None => false
     }
-    false
   }
 
+  /**
+   * Деление на подсроки. Вызов метода подразумевает, что линия точно поделится на число линий равное metadata.size
+   * @param line
+   * @param stat
+   * @return
+   */
   def divideToSublists(line: Line, stat: List[(Cell, Int)]): List[Line] = {
     val statIndicies = indicesForStat(stat)
     var hasFilledCell = false

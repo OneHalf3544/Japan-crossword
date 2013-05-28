@@ -29,12 +29,12 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
   def dropChanksFromEnds(metadata: Array[Int], line: Line, solver: LineSolver): Boolean = {
     val stat = countStat(line)
 
-    if (stat.head._1 == FILLED && stat.head._2 == metadata.head && stat(1)._1 == CLEARED) {
+    if (stat.head == (FILLED, metadata.head) && stat(1)._1 == CLEARED) {
       queue ! new SolveQueueTask(metadata.tail, line.drop(metadata.head+1), solver)
       return true
     }
 
-    if (stat.last._1 == FILLED && stat.last._2 == metadata.last && stat(stat.size-2)._1 == CLEARED) {
+    if (stat.last == (FILLED, metadata.last) && stat(stat.size-2)._1 == CLEARED) {
       queue ! new SolveQueueTask(metadata.init, line.dropRight(metadata.last+1), solver)
       return true
     }
@@ -84,12 +84,12 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
 
     val maxLength = metadata.max
 
-    if (metadata.count(_ == maxLength) != stat.count(_._1 == FILLED)) {
+    if (metadata.count(_ == maxLength) != stat.count(_ == (FILLED, maxLength))) {
       return false
     }
 
     for (i <- stat.indices) {
-      if (stat(i)._1 == FILLED && stat(i)._2 == metadata.max) {
+      if (stat(i) == (FILLED, metadata.max)) {
         if (isClearedAt(i - 1) && isClearedAt(i + 1)) {
 
           val m = metadata.splitAt(metadata.find(_ == maxLength).get)

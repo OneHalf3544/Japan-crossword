@@ -56,6 +56,7 @@ object BorderSolver extends LineSolver {
     val nextCleared = (0 to firstChunkLength-1).find(currentData(_) == CLEARED)
     if (nextCleared.isDefined) {
       // Сюда не влезет закрашенная часть ожидаемой длины. Помечаем ячейки как пустые
+      assert((0 to nextCleared.get - 1) forall(currentData(_) != FILLED))
       (0 to nextCleared.get - 1) foreach (currentData(_) = CLEARED)
       return
     }

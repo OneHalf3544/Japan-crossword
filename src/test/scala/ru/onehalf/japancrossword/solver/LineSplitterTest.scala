@@ -119,9 +119,8 @@ class LineSplitterTest extends FunSuite {
     line(6) = Cell.CLEARED
 
     val solver = new SolveLineQueue(model)
-    val splitter = solver.splitter
+    solver.splitter.splitByFirstMaxLength(line, metadata(0), BorderSolver)
 
-    val result = splitter.splitByFirstMaxLength(line, metadata(0), BorderSolver)
     assert(solver.queue.size() === 2)
     assert(solver.queue.take() === new SolveQueueTask(Array(1), new LineImpl(0, Orientation.HORIZONTAL, model, 0, 4), BorderSolver))
     assert(solver.queue.take() === new SolveQueueTask(Array(1), new LineImpl(0, Orientation.HORIZONTAL, model, 6, 4), BorderSolver))

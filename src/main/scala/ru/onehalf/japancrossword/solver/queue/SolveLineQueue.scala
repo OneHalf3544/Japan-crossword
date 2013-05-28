@@ -57,7 +57,7 @@ class SolveLineQueue(model: JapanCrosswordModel) {
             this ! new SolveQueueTask(metadata, line, solver)
         }
         // todo Сделать код более явным, не полагаться на side-эффккты
-        case _ => println("строка была поделена ранее")
+        case _ => println("строка была разделена")
       }
     }
     println("end: queue empty")
@@ -84,7 +84,7 @@ class SolveLineQueue(model: JapanCrosswordModel) {
 
   def enqueueLineForAllSolver(line: Line, metadata: Array[Int]) {
 
-    List(FastPreSolver, SearchClearedCellSolver, VariantsEnumerationSolver).foreach(s => {
+    List(FastPreSolver, SearchClearedCellSolver/*, VariantsEnumerationSolver*/).foreach(s => {
       this ! new SolveQueueTask(metadata, line, s, Int.MaxValue)
     })
 

@@ -26,6 +26,22 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
     line
   }
 
+  def dropChanksFromEnds(metadata: Array[Int], line: Line, solver: LineSolver): Boolean = {
+    val stat = countStat(line)
+
+    if (stat.head._1 == FILLED && stat.head._2 == metadata.head && stat(1)._1 == CLEARED) {
+      queue ! new SolveQueueTask(metadata.tail, line.drop(metadata.head+1), solver)
+      return true
+    }
+
+    if (stat.last._1 == FILLED && stat.last._2 == metadata.last && stat(stat.size-2)._1 == CLEARED) {
+      queue ! new SolveQueueTask(metadata.init, line.dropRight(metadata.last+1), solver)
+      return true
+    }
+
+    false
+  }
+
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
@@ -40,6 +56,10 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
 
     if (currentData(0) == CLEARED || currentData.last == CLEARED) {
       queue ! new SolveQueueTask(metadata, dropClearedFromEnds(currentData), solver)
+      return true
+    }
+
+    if (dropChanksFromEnds(metadata, currentData, solver)) {
       return true
     }
 

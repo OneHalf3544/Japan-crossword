@@ -1,5 +1,5 @@
 package ru.onehalf.japancrossword.model
-
+import ru.onehalf.japancrossword.model.Cell._
 
 /**
  * <p/>
@@ -34,9 +34,10 @@ trait Line {
 
   def notKnownCount = (1 to size) count(i => apply(i - 1) == Cell.NOT_KNOWN)
 
-  override def toString = {
-    toList.mkString("[", ", ", "]")
-  }
+  override def toString = "Line[%s]".format(toList.map({
+    case FILLED => 'X'
+    case CLEARED => '_'
+    case NOT_KNOWN => '.'}).mkString)
 
   override def hashCode(): Int = 0
 

@@ -14,15 +14,8 @@ import java.util.concurrent.{LinkedBlockingQueue, BlockingQueue}
  */
 class SolveLineQueue(model: JapanCrosswordModel) {
 
-  // todo Вместо итерирования по индексам сделать очередь задач
-  // т.е. взять все строки и добавить в одну коллекцию, потом выбирать по
-  // одной и производить вычисления.
-  // При вытаскивании задачи из очереди можно использовать какую-ниюудь
+  // todo При вытаскивании задачи из очереди можно использовать какую-ниюудь
   // систему приоритетов и/млм учитывать, была ли линия изменена после последнего подбора
-  // Полностью подобранные линии удалять из очереди.
-  // Для линий, подобранныхлиных на концах, можно возвращать в очередь линии меньшей длины.
-  // При возможности разделить линию на части,  добавлять в очередь несколько задач,
-  // по одной на каждую часть линии
 
   val queue: BlockingQueue[SolveQueueTask] = new LinkedBlockingQueue[SolveQueueTask]
 
@@ -45,13 +38,15 @@ class SolveLineQueue(model: JapanCrosswordModel) {
           addDataToModel(List.fill(line.size)(CLEARED), line)
         }
 
-        case SolveQueueTask(metadata, line, solver, remindingCells) if (!splitter.splitLine(metadata, line, solver)) => {
+        case SolveQueueTask(metadata, line, solver, remindingCells) if (splitter.splitLine(metadata, line, solver)) => {
+          println("строка была разделена")
+        }
+
+        case SolveQueueTask(metadata, line, solver, remindingCells) => {
           addDataToModel(solver.fillLine(metadata, line), line)
           if (!line.forall(_ != NOT_KNOWN))
             this ! new SolveQueueTask(metadata, line, solver)
         }
-        // todo Сделать код более явным, не полагаться на side-эффккты
-        case _ => println("строка была разделена")
       }
     }
     println("end: queue empty")

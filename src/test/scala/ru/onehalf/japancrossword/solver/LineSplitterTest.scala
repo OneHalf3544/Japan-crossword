@@ -88,7 +88,7 @@ class LineSplitterTest extends FunSuite {
 
   }
 
-  test("dropClearedCellsFromEnds") {
+  test("drop cleared cells from ends") {
     val metadata = parseLine(Orientation.VERTICAL, "2 2")
     val model = new JapanCrosswordModel("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells

@@ -44,12 +44,6 @@ class SolveLineQueue(model: JapanCrosswordModel) {
         case SolveQueueTask(metadata, line, _, _) if metadata.isEmpty => {
           addDataToModel(List.fill(line.size)(CLEARED), line)
         }
-        /*
-        // todo реализовать пропуск задач, котоорые не изменились с момента прошлого решения
-        case SolveQueueTask(metadata, line, solver, remindingCells) if (line.notKnownCount == remindingCells) => {
-          this ! new SolveQueueTask(metadata, line, solver, remindingCells)
-        }
-        */
 
         case SolveQueueTask(metadata, line, solver, remindingCells) if (!splitter.splitLine(metadata, line, solver)) => {
           addDataToModel(solver.fillLine(metadata, line), line)

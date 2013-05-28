@@ -38,6 +38,6 @@ case class SolveQueueTask(metadata: Array[Int], line: Line, solverType: LineSolv
     true
   }
 
-  override def toString = "Task[%s, size:%d, NotKnownCount:%d, solver:%s]"
-    .format(metadata.mkString("[", ",", "]"), line.size, line.notKnownCount, solverType)
+  override def toString = "Task[%s, line:%d:, NotKnownCount:%d, %s, solver:%s]"
+    .format(metadata.mkString("[", ",", "]"), line.size, line.notKnownCount, line, solverType)
 }

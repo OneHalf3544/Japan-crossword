@@ -50,10 +50,6 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
    */
   def splitLine(metadata: Array[Int], currentData: Line, solver: LineSolver): Boolean = {
 
-    if (metadata.size == 1) {
-      return false
-    }
-
     if (currentData(0) == CLEARED || currentData.last == CLEARED) {
       queue ! new SolveQueueTask(metadata, dropClearedFromEnds(currentData), solver)
       return true
@@ -61,6 +57,10 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
 
     if (dropChanksFromEnds(metadata, currentData, solver)) {
       return true
+    }
+
+    if (metadata.size == 1) {
+      return false
     }
 
     if (countStat(currentData.toList.filterNot(_ == NOT_KNOWN)).count(_._1 == FILLED) >= metadata.size) {

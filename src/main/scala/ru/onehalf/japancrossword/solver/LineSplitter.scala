@@ -116,18 +116,23 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
    */
   def divideToSublists(line: Line, stat: List[(Cell, Int)]): List[Line] = {
     val statIndicies = indicesForStat(stat)
-    var hasFilledCell = false
 
-    for (i <- stat.indices) {
-      if (stat(i)._1 == CLEARED && hasFilledCell && (stat.drop(i).exists(_._1 == FILLED))) {
-        val splitIndex = statIndicies(i)
-        return line.dropRight(line.size - splitIndex) +: divideToSublists(line.drop(splitIndex), stat.drop(i))
+    /**
+     *
+     * @param i Индекс текущего найденого кусочка
+     * @return true, если после укзанной позиции есть еще заполненные участки.
+     *         (Используется для определения необходимости деления)
+     */
+    def isNotLastFilled(i: Int) = stat.drop(i+1).exists(_._1 == FILLED)
+    def isFilledBefore(i: Int) = stat.take(i).exists(_._1 == FILLED)
+
+    (stat.indices.tail).find(i => { stat(i)._1 == CLEARED && isFilledBefore(i) && isNotLastFilled(i)}) match {
+      case Some(x) => {
+        val splitIndex = statIndicies(x)
+        line.dropRight(line.size - splitIndex) +: divideToSublists(line.drop(splitIndex), stat.drop(x))
       }
-      if (stat(i)._1 == FILLED) {
-        hasFilledCell = true
-      }
+      case None => List(line)
     }
-    List(line)
   }
 
 }

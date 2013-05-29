@@ -5,6 +5,8 @@ import ru.onehalf.japancrossword.model.Line
 import ru.onehalf.japancrossword.model.Cell._
 
 /**
+ * Делитель строки.
+ * Ищем последовательность, по которой можно разбить линию на две.
  * <p/>
  * <p/>
  * Created: 26.05.13 22:45

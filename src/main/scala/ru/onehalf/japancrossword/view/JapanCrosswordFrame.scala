@@ -20,7 +20,7 @@ class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FO
   val repaintListener = () => SwingUtilities.invokeLater(new Runnable {
     def run() {
       repaint()
-      println("repaint")
+      //println("repaint")
     }
   })
 

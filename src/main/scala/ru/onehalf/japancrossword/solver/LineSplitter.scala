@@ -78,8 +78,8 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
     val stat = countStat(line)
     val indexes = indicesForStat(stat)
 
-    def isClearedAt(i: Int): Boolean = {
-      (!stat.isDefinedAt(i) || stat(i)._1 == CLEARED)
+    def setClearedAt(i: Int) {
+      if (i >= 0 && i < line.size) line(i) == CLEARED
     }
 
     val maxLength = metadata.max
@@ -88,18 +88,24 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
       return false
     }
 
-    stat.indices
-      .find(i => (stat(i) == (FILLED, maxLength) && isClearedAt(i - 1) && isClearedAt(i + 1))) match {
-      case Some(i) => {
-        val m = metadata.splitAt(metadata.find(_ == maxLength).get)
+    val i = stat.indices.filter(i => stat(i) == (FILLED, maxLength)).head
 
-        queue ! new SolveQueueTask(m._1.dropRight(1), line.dropRight(line.size - indexes(i)), solver)
-        queue ! new SolveQueueTask(m._2, line.drop(indexes(i+1)), solver)
+    setClearedAt(indexes(i) - 1)
+    setClearedAt(indexes(i+1))
 
-        true
-      }
-      case None => false
-    }
+    val m = metadata.splitAt(metadata.indexOf(maxLength))
+
+    val metadata1 = m._1
+    val line1 = line.dropRight(line.size - indexes(i))
+
+    val metadata2 = m._2.drop(1)
+    val line2 = line.drop(indexes(i + 1))
+
+    println("splitted to: %s,%s, lines: %s, %s".format(metadata1.mkString("[", ",", "]"), metadata2.mkString("[", ",", "]"), line1, line2))
+    queue ! new SolveQueueTask(metadata1,         line1, solver)
+    queue ! new SolveQueueTask(metadata2, line2, solver)
+
+    true
   }
 
   /**

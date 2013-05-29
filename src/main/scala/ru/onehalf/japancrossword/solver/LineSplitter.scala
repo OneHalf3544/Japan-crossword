@@ -79,7 +79,7 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
     val indexes = indicesForStat(stat)
 
     def setClearedAt(i: Int) {
-      if (i >= 0 && i < line.size) line(i) == CLEARED
+      if (i >= 0 && i < line.size) line(i) = CLEARED
     }
 
     val maxLength = metadata.max

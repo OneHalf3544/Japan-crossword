@@ -36,7 +36,7 @@ class SolveLineQueue(model: JapanCrosswordModel, queueName: String) {
         task match {
 
           case SolveQueueTask(_, line, _, _) if line.notKnownCount == 0 => {
-            println("line solved")
+            //println("line solved")
           }
 
           case SolveQueueTask(metadata, line, _, _) if metadata.isEmpty => {
@@ -44,7 +44,7 @@ class SolveLineQueue(model: JapanCrosswordModel, queueName: String) {
           }
 
           case SolveQueueTask(metadata, line, solver, remindingCells) if (splitter.splitLine(metadata, line, solver)) => {
-            println("строка была разделена")
+            //println("строка была разделена")
           }
 
           case SolveQueueTask(metadata, line, solver, remindingCells) => {

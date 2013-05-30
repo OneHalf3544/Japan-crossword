@@ -15,6 +15,8 @@ import ru.onehalf.japancrossword.model.Cell._
  */
 class LineSplitter(queue: SolveLineQueue) extends LineSolver{
 
+  // todo Делить линии по точно найденному участку.
+  // Т.е.:  1 2 3  ......._XX_..... можно поделить по найденному участку независимо от того, что 2 != metadata.max
 
   def fillLine(metadata: Array[Int], currentData: Line): List[Cell] = {throw new UnsupportedOperationException}
 
@@ -26,22 +28,6 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
       return dropClearedFromEnds(line.dropRight(1))
     }
     line
-  }
-
-  def dropChanksFromEnds(metadata: Array[Int], line: Line, solver: LineSolver): Boolean = {
-    val stat = countStat(line)
-
-    if (stat.head == (FILLED, metadata.head) && stat(1)._1 == CLEARED) {
-      queue ! new SolveQueueTask(metadata.tail, line.drop(metadata.head+1), solver)
-      return true
-    }
-
-    if (stat.last == (FILLED, metadata.last) && stat(stat.size-2)._1 == CLEARED) {
-      queue ! new SolveQueueTask(metadata.init, line.dropRight(metadata.last+1), solver)
-      return true
-    }
-
-    false
   }
 
   /**
@@ -75,6 +61,32 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
     splitByFirstMaxLength(currentData, metadata, solver)
   }
 
+  /**
+   * Отрезаем решенные кусочки от линии
+   * @param metadata Метаданные
+   * @param line Заполняемая линия
+   * @param solver Решатель для строки
+   * @return true, если строка была разделена
+   */
+  def dropChanksFromEnds(metadata: Array[Int], line: Line, solver: LineSolver): Boolean = {
+    val stat = countStat(line)
+
+    if (stat.size <= 1) {
+      return false
+    }
+
+    if (stat.head == (FILLED, metadata.head) && stat(1)._1 == CLEARED) {
+      queue ! new SolveQueueTask(metadata.tail, line.drop(metadata.head+1), solver)
+      return true
+    }
+
+    if (stat.last == (FILLED, metadata.last) && stat(stat.size-2)._1 == CLEARED) {
+      queue ! new SolveQueueTask(metadata.init, line.dropRight(metadata.last+1), solver)
+      return true
+    }
+
+    false
+  }
 
   def splitByFirstMaxLength(line: Line, metadata: Array[Int], solver: LineSolver): Boolean = {
     val stat = countStat(line)
@@ -103,7 +115,7 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
     val metadata2 = m._2.drop(1)
     val line2 = line.drop(indexes(i + 1))
 
-    println("splitted to: %s,%s, lines: %s, %s".format(metadata1.mkString("[", ",", "]"), metadata2.mkString("[", ",", "]"), line1, line2))
+    //println("splitted to: %s,%s, lines: %s, %s".format(metadata1.mkString("[", ",", "]"), metadata2.mkString("[", ",", "]"), line1, line2))
     queue ! new SolveQueueTask(metadata1,         line1, solver)
     queue ! new SolveQueueTask(metadata2, line2, solver)
 

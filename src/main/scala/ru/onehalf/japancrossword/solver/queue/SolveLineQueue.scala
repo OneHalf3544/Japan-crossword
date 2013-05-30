@@ -88,11 +88,11 @@ class SolveLineQueue(model: JapanCrosswordModel, queueName: String) {
       rowQueue ! new SolveQueueTask(v._2, v._1, VariantsEnumerationSolver, Int.MaxValue)
     })
 
+    fastQueue.startThread()
     for(i <- 1 to 4) {
       columnQueue.startThread()
       rowQueue.startThread()
     }
-    fastQueue.startThread()
   }
 
   def enqueueLineForFastSolver(v: (Line, Array[Int])) {

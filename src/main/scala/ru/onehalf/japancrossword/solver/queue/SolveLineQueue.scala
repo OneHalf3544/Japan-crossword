@@ -31,7 +31,7 @@ class SolveLineQueue(model: JapanCrosswordModel, queueName: String) {
 
       while (!(model.isSolved || Thread.currentThread().isInterrupted)) {
         val task = queue.take()
-        println("task: " + task + " for " + queueName)
+        //println("task: " + task + " for " + queueName)
 
         task match {
 

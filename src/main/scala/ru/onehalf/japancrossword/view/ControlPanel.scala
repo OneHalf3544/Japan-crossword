@@ -45,7 +45,7 @@ class ControlPanel(models: Array[JapanCrosswordModel], modelChangeListener: Item
     def actionPerformed(e: ActionEvent) {
       val model = modelsCombobox.getSelectedItem.asInstanceOf[JapanCrosswordModel]
       future {
-        new SolveLineQueue(model).solve()
+        new SolveLineQueue(model, "static").solve()
       }.onFailure({
         case e: Exception => e.printStackTrace()
       })

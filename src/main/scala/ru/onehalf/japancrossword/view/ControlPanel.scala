@@ -3,10 +3,10 @@ package ru.onehalf.japancrossword.view
 import javax.swing.{JComboBox, AbstractAction, JButton, JPanel}
 import java.awt.FlowLayout
 import java.awt.event.{ItemListener, ActionEvent}
-import ru.onehalf.japancrossword.solver.{SearchClearedCellSolver, BorderSolver, FastPreSolver, VariantsEnumerationSolver}
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import concurrent.future
 import concurrent.ExecutionContext.Implicits.global
+import ru.onehalf.japancrossword.solver.queue.SolveLineQueue
 
 /**
  * <p/>
@@ -15,7 +15,7 @@ import concurrent.ExecutionContext.Implicits.global
  * <p/>
  * @author OneHalf
  */
-class ModelChoosePanel(models: Array[JapanCrosswordModel], modelChangeListener: ItemListener) extends JPanel(new FlowLayout()) {
+class ControlPanel(models: Array[JapanCrosswordModel], modelChangeListener: ItemListener) extends JPanel(new FlowLayout()) {
 
   val modelsCombobox: JComboBox[JapanCrosswordModel] = {
     val comboBox = new JComboBox(models)
@@ -43,16 +43,12 @@ class ModelChoosePanel(models: Array[JapanCrosswordModel], modelChangeListener: 
 
   def solveButton = new JButton(new AbstractAction("Решить") {
     def actionPerformed(e: ActionEvent) {
+      val model = modelsCombobox.getSelectedItem.asInstanceOf[JapanCrosswordModel]
       future {
-        println("action performed")
-        val model = modelsCombobox.getSelectedItem.asInstanceOf[JapanCrosswordModel]
-        new FastPreSolver(model).solve()
-        new BorderSolver(model).solve()
-        new SearchClearedCellSolver(model).solve()
-        new VariantsEnumerationSolver(model).solve()
-      }.onFailure {
+        new SolveLineQueue(model, "static").solve()
+      }.onFailure({
         case e: Exception => e.printStackTrace()
-      }
+      })
     }
   })
 }

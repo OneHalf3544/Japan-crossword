@@ -30,6 +30,45 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
     line
   }
 
+  def splitByKnownChunk(line: Line, metadata: Array[Int], solver: LineSolver): Boolean = {
+    val stat: List[(Cell, Int)] = (CLEARED, 0) +: countStat(line) :+ (CLEARED, 0)
+    val indexes = indicesForStat(stat)
+
+    def searchBoundedParts(l: List[(Cell, Int)]): Option[Int] = {
+      l match {
+        case List((CLEARED, _), (FILLED, chunkLength), (CLEARED, _))  => Some(chunkLength)
+        case _ => None
+      }
+    }
+
+    val foundedParts = stat.sliding(3).map(searchBoundedParts(_)).filter(_.isDefined).map(_.get).toList
+
+    if (foundedParts.isEmpty) {
+      return false
+    }
+
+    for (length <- foundedParts) {
+      if (foundedParts.count(_ == length) == metadata.count(_ == length)) {
+        val i = stat.indices.init.tail.filter(i => stat(i) == (FILLED, length) && stat(i - 1)._1 == CLEARED && stat(i + 1)._1 == CLEARED ).head
+
+        val m = metadata.splitAt(metadata.indexOf(length))
+
+        val metadata1 = m._1
+        val line1 = line.dropRight(line.size - indexes(i))
+
+        val metadata2 = m._2.drop(1)
+        val line2 = line.drop(indexes(i + 1))
+
+        //println("splitted to: %s,%s, lines: %s, %s".format(metadata1.mkString("[", ",", "]"), metadata2.mkString("[", ",", "]"), line1, line2))
+        queue ! new SolveQueueTask(metadata1, line1, solver)
+        queue ! new SolveQueueTask(metadata2, line2, solver)
+
+        return true
+      }
+    }
+    false
+  }
+
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
@@ -58,7 +97,11 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
       return true
     }
 
-    splitByFirstMaxLength(currentData, metadata, solver)
+    if (splitByFirstMaxLength(currentData, metadata, solver)) {
+      return true
+    }
+
+    splitByKnownChunk(currentData, metadata, solver)
   }
 
   /**

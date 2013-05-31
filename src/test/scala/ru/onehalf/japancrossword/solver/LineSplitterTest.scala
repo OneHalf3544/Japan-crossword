@@ -144,4 +144,45 @@ class LineSplitterTest extends FunSuite {
     assert(solver.queue.size() === 1)
     assert(solver.queue.take() === new SolveQueueTask(Array(2, 1), new LineImpl(0, Orientation.HORIZONTAL, model, 4, 6), BorderSolver))
   }
+
+  test("split by known chank") {
+    val metadata = parseLine(Orientation.VERTICAL, "2 1 2")
+    val model = new JapanCrosswordModel("test",
+      parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 0, 0, 1, 1, 0"),  // 10 cells
+      metadata)
+
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    line(3) = Cell.CLEARED
+    line(4) = Cell.FILLED
+    line(5) = Cell.CLEARED
+
+    val solver = new SolveLineQueue(model)
+    solver.splitter.splitByKnownChunk(line, metadata(0), BorderSolver)
+
+    assert(solver.queue.size() === 2)
+    assert(solver.queue.take() === new SolveQueueTask(Array(2), new LineImpl(0, Orientation.HORIZONTAL, model, 0, 4), BorderSolver))
+    assert(solver.queue.take() === new SolveQueueTask(Array(2), new LineImpl(0, Orientation.HORIZONTAL, model, 5, 5), BorderSolver))
+  }
+
+  test("split by first chank") {
+    val metadata = parseLine(Orientation.VERTICAL, "1 1 2")
+    val model = new JapanCrosswordModel("test",
+      parseLine(Orientation.HORIZONTAL, "0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0"),  // 11 cells
+      metadata)
+
+    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    line(1) = Cell.CLEARED
+    line(2) = Cell.FILLED
+    line(3) = Cell.CLEARED
+    line(4) = Cell.CLEARED
+    line(5) = Cell.FILLED
+    line(6) = Cell.CLEARED
+
+    val solver = new SolveLineQueue(model)
+    solver.splitter.splitByKnownChunk(line, metadata(0), BorderSolver)
+
+    assert(solver.queue.size() === 2)
+    assert(solver.queue.take() === new SolveQueueTask(Array(), new LineImpl(0, Orientation.HORIZONTAL, model, 0, 2), BorderSolver))
+    assert(solver.queue.take() === new SolveQueueTask(Array(1, 2), new LineImpl(0, Orientation.HORIZONTAL, model, 3, 8), BorderSolver))
+  }
 }

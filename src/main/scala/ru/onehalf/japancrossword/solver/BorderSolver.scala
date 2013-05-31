@@ -41,6 +41,7 @@ object BorderSolver extends LineSolver {
 
     val firstChunkLength = metadata(0)
     if (firstChunkLength > currentData.size) {
+      // todo кидать исключение, или заполнить всю currentData
       return
     }
 

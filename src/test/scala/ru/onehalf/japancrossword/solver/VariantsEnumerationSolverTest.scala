@@ -6,7 +6,6 @@ import queue.SolveLineQueue
 import ru.onehalf.japancrossword.model.{Cell, LineImpl, JapanCrosswordModel}
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.CrosswordLoader.parseLine
-import org.scalatest.time.SpanSugar._
 import org.scalatest.concurrent.Timeouts
 
 /**
@@ -39,17 +38,15 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers with Ti
     assert(result(9) === Cell.NOT_KNOWN)
   }
 
-  ignore should "resolve all cells in line" in {
+  it should "resolve all cells in line" in {
 
-    val metadata = parseLine(Orientation.VERTICAL, "8")
+    val metadata = parseLine(Orientation.VERTICAL, "6")
     val model = new JapanCrosswordModel("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 1, 1, 0, 0"),  // 10 cells
       metadata)
 
-    failAfter(1 seconds) {
-      new SolveLineQueue(model).solve()
-    }
-
+    new SolveLineQueue(model).solve()
+    Thread.sleep(100)
     assert(model.isSolved)
   }
 

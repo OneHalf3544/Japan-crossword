@@ -22,7 +22,7 @@ object FastPreSolver extends LineSolver {
   def fillLine(metadata: Array[Int], currentData: Line): List[Cell] = {
     assert(metadata.nonEmpty)
 
-    println("metadata: %s, line: %s".format(metadata.mkString("[", ",", "]"), currentData))
+    //println("metadata: %s, line: %s".format(metadata.mkString("[", ",", "]"), currentData))
 
     val length = metadata.sum + metadata.size - 1
     assert(currentData.size >= length, "wrong length: " + length)

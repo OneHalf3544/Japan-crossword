@@ -28,12 +28,9 @@ object FastPreSolver extends LineSolver {
 
     val cellSequence: List[Cell] = createSequence(metadata)
 
-    var variants: List[List[Cell]] = List()
-    for (i <- 0 to currentData.size - length) {
-      variants = variants ::: List(List.fill(i)(CLEARED) ::: cellSequence ::: List.fill(currentData.size - i - length)(CLEARED))
-    }
-
-    variants.reduce(reduceLines)
+    (0 to currentData.size - length)
+      .map(i => List.fill(i)(CLEARED) ::: cellSequence ::: List.fill(currentData.size - i - length)(CLEARED))
+      .reduce(reduceLines)
   }
 
   /**

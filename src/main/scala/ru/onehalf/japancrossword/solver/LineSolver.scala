@@ -13,6 +13,8 @@ import ru.onehalf.japancrossword.model.Cell.Cell
  */
 trait LineSolver {
 
+  val SEPARATOR: List[Cell] = List(CLEARED)
+
   def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell]
 
   def indicesForStat(stat: List[(Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)

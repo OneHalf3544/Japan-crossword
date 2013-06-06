@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.model
 
-import ru.onehalf.japancrossword.solver.Orientation
+import Orientation._
 
 /**
  * Обертка над моделью для получения доступа к части данных как к массиву
@@ -10,37 +10,38 @@ import ru.onehalf.japancrossword.solver.Orientation
  * <p/>
  * @author OneHalf
  */
-class LineImpl(val lineIndex: Int, orientation: Orientation.Orientation,
+class LineImpl(val lineIndex: Int, var orientation: Orientation,
            model: JapanCrosswordModel, fromIndex: Int, val size :Int) extends Line {
 
-  def this(lineIndex: Int, orientation: Orientation.Orientation, model: JapanCrosswordModel, fromIndex: Int) =
+  def this(lineIndex: Int, orientation: Orientation, model: JapanCrosswordModel, fromIndex: Int) =
     this(lineIndex, orientation, model, fromIndex, orientation match {
-      case Orientation.HORIZONTAL => model.columnNumber - fromIndex
-      case Orientation.VERTICAL => model.rowNumber - fromIndex
+      case HORIZONTAL => model.columnNumber - fromIndex
+      case VERTICAL => model.rowNumber - fromIndex
     })
 
-  def this(lineIndex: Int, orientation: Orientation.Orientation, model: JapanCrosswordModel) =
+  def this(lineIndex: Int, orientation: Orientation, model: JapanCrosswordModel) =
     this(lineIndex, orientation, model, 0)
 
   def apply(cellIndex: Int) = {
     assert(cellIndex < size)
 
-    orientation match {
-      case Orientation.HORIZONTAL => model(cellIndex + fromIndex, lineIndex)
-      case Orientation.VERTICAL => model(lineIndex, cellIndex + fromIndex)
-    }
+    model(absoluteCoordinate(cellIndex))
   }
 
   def update(cellIndex: Int, cell: Cell.Cell) {
     assert(cellIndex < size, "cellIndex " + cellIndex + " >= " + size)
 
-    orientation match {
-      case Orientation.HORIZONTAL => model(cellIndex + fromIndex, lineIndex) = cell
-      case Orientation.VERTICAL => model(lineIndex, cellIndex + fromIndex) = cell
-    }
+    model(absoluteCoordinate(cellIndex)) = cell
   }
 
   val indexes = 0 to size - 1
+
+  def absoluteCoordinate(cellIndex: Int): (Int, Int) = {
+    orientation match {
+      case HORIZONTAL => (cellIndex + fromIndex, lineIndex)
+      case VERTICAL => (lineIndex, cellIndex + fromIndex)
+    }
+  }
 
   def forall(predicate: (Cell.Cell) => Boolean) = {
     indexes forall(cellIndex => predicate(apply(cellIndex)))
@@ -102,5 +103,11 @@ class LineImpl(val lineIndex: Int, orientation: Orientation.Orientation,
     def apply(cellIndex: Int): Cell.Cell = {
       original(size - cellIndex - 1)
     }
+
+    def orientation: Orientation = {
+      original.orientation
+    }
+
+    def absoluteCoordinate(i: Int): (Int, Int) = original.absoluteCoordinate(size - i - 1)
   }
 }

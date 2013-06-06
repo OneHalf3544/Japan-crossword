@@ -3,7 +3,7 @@ package ru.onehalf.japancrossword.solver
 import org.scalatest.FunSuite
 import queue.{SolveQueueTask, SolveLineQueue}
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{Cell, LineImpl, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Orientation, Cell, LineImpl, JapanCrosswordModel}
 
 /**
  * <p/>
@@ -28,7 +28,7 @@ class LineSplitterTest extends FunSuite {
     line(7) = Cell.CLEARED
     line(9) = Cell.FILLED
 
-    val splitter = new SolveLineQueue(model).splitter
+    val splitter = new SolveLineQueue(model, "", new ModelSolver(model)).splitter
 
     val result = splitter.divideToSublists(line, splitter.countStat(line))
 
@@ -53,7 +53,7 @@ class LineSplitterTest extends FunSuite {
     line(7) = Cell.CLEARED
     line(9) = Cell.FILLED
 
-    val solver = new SolveLineQueue(model).splitter
+    val solver = new SolveLineQueue(model, "", new ModelSolver(model)).splitter
 
     val result = solver.divideToSublists(line, solver.countStat(line))
 
@@ -78,7 +78,7 @@ class LineSplitterTest extends FunSuite {
     line(8) = Cell.CLEARED
     line(9) = Cell.CLEARED
 
-    val solver = new SolveLineQueue(model).splitter
+    val solver = new SolveLineQueue(model, "", new ModelSolver(model)).splitter
 
     val result = solver.divideToSublists(line, solver.countStat(line))
 
@@ -99,7 +99,7 @@ class LineSplitterTest extends FunSuite {
     line(8) = Cell.CLEARED
     line(9) = Cell.CLEARED
 
-    val splitter = new SolveLineQueue(model).splitter
+    val splitter = new SolveLineQueue(model, "", new ModelSolver(model)).splitter
 
     val result = splitter.dropClearedFromEnds(line)
 
@@ -118,7 +118,7 @@ class LineSplitterTest extends FunSuite {
     line(5) = Cell.FILLED
     line(6) = Cell.CLEARED
 
-    val solver = new SolveLineQueue(model)
+    val solver = new SolveLineQueue(model, "", new ModelSolver(model))
     solver.splitter.splitByFirstMaxLength(line, metadata(0), BorderSolver)
 
     assert(solver.queue.size() === 2)
@@ -138,7 +138,7 @@ class LineSplitterTest extends FunSuite {
     line(2) = Cell.FILLED
     line(3) = Cell.CLEARED
 
-    val solver = new SolveLineQueue(model)
+    val solver = new SolveLineQueue(model, "", new ModelSolver(model))
     solver.splitter.dropChanksFromEnds(metadata(0), line, BorderSolver)
 
     assert(solver.queue.size() === 1)
@@ -156,7 +156,7 @@ class LineSplitterTest extends FunSuite {
     line(4) = Cell.FILLED
     line(5) = Cell.CLEARED
 
-    val solver = new SolveLineQueue(model)
+    val solver = new SolveLineQueue(model, "", new ModelSolver(model))
     solver.splitter.splitByKnownChunk(line, metadata(0), BorderSolver)
 
     assert(solver.queue.size() === 2)
@@ -178,7 +178,7 @@ class LineSplitterTest extends FunSuite {
     line(5) = Cell.FILLED
     line(6) = Cell.CLEARED
 
-    val solver = new SolveLineQueue(model)
+    val solver = new SolveLineQueue(model, "", new ModelSolver(model))
     solver.splitter.splitByKnownChunk(line, metadata(0), BorderSolver)
 
     assert(solver.queue.size() === 2)

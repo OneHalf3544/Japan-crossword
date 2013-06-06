@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword
 
-import model.{JapanCrosswordModel, Metadata}
-import solver.Orientation._
+import model.{Orientation, JapanCrosswordModel, Metadata}
+import Orientation._
 import io.Source
 import java.util.Properties
 import scala.collection.convert.wrapAsScala._

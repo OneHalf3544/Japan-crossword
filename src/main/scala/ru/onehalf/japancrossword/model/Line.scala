@@ -1,5 +1,7 @@
 package ru.onehalf.japancrossword.model
+
 import ru.onehalf.japancrossword.model.Cell._
+import Orientation._
 
 /**
  * <p/>
@@ -28,9 +30,13 @@ trait Line {
 
   def size: Int
 
+  def orientation: Orientation
+
   def update(cellIndex: Int, cell: Cell.Cell)
 
   def apply(cellIndex: Int): Cell.Cell
+
+  def absoluteCoordinate(i: Int): (Int, Int)
 
   def notKnownCount = (1 to size) count(i => apply(i - 1) == Cell.NOT_KNOWN)
 

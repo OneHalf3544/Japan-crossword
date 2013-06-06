@@ -1,8 +1,7 @@
 package ru.onehalf.japancrossword.view
 
 import java.awt.{Font, Color, Graphics, Dimension}
-import ru.onehalf.japancrossword.model.Metadata
-import ru.onehalf.japancrossword.solver.Orientation
+import ru.onehalf.japancrossword.model.{Orientation, Metadata}
 import javax.swing.JPanel
 
 /**

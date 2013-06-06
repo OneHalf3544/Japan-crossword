@@ -2,7 +2,7 @@ package ru.onehalf.japancrossword.solver
 
 import org.scalatest.FunSuite
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{LineImpl, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Orientation, LineImpl, JapanCrosswordModel}
 import ru.onehalf.japancrossword.model.Cell._
 
 /**

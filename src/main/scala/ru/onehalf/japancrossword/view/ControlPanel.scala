@@ -6,7 +6,7 @@ import java.awt.event.{ItemListener, ActionEvent}
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import concurrent.future
 import concurrent.ExecutionContext.Implicits.global
-import ru.onehalf.japancrossword.solver.queue.SolveLineQueue
+import ru.onehalf.japancrossword.solver.ModelSolver
 
 /**
  * <p/>
@@ -45,7 +45,7 @@ class ControlPanel(models: Array[JapanCrosswordModel], modelChangeListener: Item
     def actionPerformed(e: ActionEvent) {
       val model = modelsCombobox.getSelectedItem.asInstanceOf[JapanCrosswordModel]
       future {
-        new SolveLineQueue(model, "static").solve()
+        new ModelSolver(model).solve()
       }.onFailure({
         case e: Exception => e.printStackTrace()
       })

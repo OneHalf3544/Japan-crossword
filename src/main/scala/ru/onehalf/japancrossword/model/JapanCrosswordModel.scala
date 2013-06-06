@@ -28,6 +28,10 @@ class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val vert
     writeAndNotify(() => board = Array.fill(columnNumber, rowNumber)(Cell.NOT_KNOWN))
   }
 
+  def apply(coordinate: (Int, Int)): Cell.Cell = {
+    apply(coordinate._1, coordinate._2)
+  }
+
   def apply(x: Int, y: Int): Cell.Cell = {
     read(() => board(x)(y))
   }
@@ -36,9 +40,21 @@ class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val vert
     writeAndNotify(() =>  board(x)(y) = c)
   }
 
+  def update(coordinate: (Int, Int), c: Cell.Cell) {
+    this(coordinate._1, coordinate._2) = c
+  }
+
   def getColumn(x: Int) = apply(x, _: Int)
 
   def getRow(y: Int) = apply(_: Int, y)
+
+  def getRowLine(i: Int): (Line, Array[Int]) = {
+    (new LineImpl(i, Orientation.HORIZONTAL, this), verticalLine(i))
+  }
+
+  def getColumnLine(i: Int): (Line, Array[Int]) = {
+    (new LineImpl(i, Orientation.VERTICAL, this), horizonLine(i))
+  }
 
   def addListener(f :() => Unit) {
     listeners = listeners :+ f

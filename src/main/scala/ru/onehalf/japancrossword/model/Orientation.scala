@@ -1,4 +1,4 @@
-package ru.onehalf.japancrossword.solver
+package ru.onehalf.japancrossword.model
 
 /**
  * <p/>

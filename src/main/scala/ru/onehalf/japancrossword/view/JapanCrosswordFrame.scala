@@ -61,6 +61,5 @@ class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FO
     crosswordPanel = newCrosswordPanel
     getContentPane.add(newCrosswordPanel, BorderLayout.CENTER)
     validate()
-    pack()
   }
 }

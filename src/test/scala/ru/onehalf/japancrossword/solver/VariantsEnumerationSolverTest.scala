@@ -2,8 +2,7 @@ package ru.onehalf.japancrossword.solver
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import queue.SolveLineQueue
-import ru.onehalf.japancrossword.model.{Cell, LineImpl, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Orientation, Cell, LineImpl, JapanCrosswordModel}
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.CrosswordLoader.parseLine
 import org.scalatest.concurrent.Timeouts
@@ -45,7 +44,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers with Ti
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 1, 1, 0, 0"),  // 10 cells
       metadata)
 
-    new SolveLineQueue(model).solve()
+    new ModelSolver(model).solve()
     Thread.sleep(100)
     assert(model.isSolved)
   }

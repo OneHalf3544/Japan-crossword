@@ -1,7 +1,6 @@
 package ru.onehalf.japancrossword.model
 
 import scala.Array
-import ru.onehalf.japancrossword.solver.Orientation
 
 /**
  * Сигнатуры рядов.

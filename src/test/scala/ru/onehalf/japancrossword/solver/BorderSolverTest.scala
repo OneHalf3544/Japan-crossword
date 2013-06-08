@@ -3,7 +3,7 @@ package ru.onehalf.japancrossword.solver
 import org.scalatest.{FlatSpec, Matchers}
 import ru.onehalf.japancrossword.CrosswordLoader._
 import ru.onehalf.japancrossword.model.line.{LineImpl, LineOfModelImpl}
-import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, Orientation}
+import ru.onehalf.japancrossword.model.{Cell, Model, Orientation}
 
 /**
  * <p/>
@@ -17,7 +17,7 @@ class BorderSolverTest extends FlatSpec with Matchers {
   it should "set CLEARED cells status to model" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "2 4")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
       metadata)
 

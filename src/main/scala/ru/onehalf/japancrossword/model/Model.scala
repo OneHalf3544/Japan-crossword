@@ -12,7 +12,7 @@ import ru.onehalf.japancrossword.model.line.{LineOfModel, LineOfModelImpl}
  * <p/>
  * @author OneHalf
  */
-class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val verticalLine : Metadata) {
+class Model(val name: String, val horizonLine : ModelMetadata, val verticalLine : ModelMetadata) {
 
   private val readWriteLock = new ReentrantReadWriteLock()
 

@@ -4,7 +4,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.FlatSpec
 import ru.onehalf.japancrossword.CrosswordLoader._
 import ru.onehalf.japancrossword.model.line._
-import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, Metadata, Orientation}
+import ru.onehalf.japancrossword.model._
 import ru.onehalf.japancrossword.solver.queue.{NonogramSolverQueue, SolveQueueTask}
 
 /**
@@ -116,13 +116,13 @@ class LineSplitterTest extends FlatSpec with MockFactory {
 
   private def oneLineModel(string: String) = {
     val solvedLine = createSolvedLine(string)
-    val metadata = new Metadata(Orientation.VERTICAL, Array(solvedLine.metadata))
+    val metadata = new ModelMetadata()(Orientation.VERTICAL, Array(solvedLine.metadata))
     val horizontalMetadata = solvedLine.toList
       .map(i => if (i == Cell.FILLED) 1 else 0)
       .map(LineMetadata.metadata(_))
       .toArray
 
-    new JapanCrosswordModel("test",
+    new Model("test",
       new Metadata(Orientation.HORIZONTAL, horizontalMetadata),
       metadata)
   }

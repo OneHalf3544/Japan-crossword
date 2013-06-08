@@ -18,7 +18,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
   test("find borders") {
 
     val metadata = parseLine(Orientation.VERTICAL, "1 4 1")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "1, 0, 0, 1, 1, 1, 1, 0, 0, 1"),  // 10 cells
       metadata)
 
@@ -33,7 +33,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
   test("search cleared cells at border") {
 
     val metadata = parseLine(Orientation.VERTICAL, "2")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 0, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
       metadata)
 
@@ -48,7 +48,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
   test("fill already solved") {
 
     val metadata = parseLine(Orientation.VERTICAL, "1 2")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 0, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
       metadata)
 
@@ -70,7 +70,7 @@ class SearchClearedCellSolverTest  extends FunSuite {
   test("fill cells betwean cleared ") {
 
     val metadata = parseLine(Orientation.VERTICAL, "4")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 0, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
       metadata)
 

@@ -2,10 +2,12 @@ package ru.onehalf.japancrossword.solver
 
 import org.scalatest.concurrent.TimeLimits
 import org.scalatest.{FlatSpec, Matchers}
+import ru.onehalf.japancrossword.model.{Orientation, Cell, LineImpl, Model}
+import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.CrosswordLoader.parseLine
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.line._
-import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, Orientation}
+import ru.onehalf.japancrossword.model.{Cell, Model}
 
 import scala.collection.mutable
 
@@ -21,7 +23,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
   it should "resolve center cells in line" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "8")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 1, 1, 0, 0"),  // 10 cells
       metadata)
 
@@ -42,7 +44,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
   it should "resolve all cells in line" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "6")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 1, 1, 0, 0"),  // 10 cells
       metadata)
 
@@ -54,7 +56,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
   it should "set CLEARED cells status to model" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "2 4")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
       metadata)
 
@@ -73,7 +75,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
   it should "fill all line by Cell.FILLED status" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "5")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "1, 1, 1, 1, 1"),  // 5 cells
       metadata)
 
@@ -87,7 +89,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
   it should "fill space between two cells" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "4")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 0, 0"),  // 8 cells
       metadata)
 
@@ -110,7 +112,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
   it should "sovle line by sublists" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "4 4")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0"),
       metadata)
 

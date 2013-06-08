@@ -68,6 +68,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
       .filter(i => stat(i) == (FILLED, length) && stat(i - 1)._1 == CLEARED && stat(i + 1)._1 == CLEARED)
       .head
 
+    val m = line.metadata.splitByFirstChunk(length)
     val m = line.metadata.splitAt(line.metadata.indexOf(length))
     val metadata1 = m._1
     val metadata2 = m._2.drop(1)
@@ -163,6 +164,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
     setClearedAt(indexes(indexOfFirstMaxChunk) - 1)
     setClearedAt(indexes(indexOfFirstMaxChunk + 1))
 
+    val m = metadata.splitByFirstChunk(maxLength)
     val m = line.metadata.splitAt(line.metadata.indexOf(maxLength))
 
     val line1 = line.dropRight(m._2.size, line.size - indexes(indexOfFirstMaxChunk))

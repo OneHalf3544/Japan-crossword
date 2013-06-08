@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
-import queue.{NonogramSolverQueue, SolveQueueTask}
-import ru.onehalf.japancrossword.model.JapanCrosswordModel
+import queue.{SolveQueueTask, NonogramSolverQueue}
+import ru.onehalf.japancrossword.model.{LineMetadata, Line, Model}
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.Orientation._
 import ru.onehalf.japancrossword.model.line.{Line, LineOfModel}
@@ -12,7 +12,7 @@ import ru.onehalf.japancrossword.model.line.{Line, LineOfModel}
   * @since 05.06.13 22:47
   * @author OneHalf
   */
-class ModelSolver(model: JapanCrosswordModel) {
+class ModelSolver(model: Model) {
 
   private val fastQueue: NonogramSolverQueue = new NonogramSolverQueue(model, "fast", this)
   private val columnQueue: NonogramSolverQueue = new NonogramSolverQueue(model, "column", this)

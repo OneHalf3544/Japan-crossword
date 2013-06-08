@@ -1,8 +1,8 @@
 package ru.onehalf.japancrossword.view
 
-import java.awt.{Font, Color, Graphics, Dimension}
+import java.awt.{Color, Graphics, Dimension}
 import java.awt.event.{MouseEvent, MouseListener}
-import ru.onehalf.japancrossword.model.{JapanCrosswordModel, Cell}
+import ru.onehalf.japancrossword.model.{Model, Cell}
 import javax.swing.JPanel
 
 /**
@@ -13,7 +13,7 @@ import javax.swing.JPanel
  * <p/>
  * @author OneHalf
  */
-class GridPanel(model: JapanCrosswordModel, CELL_SIZE: Int) extends JPanel {
+class GridPanel(model: Model, CELL_SIZE: Int) extends JPanel {
 
   private val left = 0
   private val top = 0

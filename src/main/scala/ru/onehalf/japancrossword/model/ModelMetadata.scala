@@ -6,7 +6,7 @@ package ru.onehalf.japancrossword.model
   * @author OneHalf
   * @since 11.05.13 12:56
   */
-class Metadata(val orientation: Orientation.Orientation,  content: Array[Array[Int]]) {
+class ModelMetadata(val orientation: Orientation.Orientation,  content: Array[LineMetadata]) {
 
   /**
    * A count of lines for current object.

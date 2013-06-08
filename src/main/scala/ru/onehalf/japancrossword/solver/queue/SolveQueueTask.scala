@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword.solver.queue
 
 import com.typesafe.scalalogging.StrictLogging
-import ru.onehalf.japancrossword.model.{Cell, Line}
+import ru.onehalf.japancrossword.model.{LineMetadata, Cell, Line}
 import ru.onehalf.japancrossword.solver.LineSolver
 
 /**
@@ -15,18 +15,17 @@ import ru.onehalf.japancrossword.solver.LineSolver
   * @since 23.05.13 22:37
   * @author OneHalf
   */
-case class SolveQueueTask(metadata: Array[Int], line: Line, solverType: LineSolver, remainingCells: Int) extends StrictLogging {
+case class SolveQueueTask(metadata: LineMetadata, line: Line, solverType: LineSolver, remainingCells: Int) extends StrictLogging {
 
-  def this(metadata: Array[Int], line: Line, solverType: LineSolver) =
-    this(metadata: Array[Int], line: Line, solverType: LineSolver, line.toList.count(_ == Cell.NOT_KNOWN))
-
+  def this(metadata: LineMetadata, line: Line, solverType: LineSolver) =
+    this(metadata: LineMetadata, line: Line, solverType: LineSolver, line.toList.count(_ == Cell.NOT_KNOWN))
 
   override def equals(obj: Any): Boolean = {
     if (!obj.isInstanceOf[SolveQueueTask]) {
       return false
     }
     val o = obj.asInstanceOf[SolveQueueTask]
-    if (!metadata.corresponds(o.metadata)((a,b) => a == b)) {
+    if (!metadata.eq(o.metadata)) {
       println("metadata not equals")
       return false
     }
@@ -38,5 +37,5 @@ case class SolveQueueTask(metadata: Array[Int], line: Line, solverType: LineSolv
   }
 
   override def toString: String = "Task[%s, line:%d:, NotKnownCount:%d, %s, solver:%s]"
-    .format(metadata.mkString("[", ",", "]"), line.size, line.notKnownCount, line, solverType)
+    .format(metadata.toString, line.size, line.notKnownCount, line, solverType)
 }

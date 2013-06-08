@@ -21,7 +21,7 @@ object VariantsEnumerationSolver extends LineSolver {
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  override def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell] = {
+  override def fillLine(metadata: LineMetadata, currentData: Line): List[Cell.Cell] = {
     fitRemainder(metadata, currentData).get
   }
 
@@ -33,7 +33,7 @@ object VariantsEnumerationSolver extends LineSolver {
    * @param currentData текущее содержимое линии
    * @return Список линий, подходящих под указанные метаданные
    */
-  private[solver] def fitRemainder(metadata: Array[Int], currentData: Line): Option[List[Cell]] = {
+  private[solver] def fitRemainder(metadata: LineMetadata, currentData: Line): Option[List[Cell]] = {
 
     if (metadata.isEmpty) {
       // Нету больше метаданных? Значит остаток строки пустой

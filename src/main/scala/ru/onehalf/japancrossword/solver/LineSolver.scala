@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model.Cell._
-import ru.onehalf.japancrossword.model.{Cell, Line}
+import ru.onehalf.japancrossword.model.{LineMetadata, Cell, Line}
 import ru.onehalf.japancrossword.model.Cell.Cell
 
 /**
@@ -14,7 +14,7 @@ trait LineSolver {
 
   val SEPARATOR: List[Cell] = List(CLEARED)
 
-  def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell]
+  def fillLine(metadata: LineMetadata, currentData: Line): List[Cell.Cell]
 
   protected def indicesForStat(stat: List[(Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
 

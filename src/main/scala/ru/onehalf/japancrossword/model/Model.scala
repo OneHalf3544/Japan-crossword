@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
  * <p/>
  * @author OneHalf
  */
-class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val verticalLine : Metadata) {
+class Model(val name: String, val horizonLine : ModelMetadata, val verticalLine : ModelMetadata) {
 
   private val readWriteLock = new ReentrantReadWriteLock()
 
@@ -48,11 +48,11 @@ class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val vert
 
   def getRow(y: Int) = apply(_: Int, y)
 
-  def getRowLine(i: Int): (Line, Array[Int]) = {
+  def getRowLine(i: Int): (Line, LineMetadata) = {
     (new LineImpl(i, Orientation.HORIZONTAL, this), verticalLine(i))
   }
 
-  def getColumnLine(i: Int): (Line, Array[Int]) = {
+  def getColumnLine(i: Int): (Line, LineMetadata) = {
     (new LineImpl(i, Orientation.VERTICAL, this), horizonLine(i))
   }
 

@@ -12,15 +12,15 @@ import ru.onehalf.japancrossword.model.Cell.Cell
  * @author OneHalf
  */
 class LineImpl(val lineIndex: Int, var orientation: Orientation,
-           model: JapanCrosswordModel, fromIndex: Int, val size :Int) extends Line {
+           model: Model, fromIndex: Int, val size :Int) extends Line {
 
-  def this(lineIndex: Int, orientation: Orientation, model: JapanCrosswordModel, fromIndex: Int) =
+  def this(lineIndex: Int, orientation: Orientation, model: Model, fromIndex: Int) =
     this(lineIndex, orientation, model, fromIndex, orientation match {
       case HORIZONTAL => model.columnNumber - fromIndex
       case VERTICAL => model.rowNumber - fromIndex
     })
 
-  def this(lineIndex: Int, orientation: Orientation, model: JapanCrosswordModel) =
+  def this(lineIndex: Int, orientation: Orientation, model: Model) =
     this(lineIndex, orientation, model, 0)
 
   def apply(cellIndex: Int): Cell = {

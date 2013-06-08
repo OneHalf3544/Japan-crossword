@@ -1,5 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
+import ru.onehalf.japancrossword.model.{LineMetadata, Line}
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.Line
 
@@ -19,13 +20,13 @@ object SearchClearedCellSolver extends LineSolver {
    * @param currentData Текущие данные
    * @return Предполагаемый вариант линии. Может содержать Cell.NOT_KNOWN значения
    */
-  def fillLine(metadata: Array[Int], currentData: Line): List[Cell] = {
+  def fillLine(metadata: LineMetadata, currentData: Line): List[Cell] = {
     val stat: List[(Cell, Int)] = countStat(currentData)
 
     val indexes = indicesForStat(stat)
     var preResult = currentData.toList
 
-    if (stat.filter(_._1 == FILLED).corresponds(metadata)((a, b) => a._2 == b)) {
+    if (stat.filter(_._1 == FILLED).corresponds(metadata.toList)((a, b) => a._2 == b)) {
       // Все уже решено
       return preResult.map(v => if (v == NOT_KNOWN) CLEARED else v)
     }

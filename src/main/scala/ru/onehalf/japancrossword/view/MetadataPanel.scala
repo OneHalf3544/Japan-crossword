@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword.view
 
 import java.awt.{Font, Color, Graphics, Dimension}
-import ru.onehalf.japancrossword.model.{Orientation, Metadata}
+import ru.onehalf.japancrossword.model.{Orientation, ModelMetadata}
 import javax.swing.JPanel
 
 /**
@@ -10,7 +10,7 @@ import javax.swing.JPanel
   * @since 11.05.13 11:25
   * @author OneHalf
   */
-class MetadataPanel(val CELL_SIZE: Int, val FONT_SIZE: Int, metadata: Metadata) extends JPanel {
+class MetadataPanel(val CELL_SIZE: Int, val FONT_SIZE: Int, metadata: ModelMetadata) extends JPanel {
 
   setPreferredSize(dimension)
 

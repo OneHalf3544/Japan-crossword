@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
 import queue.{SolveQueueTask, NonogramSolverQueue}
-import ru.onehalf.japancrossword.model.{Line, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{LineMetadata, Line, Model}
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.Orientation._
 
@@ -11,7 +11,7 @@ import ru.onehalf.japancrossword.model.Orientation._
   * @since 05.06.13 22:47
   * @author OneHalf
   */
-class ModelSolver(model: JapanCrosswordModel) {
+class ModelSolver(model: Model) {
 
   private val fastQueue: NonogramSolverQueue = new NonogramSolverQueue(model, "fast", this)
   private val columnQueue: NonogramSolverQueue = new NonogramSolverQueue(model, "column", this)
@@ -37,7 +37,7 @@ class ModelSolver(model: JapanCrosswordModel) {
     }
   }
 
-  def enqueue(v: (Line, Array[Int]), orientation: Orientation) {
+  def enqueue(v: (Line, LineMetadata), orientation: Orientation) {
     fastQueue.enqueueLineForFastSolver(v)
 
     (if (orientation == VERTICAL) columnQueue else rowQueue ) !

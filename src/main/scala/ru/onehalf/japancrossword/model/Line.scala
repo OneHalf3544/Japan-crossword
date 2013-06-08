@@ -12,13 +12,13 @@ import Orientation._
  */
 trait Line {
 
-  def last: Cell.Cell = apply(size - 1)
+  def last: Cell = apply(size - 1)
 
   def lineIndex: Int
 
   def reverse(): Line
 
-  def toList: List[Cell.Cell]
+  def toList: List[Cell]
 
   def nonEmpty(): Boolean
 
@@ -26,7 +26,7 @@ trait Line {
 
   def dropRight(i: Int): Line
 
-  def forall(predicate: Cell.Cell => Boolean): Boolean
+  def forall(predicate: Cell => Boolean): Boolean
 
   def size: Int
 

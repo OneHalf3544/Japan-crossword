@@ -2,7 +2,7 @@ package ru.onehalf.japancrossword.solver
 
 import org.scalatest.FunSuite
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{Orientation, LineImpl, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Orientation, LineImpl, Model}
 import ru.onehalf.japancrossword.model.Cell._
 
 /**
@@ -16,7 +16,7 @@ class SearchOverlapsSolver$Test extends FunSuite {
 
   test("fitFromLeft") {
     val metadata = parseLine(Orientation.VERTICAL, "2 1 3")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 0, 0, 1, 1, 1"),  // 10 cells
       metadata)
 
@@ -30,7 +30,7 @@ class SearchOverlapsSolver$Test extends FunSuite {
 
   test("fitFromRight") {
     val metadata = parseLine(Orientation.VERTICAL, "2 1 3")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 0, 0, 1, 1, 1"),  // 10 cells
       metadata)
 
@@ -44,7 +44,7 @@ class SearchOverlapsSolver$Test extends FunSuite {
 
   test("fillLine") {
     val metadata = parseLine(Orientation.VERTICAL, "2 1 3")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 0, 0, 1, 1, 1"),  // 10 cells
       metadata)
 
@@ -58,7 +58,7 @@ class SearchOverlapsSolver$Test extends FunSuite {
 
   test("fillLine2") {
     val metadata = parseLine(Orientation.VERTICAL, "2 2 13 4")
-    val model = new JapanCrosswordModel("test",
+    val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0"),  // 10 cells
       metadata)
 

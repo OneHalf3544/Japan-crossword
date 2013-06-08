@@ -2,7 +2,7 @@ package ru.onehalf.japancrossword.view
 
 import java.awt._
 import javax.swing._
-import ru.onehalf.japancrossword.model.JapanCrosswordModel
+import ru.onehalf.japancrossword.model.Model
 import java.awt.event.{ItemEvent, ItemListener}
 
 /**
@@ -11,7 +11,7 @@ import java.awt.event.{ItemEvent, ItemListener}
   * @since 02.05.13 0:16
   * @author OneHalf
   */
-class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FONT_SIZE: Int) extends JFrame("Японский кроссворд") {
+class JapanCrosswordFrame(models: Array[Model], CELL_SIZE: Int, FONT_SIZE: Int) extends JFrame("Японский кроссворд") {
 
   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
@@ -24,7 +24,7 @@ class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FO
    */
   private val modelChoosePanel = new ControlPanel(models, new ItemListener(){
     def itemStateChanged(e: ItemEvent) {
-      val model = e.getItem.asInstanceOf[JapanCrosswordModel]
+      val model = e.getItem.asInstanceOf[Model]
       e.getStateChange match {
         case ItemEvent.SELECTED => {
           model.addListener(repaintListener)

@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
 import queue.{NonogramSolverQueue, SolveQueueTask}
-import ru.onehalf.japancrossword.model.Line
+import ru.onehalf.japancrossword.model.{LineMetadata, Line}
 import ru.onehalf.japancrossword.model.Cell._
 
 /**
@@ -17,7 +17,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
   // todo Делить линии по точно найденному участку.
   // Т.е.:  1 2 3  ......._XX_..... можно поделить по найденному участку независимо от того, что 2 != metadata.max
 
-  def fillLine(metadata: Array[Int], currentData: Line): List[Cell] = {throw new UnsupportedOperationException}
+  def fillLine(metadata: LineMetadata, currentData: Line): List[Cell] = {throw new UnsupportedOperationException}
 
   def dropClearedFromEnds(line: Line): Line = {
     if (line(0) == CLEARED) {
@@ -29,7 +29,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
     line
   }
 
-  def splitByKnownChunk(line: Line, metadata: Array[Int], solver: LineSolver): Boolean = {
+  def splitByKnownChunk(line: Line, metadata: LineMetadata, solver: LineSolver): Boolean = {
     val stat: List[(Cell, Int)] = (CLEARED, 0) +: countStat(line) :+ (CLEARED, 0)
     val indexes = indicesForStat(stat)
 
@@ -50,7 +50,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
       if (foundedParts.count(_ == length) == metadata.count(_ == length)) {
         val i = stat.indices.init.tail.filter(i => stat(i) == (FILLED, length) && stat(i - 1)._1 == CLEARED && stat(i + 1)._1 == CLEARED ).head
 
-        val m = metadata.splitAt(metadata.indexOf(length))
+        val m = metadata.splitByFirstChunk(length)
 
         val metadata1 = m._1
         val line1 = line.dropRight(line.size - indexes(i))
@@ -74,7 +74,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
    * @param currentData Текущие данные
    * @return true, если линия разделена
    */
-  def splitLine(metadata: Array[Int], currentData: Line, solver: LineSolver): Boolean = {
+  def splitLine(metadata: LineMetadata, currentData: Line, solver: LineSolver): Boolean = {
 
     if (currentData(0) == CLEARED || currentData.last == CLEARED) {
       queue ! new SolveQueueTask(metadata, dropClearedFromEnds(currentData), solver)
@@ -91,8 +91,8 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
 
     if (countStat(currentData.toList.filterNot(_ == NOT_KNOWN)).count(_._1 == FILLED) >= metadata.size) {
       val sublists = divideToSublists(currentData, countStat(currentData))
-      assert(sublists.size == metadata.size, "size not equals: %s and %s".format(metadata.mkString("[", ",", "]"), sublists))
-      sublists.indices map (v => queue ! new SolveQueueTask(Array(metadata(v)), sublists(v), solver))
+      assert(sublists.size == metadata.size, "size not equals: %s and %s".format(metadata, sublists))
+      sublists.indices map (v => queue ! new SolveQueueTask(new LineMetadata(metadata(v)), sublists(v), solver))
       return true
     }
 
@@ -110,7 +110,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
    * @param solver Решатель для строки
    * @return true, если строка была разделена
    */
-  def dropChanksFromEnds(metadata: Array[Int], line: Line, solver: LineSolver): Boolean = {
+  def dropChanksFromEnds(metadata: LineMetadata, line: Line, solver: LineSolver): Boolean = {
     val stat = countStat(line)
 
     if (stat.size <= 1) {
@@ -130,7 +130,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
     false
   }
 
-  def splitByFirstMaxLength(line: Line, metadata: Array[Int], solver: LineSolver): Boolean = {
+  def splitByFirstMaxLength(line: Line, metadata: LineMetadata, solver: LineSolver): Boolean = {
     val stat = countStat(line)
     val indexes = indicesForStat(stat)
 
@@ -149,7 +149,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
     setClearedAt(indexes(i) - 1)
     setClearedAt(indexes(i+1))
 
-    val m = metadata.splitAt(metadata.indexOf(maxLength))
+    val m = metadata.splitByFirstChunk(maxLength)
 
     val metadata1 = m._1
     val line1 = line.dropRight(line.size - indexes(i))
@@ -158,7 +158,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
     val line2 = line.drop(indexes(i + 1))
 
     //println("splitted to: %s,%s, lines: %s, %s".format(metadata1.mkString("[", ",", "]"), metadata2.mkString("[", ",", "]"), line1, line2))
-    queue ! new SolveQueueTask(metadata1,         line1, solver)
+    queue ! new SolveQueueTask(metadata1, line1, solver)
     queue ! new SolveQueueTask(metadata2, line2, solver)
 
     true

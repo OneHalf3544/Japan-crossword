@@ -1,9 +1,8 @@
 package ru.onehalf.japancrossword.view
 
 import javax.swing.JPanel
-import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.Model
 import java.awt._
-import java.awt.event.{MouseEvent, MouseListener}
 
 /**
  * Панелька с кроссводром (цифры + сетка)
@@ -13,7 +12,7 @@ import java.awt.event.{MouseEvent, MouseListener}
  * <p/>
  * @author OneHalf
  */
-class JapanCrosswordPanel(model: JapanCrosswordModel,  CELL_SIZE: Int, FONT_SIZE: Int) extends JPanel(new GridBagLayout()) {
+class JapanCrosswordPanel(model: Model,  CELL_SIZE: Int, FONT_SIZE: Int) extends JPanel(new GridBagLayout()) {
 
   initializeComponents()
 

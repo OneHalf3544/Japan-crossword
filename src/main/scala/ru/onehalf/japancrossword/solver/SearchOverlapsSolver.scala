@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.Line
+import ru.onehalf.japancrossword.model.{LineMetadata, Line}
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.Cell.Cell
 
@@ -17,7 +17,7 @@ object SearchOverlapsSolver extends LineSolver {
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  def fillLine(metadata: Array[Int], currentData: Line): List[Cell] = {
+  def fillLine(metadata: LineMetadata, currentData: Line): List[Cell] = {
     assert(metadata.nonEmpty)
 
     //println("metadata: %s, line: %s".format(metadata.mkString("[", ",", "]"), currentData))
@@ -46,7 +46,7 @@ object SearchOverlapsSolver extends LineSolver {
    * @param currentData текущее содержимое линии
    * @return Линия, подходящих под указанные метаданные
    */
-  def fitFromLeft(metadata: Array[Int], currentData: Line): Option[List[Cell]] = {
+  def fitFromLeft(metadata: LineMetadata, currentData: Line): Option[List[Cell]] = {
 
     if (metadata.isEmpty) {
       // Нету больше метаданных? Значит остаток строки пустой
@@ -89,7 +89,7 @@ object SearchOverlapsSolver extends LineSolver {
     None
   }
 
-  def fitFromRight(metadata: Array[Int], currentData: Line): Option[List[Cell]] = {
+  def fitFromRight(metadata: LineMetadata, currentData: Line): Option[List[Cell]] = {
     Some(fitFromLeft(metadata.reverse, currentData.reverse()).get.reverse)
   }
 

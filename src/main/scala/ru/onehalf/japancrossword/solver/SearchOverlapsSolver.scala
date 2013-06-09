@@ -87,7 +87,7 @@ object SearchOverlapsSolver extends LineSolver with StrictLogging {
     }
 
     val chunkLength = currentData.metadata.head
-    val chunk = List.fill[Cell](chunkLength)(FILLED)
+    val chunk = List.fill[Cell](chunkLength)(new FilledCell(Color.BLACK))
 
     if (currentData.size == chunkLength) {
       // Оставшаяся длина совпадает в оставшимся куском
@@ -101,7 +101,7 @@ object SearchOverlapsSolver extends LineSolver with StrictLogging {
     for ( i <- 0 to maxChunkStartIndex(currentData)) {
 
       // Заполнение отступом + заполненный участок
-      var lineArray: List[Cell] = List.fill(i)(CLEARED) ++ chunk
+      var lineArray: List[Cell] = List.fill(i)(Cleared) ++ chunk
       // Если какая-то часть строки еще остается, добавляем разделительную ячейку
       if (currentData.metadata.size > 1) {
         lineArray = lineArray :+ CLEARED

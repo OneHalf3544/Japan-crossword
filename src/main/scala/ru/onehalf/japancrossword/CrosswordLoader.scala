@@ -9,6 +9,7 @@ import java.util.Properties
 import ru.onehalf.japancrossword.model.line.LineMetadata
 
 import scala.collection.convert.wrapAsScala._
+import java.awt.Color
 
 
 /**
@@ -34,7 +35,8 @@ object CrosswordLoader {
       .map(tuple => new Model(
           tuple._2(tuple._1 + ".name"),
           parseLine(HORIZONTAL, tuple._2(tuple._1 + ".horizontal")),
-          parseLine(VERTICAL,   tuple._2(tuple._1 + ".vertical"))))
+          parseLine(VERTICAL,   tuple._2(tuple._1 + ".vertical")),
+          Set(Color.BLACK)))
       .toArray
       .sortBy(_.name)
   }

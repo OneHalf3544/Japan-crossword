@@ -2,8 +2,9 @@ package ru.onehalf.japancrossword.view
 
 import java.awt.{Color, Graphics, Dimension}
 import java.awt.event.{MouseEvent, MouseListener}
-import ru.onehalf.japancrossword.model.{Model, Cell}
+import ru.onehalf.japancrossword.model._
 import javax.swing.JPanel
+import ru.onehalf.japancrossword.model.FilledCell
 
 /**
  * Панель с сеткой кроссворда. Реагирует на клики изменением модели
@@ -38,9 +39,9 @@ class GridPanel(model: Model, CELL_SIZE: Int) extends JPanel {
 
       val current = model.apply(coordinates._1, coordinates._2)
       model.update(coordinates._1, coordinates._2, (current, e.getButton) match {
-        case (Cell.NOT_KNOWN, MouseEvent.BUTTON1) => Cell.FILLED
-        case (Cell.NOT_KNOWN, MouseEvent.BUTTON3) => Cell.CLEARED
-        case (_, _) => Cell.NOT_KNOWN
+        case (NotKnownCell(_), MouseEvent.BUTTON1) => new FilledCell(Color.BLACK)
+        case (NotKnownCell(_), MouseEvent.BUTTON3) => Cleared
+        case (_, _) => NotKnownCell(model.colors)
       })
     }
 
@@ -76,8 +77,8 @@ class GridPanel(model: Model, CELL_SIZE: Int) extends JPanel {
 
     def drawCell(x: Int, y: Int) {
       model.apply(x, y) match {
-        case Cell.FILLED => g.fillRect(left + x * CELL_SIZE, top + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
-        case Cell.CLEARED => {
+        case FilledCell(_) => g.fillRect(left + x * CELL_SIZE, top + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        case Cleared => {
           val x1 = left + x * CELL_SIZE
           val y1 = top + y * CELL_SIZE
           g.drawLine(x1, y1, x1 + CELL_SIZE, y1 + CELL_SIZE)
@@ -88,7 +89,7 @@ class GridPanel(model: Model, CELL_SIZE: Int) extends JPanel {
 
     for (x <- 0 until model.columnNumber)
       for (y <- 0 until model.rowNumber)
-        if (model(x, y) != Cell.NOT_KNOWN)
+        if (!model(x, y).isNotKnown)
           drawCell(x, y)
   }
 

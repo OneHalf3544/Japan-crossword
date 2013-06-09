@@ -15,15 +15,19 @@ import ru.onehalf.japancrossword.model.line.{LineImpl, LineOfModelImpl}
  */
 class SearchClearedCellSolverTest  extends FunSuite {
 
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val FILLED = new FilledCell(Color.BLACK)
+  val CLEARED = Cleared
+
   test("find borders") {
 
     val metadata = parseLine(Orientation.VERTICAL, "1 4 1")
     val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "1, 0, 0, 1, 1, 1, 1, 0, 0, 1"),  // 10 cells
-      metadata)
+      metadata, Set(Color.BLACK))
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
-    3 to 6 foreach (line(_) = Cell.FILLED)
+    3 to 6 foreach (line(_) = FILLED)
 
     val result = SearchClearedCellSolver.fillLine(line).toList
 
@@ -35,10 +39,10 @@ class SearchClearedCellSolverTest  extends FunSuite {
     val metadata = parseLine(Orientation.VERTICAL, "2")
     val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 0, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
-      metadata)
+      metadata, Set(Color.BLACK))
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
-    line(4) = Cell.FILLED
+    line(4) = FILLED
 
     val result = SearchClearedCellSolver.fillLine(line).toList
 
@@ -50,12 +54,12 @@ class SearchClearedCellSolverTest  extends FunSuite {
     val metadata = parseLine(Orientation.VERTICAL, "1 2")
     val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 0, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
-      metadata)
+      metadata, Set(Color.BLACK))
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
-    line(1) = Cell.FILLED
-    line(4) = Cell.FILLED
-    line(5) = Cell.FILLED
+    line(1) = FILLED
+    line(4) = FILLED
+    line(5) = FILLED
 
     val result = SearchClearedCellSolver.fillLine(line).toList
 
@@ -72,11 +76,11 @@ class SearchClearedCellSolverTest  extends FunSuite {
     val metadata = parseLine(Orientation.VERTICAL, "4")
     val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 0, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
-      metadata)
+      metadata, Set(Color.BLACK))
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
-    line(2) = Cell.CLEARED
-    line(5) = Cell.CLEARED
+    line(2) = CLEARED
+    line(5) = CLEARED
 
     val result = SearchClearedCellSolver.fillLine(line).toList
 

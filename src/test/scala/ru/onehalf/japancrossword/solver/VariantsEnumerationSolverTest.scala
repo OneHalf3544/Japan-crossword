@@ -2,8 +2,7 @@ package ru.onehalf.japancrossword.solver
 
 import org.scalatest.concurrent.TimeLimits
 import org.scalatest.{FlatSpec, Matchers}
-import ru.onehalf.japancrossword.model.{Orientation, Cell, LineImpl, Model}
-import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.model._
 import ru.onehalf.japancrossword.CrosswordLoader.parseLine
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.line._
@@ -20,25 +19,29 @@ import scala.collection.mutable
  */
 class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimits {
 
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val FILLED = new FilledCell(Color.BLACK)
+  val CLEARED = Cleared
+
   it should "resolve center cells in line" in {
 
     val metadata = parseLine(Orientation.VERTICAL, "8")
     val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 1, 1, 0, 0"),  // 10 cells
-      metadata)
+      metadata, Set(Color.BLACK))
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
 
     val result = VariantsEnumerationSolver.fillLine(line)
 
     assert(result.size === 10)
-    assert(result(0) === Cell.NOT_KNOWN)
-    assert(result(1) === Cell.NOT_KNOWN)
+    assert(result(0) === NOT_KNOWN)
+    assert(result(1) === NOT_KNOWN)
 
-    assert(2 to 7 forall(result(_) == Cell.FILLED))
+    assert(2 to 7 forall(result(_) == FILLED))
 
-    assert(result(8) === Cell.NOT_KNOWN)
-    assert(result(9) === Cell.NOT_KNOWN)
+    assert(result(8) === NOT_KNOWN)
+    assert(result(9) === NOT_KNOWN)
   }
 
   it should "resolve all cells in line" in {
@@ -46,7 +49,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
     val metadata = parseLine(Orientation.VERTICAL, "6")
     val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 1, 1, 0, 0"),  // 10 cells
-      metadata)
+      metadata, Set(Color.BLACK))
 
     new ModelSolver(model).solve()
     Thread.sleep(100)
@@ -58,18 +61,18 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
     val metadata = parseLine(Orientation.VERTICAL, "2 4")
     val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
-      metadata)
+      metadata, Set(Color.BLACK))
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
 
-    line(1) = Cell.FILLED // Закрашиваем две клетки:          _X_______X
-    line(9) = Cell.FILLED // После подбора строки должно быть _X_...XXXX
+    line(1) = FILLED // Закрашиваем две клетки:          _X_______X
+    line(9) = FILLED // После подбора строки должно быть _X_...XXXX
 
     val result = VariantsEnumerationSolver.fillLine(line).toList
 
     assert(result === List(
-      Cell.NOT_KNOWN, Cell.FILLED, Cell.NOT_KNOWN, Cell.CLEARED, Cell.CLEARED,
-      Cell.CLEARED, Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED))
+      NOT_KNOWN, FILLED, NOT_KNOWN, CLEARED, CLEARED,
+      CLEARED, FILLED, FILLED, FILLED, FILLED))
   }
 
   it should "fill all line by Cell.FILLED status" in {
@@ -77,13 +80,13 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
     val metadata = parseLine(Orientation.VERTICAL, "5")
     val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "1, 1, 1, 1, 1"),  // 5 cells
-      metadata)
+      metadata, Set(Color.BLACK))
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
 
     val result = VariantsEnumerationSolver.fillLine(line).toList
 
-    assert(result === List(Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED))
+    assert(result === List(FILLED, FILLED, FILLED, FILLED, FILLED))
   }
 
   it should "fill space between two cells" in {
@@ -91,22 +94,22 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
     val metadata = parseLine(Orientation.VERTICAL, "4")
     val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 0, 0"),  // 8 cells
-      metadata)
+      metadata, Set(Color.BLACK))
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
     // Выставляем две ячейки. Они должны быть соединены, т.к. должно быть только 4 ячейки идущих подряд
-    line(3) = Cell.FILLED // Выставляем:     ___X_X__
-    line(5) = Cell.FILLED // После решения:  .._XXX_.
+    line(3) = FILLED // Выставляем:     ___X_X__
+    line(5) = FILLED // После решения:  .._XXX_.
 
 
     val result = VariantsEnumerationSolver.fillLine(line).toList
 
     assert(result === List(
-      Cell.CLEARED, Cell.CLEARED,
-      Cell.NOT_KNOWN,
-      Cell.FILLED, Cell.FILLED, Cell.FILLED,
-      Cell.NOT_KNOWN,
-      Cell.CLEARED))
+      CLEARED, CLEARED,
+      NOT_KNOWN,
+      FILLED, FILLED, FILLED,
+      NOT_KNOWN,
+      CLEARED))
   }
 
   it should "sovle line by sublists" in {
@@ -114,7 +117,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
     val metadata = parseLine(Orientation.VERTICAL, "4 4")
     val model = new Model("test",
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0"),
-      metadata)
+      metadata, Set(Color.BLACK))
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
     line(3) = FILLED

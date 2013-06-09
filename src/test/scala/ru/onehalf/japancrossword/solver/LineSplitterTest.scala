@@ -5,6 +5,7 @@ import org.scalatest.FlatSpec
 import ru.onehalf.japancrossword.CrosswordLoader._
 import ru.onehalf.japancrossword.model.line._
 import ru.onehalf.japancrossword.model._
+import java.awt.Color
 import ru.onehalf.japancrossword.solver.queue.{NonogramSolverQueue, SolveQueueTask}
 
 /**
@@ -15,6 +16,10 @@ import ru.onehalf.japancrossword.solver.queue.{NonogramSolverQueue, SolveQueueTa
  * @author OneHalf
  */
 class LineSplitterTest extends FlatSpec with MockFactory {
+
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val FILLED = new FilledCell(Color.BLACK)
+  val CLEARED = Cleared
 
   behavior of "splitter"
 

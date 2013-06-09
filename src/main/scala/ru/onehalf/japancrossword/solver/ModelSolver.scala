@@ -2,7 +2,7 @@ package ru.onehalf.japancrossword.solver
 
 import queue.{SolveQueueTask, NonogramSolverQueue}
 import ru.onehalf.japancrossword.model.{LineMetadata, Line, Model}
-import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.model.Cell
 import ru.onehalf.japancrossword.model.Orientation._
 import ru.onehalf.japancrossword.model.line.{Line, LineOfModel}
 
@@ -51,7 +51,7 @@ class ModelSolver(model: Model) {
    * @param line Кусочек модели, в которую нужно скопировать предлагаемые значения
    */
   def addDataToModel(oldData: List[Cell], variant: Line, line: LineOfModel) {
-    variant.indexes filter (i => line(i) == NOT_KNOWN && variant(i) != NOT_KNOWN) foreach(i => {
+    variant.indexes filter (i => line(i).isNotKnown && !variant(i).isNotKnown) foreach(i => {
       line(i) = variant(i)
 /*      line.orientation match {
         case HORIZONTAL => enqueue(model.getColumnLine(i), VERTICAL)

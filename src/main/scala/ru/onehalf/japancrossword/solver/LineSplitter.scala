@@ -30,12 +30,12 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
       return false
     }
 
-    val stat: List[(Cell, Int)] = (CLEARED, 0) +: line.countStat() :+ (CLEARED, 0)
+    val stat: List[(Cell, Int)] = (Cleared, 0) +: line.countStat() :+ (Cleared, 0)
     val indexes: Seq[Int] = indicesForStat(stat)
 
     def searchBoundParts(statWindow: List[(Cell, Int)]): Option[Int] = {
       statWindow match {
-        case List((CLEARED, _), (FILLED, chunkLength), (CLEARED, _))  => Some(chunkLength)
+        case List((Cleared, _), (FilledCell(Color.BLACK), chunkLength), (Cleared, _))  => Some(chunkLength)
         case _ => None
       }
     }
@@ -89,7 +89,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
   def splitLine(currentData: LineOfModel, solver: LineSolver): Boolean = {
 
     val metadata = currentData.metadata
-    if (currentData(0) == CLEARED || currentData.last == CLEARED) {
+    if (currentData(0) == Cleared || currentData.last == Cleared) {
       queue ! new SolveQueueTask(currentData.dropClearedFromEnds(), solver)
       return true
     }
@@ -102,7 +102,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
       return false
     }
 
-    if (Line.countStat(currentData.toList.filterNot(_ == NOT_KNOWN)).count(_._1 == FILLED) >= metadata.size) {
+    if (Line.countStat(currentData.toList.filterNot(_.isNotKnown)).count(_._1.isFilled) >= metadata.size) {
       val sublists = divideToSublists(currentData, currentData.countStat())
       assert(sublists.size == metadata.size, s"size not equals: $metadata and $sublists")
       sublists.indices foreach (v => queue ! new SolveQueueTask(sublists(v), solver))
@@ -130,12 +130,12 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
       return false
     }
 
-    if (stat.head == (FILLED, line.metadata.head) && stat(1)._1 == CLEARED) {
+    if (stat.head == (new FilledCell(Color.BLACK), line.metadata.head) && stat(1)._1 == Cleared) {
       queue ! new SolveQueueTask(line.dropLeft(1, line.metadata.head + 1), solver)
       return true
     }
 
-    if (stat.last == (FILLED, line.metadata.last) && stat(stat.size-2)._1 == CLEARED) {
+    if (stat.last == (new FilledCell(Color.BLACK), line.metadata.last) && stat(stat.size-2)._1 == Cleared) {
       queue ! new SolveQueueTask(line.dropRight(1, line.metadata.last + 1), solver)
       return true
     }
@@ -155,11 +155,11 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
     val maxLength = line.metadata.max
 
     // if we don't find all chunks with max length, we cannot split line correctly
-    if (line.metadata.count(_ == maxLength) != stat.count(_ == (FILLED, maxLength))) {
+    if (line.metadata.count(_ == maxLength) != stat.count(_ == (new FilledCell(Color.BLACK), maxLength))) {
       return false
     }
 
-    val indexOfFirstMaxChunk = stat.indices.filter(i => stat(i) == (FILLED, maxLength)).head
+    val indexOfFirstMaxChunk = stat.indices.filter(i => stat(i) == (new FilledCell(Color.BLACK), maxLength)).head
     // place cleared cells around the found chunk:
     setClearedAt(indexes(indexOfFirstMaxChunk) - 1)
     setClearedAt(indexes(indexOfFirstMaxChunk + 1))
@@ -193,10 +193,10 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
      * @return true, если после укзанной позиции есть еще заполненные участки.
      *         (Используется для определения необходимости деления)
      */
-    def isNotLastFilled(i: Int) = stat.drop(i+1).exists(_._1 == FILLED)
-    def isFilledBefore(i: Int) = stat.take(i).exists(_._1 == FILLED)
+    def isNotLastFilled(i: Int) = stat.drop(i+1).exists(_._1.isFilled)
+    def isFilledBefore(i: Int) = stat.take(i).exists(_._1.isFilled)
 
-    stat.indices.tail.find(i => { stat(i)._1 == CLEARED && isFilledBefore(i) && isNotLastFilled(i)}) match {
+    stat.indices.tail.find(i => { stat(i)._1 == Cleared && isFilledBefore(i) && isNotLastFilled(i)}) match {
       case Some(x) =>
         val splitIndex = statIndicies(x)
         val mc = line.metadata.size - 1

@@ -11,7 +11,7 @@ import ru.onehalf.japancrossword.model.line.{Line, LineImpl}
   */
 trait LineSolver {
 
-  val SEPARATOR: List[Cell] = List(CLEARED)
+  val SEPARATOR: List[Cell] = List(Cleared)
 
   def fillLine(currentData: Line): Line
 
@@ -30,7 +30,7 @@ trait LineSolver {
     assert(line1.size == line2.size, s"lines: ${line1.size}, ${line2.size}")
     val lineLength = line1.size
 
-    val result = Array.fill[Cell](lineLength)(NOT_KNOWN)
+    val result = Array.fill[Cell](lineLength)(new NotKnownCell(Set(Color.BLACK)))
 
     // Сохряняем в результат только совпадающие данные
     0 until lineLength filter (i => line1(i) == line2(i)) foreach(i => result(i) = line2(i))
@@ -46,7 +46,7 @@ trait LineSolver {
   def compatibleToCurrentData(currentData: Line, supposeLine: Line): Boolean = {
 
     def cellIsCompatible(i: Int): Boolean = {
-      currentData(i) == supposeLine(i) || currentData(i) == NOT_KNOWN || supposeLine(i) == NOT_KNOWN
+      currentData(i) == supposeLine(i) || currentData(i).isNotKnown || supposeLine(i).isNotKnown
     }
 
     assert(currentData.size == supposeLine.size)

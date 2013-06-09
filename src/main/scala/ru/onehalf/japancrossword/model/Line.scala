@@ -1,6 +1,5 @@
 package ru.onehalf.japancrossword.model
 
-import ru.onehalf.japancrossword.model.Cell._
 import Orientation._
 
 /**
@@ -11,6 +10,10 @@ import Orientation._
  * @author OneHalf
  */
 trait Line {
+
+  def exists(predicate: (Cell) => Boolean): Boolean = {
+    ! forall(! predicate(_))
+  }
 
   def last: Cell = apply(size - 1)
 
@@ -32,18 +35,18 @@ trait Line {
 
   def orientation: Orientation
 
-  def update(cellIndex: Int, cell: Cell.Cell)
+  def update(cellIndex: Int, cell: Cell)
 
-  def apply(cellIndex: Int): Cell.Cell
+  def apply(cellIndex: Int): Cell
 
   def absoluteCoordinate(i: Int): (Int, Int)
 
-  def notKnownCount: Int = (1 to size) count(i => apply(i - 1) == Cell.NOT_KNOWN)
+  def notKnownCount: Int = (1 to size) count(i => apply(i - 1).isNotKnown)
 
   override def toString: String = "Line[%s]".format(toList.map({
-    case FILLED => 'X'
-    case CLEARED => '_'
-    case NOT_KNOWN => '.'}).mkString)
+    case FilledCell(_) => 'X'
+    case Cleared => '_'
+    case NotKnownCell(_) => '.'}).mkString)
 
   override def hashCode(): Int = 0
 

@@ -1,6 +1,7 @@
 package ru.onehalf.japancrossword.model
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import java.awt.Color
 
 /**
  * A nonogram model. Contains of two [[Metadata]] and grid content.
@@ -10,7 +11,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
  * <p/>
  * @author OneHalf
  */
-class Model(val name: String, val horizonLine : ModelMetadata, val verticalLine : ModelMetadata) {
+class Model(val name: String, val horizonLine : ModelMetadata, val verticalLine : ModelMetadata, val colors: Set[Color]) {
+
+  def this(name: String, horizonLine : ModelMetadata, verticalLine : ModelMetadata) =
+    this(name, horizonLine, verticalLine, Set(Color.BLACK))
 
   private val readWriteLock = new ReentrantReadWriteLock()
 
@@ -20,27 +24,27 @@ class Model(val name: String, val horizonLine : ModelMetadata, val verticalLine 
 
   private var listeners: List[()=>Unit] = List()
 
-  private var board: Array[Array[Cell.Cell]] = _
+  private var board: Array[Array[Cell]] = _
 
   clear()
 
   def clear() {
-    writeAndNotify(() => board = Array.fill(columnNumber, rowNumber)(Cell.NOT_KNOWN))
+    writeAndNotify(() => board = Array.fill(columnNumber, rowNumber)(new NotKnownCell(colors)))
   }
 
-  def apply(coordinate: (Int, Int)): Cell.Cell = {
+  def apply(coordinate: (Int, Int)): Cell = {
     apply(coordinate._1, coordinate._2)
   }
 
-  def apply(x: Int, y: Int): Cell.Cell = {
+  def apply(x: Int, y: Int): Cell = {
     read(() => board(x)(y))
   }
 
-  def update(x: Int, y: Int, c: Cell.Cell) {
+  def update(x: Int, y: Int, c: Cell) {
     writeAndNotify(() =>  board(x)(y) = c)
   }
 
-  def update(coordinate: (Int, Int), c: Cell.Cell) {
+  def update(coordinate: (Int, Int), c: Cell) {
     this(coordinate._1, coordinate._2) = c
   }
 
@@ -65,7 +69,7 @@ class Model(val name: String, val horizonLine : ModelMetadata, val verticalLine 
   }
 
   def totalUnresolvedCount(): Int = {
-    board.map(_.count(_ == Cell.NOT_KNOWN)).sum
+    board.map(_.count(_.isNotKnown)).sum
   }
 
   def isSolved: Boolean = {

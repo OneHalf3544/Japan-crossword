@@ -1,7 +1,8 @@
 package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model._
-import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.model.Cell
+import java.awt.Color
 
 /**
  * Логика решения кроссворда перебором содержимого строк и столбцов.
@@ -21,7 +22,7 @@ object VariantsEnumerationSolver extends LineSolver {
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  override def fillLine(metadata: LineMetadata, currentData: Line): List[Cell.Cell] = {
+  override def fillLine(metadata: LineMetadata, currentData: Line): List[Cell] = {
     fitRemainder(metadata, currentData).get
   }
 
@@ -37,14 +38,16 @@ object VariantsEnumerationSolver extends LineSolver {
 
     if (metadata.isEmpty) {
       // Нету больше метаданных? Значит остаток строки пустой
-      if (currentData.forall(_ != FILLED)) return Option(List.fill[Cell](currentData.size)(CLEARED))
-      else return Option.empty // В случае противоречий говорим, что решения нет
+      if (currentData.exists(_.isFilled))
+        return Option.empty // В случае противоречий говорим, что решения нет
+      else
+        return Option(List.fill[Cell](currentData.size)(Cleared))
     }
 
     val chunkLength = metadata.head
-    val chunk = List.fill[Cell](chunkLength)(FILLED)
+    val chunk = List.fill[Cell](chunkLength)(new FilledCell(Color.BLACK))
     val expectedLength = currentData.size
-    val separator = List(CLEARED)
+    val separator = List(Cleared)
 
     if (expectedLength == chunkLength) {
       // Оставшаяся длина совпадает в оставшимся куском
@@ -53,7 +56,7 @@ object VariantsEnumerationSolver extends LineSolver {
 
     // Не пересчитывать заведомо неопределяемые ячейки
     val maxSequenceLength = metadata.sum + metadata.length - 1
-    if (currentData.forall(_ == NOT_KNOWN) && currentData.size >= 2 * maxSequenceLength ) {
+    if (currentData.forall(_.isNotKnown) && currentData.size >= 2 * maxSequenceLength ) {
       return Option(currentData.toList)
     }
 
@@ -62,7 +65,7 @@ object VariantsEnumerationSolver extends LineSolver {
     for (offset <- 0 to expectedLength - chunkLength - metadata.tail.map(_ + 1).sum) {
 
       // Заполнение отступом + заполненный участок
-      var lineStart: List[Cell] = List.fill[Cell](offset)(CLEARED) ::: chunk
+      var lineStart: List[Cell] = List.fill[Cell](offset)(Cleared) ::: chunk
 
       // Параметр для повтороного вызова метода
       var newCurrentData = currentData.drop(lineStart.size)

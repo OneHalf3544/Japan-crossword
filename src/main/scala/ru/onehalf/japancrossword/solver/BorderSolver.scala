@@ -1,7 +1,8 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{LineMetadata, Line}
-import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.model._
+import java.awt.Color
+import ru.onehalf.japancrossword.model.FilledCell
 
 /**
  * Определение состояния ячеек ближайших к краям.
@@ -45,39 +46,39 @@ object BorderSolver extends LineSolver {
       return
     }
 
-    if ((0 to firstChunkLength - 1) forall(currentData(_) == FILLED) ) {
+    if ((0 to firstChunkLength - 1) forall(currentData(_) == new FilledCell(Color.BLACK)) ) {
       if (firstChunkLength + 1 >= currentData.size)
         // Мы решили строку до конца
         return
 
-      currentData(firstChunkLength) = CLEARED
+      currentData(firstChunkLength) = Cleared
       return
     }
 
-    val nextCleared = (0 to firstChunkLength-1).find(currentData(_) == CLEARED)
+    val nextCleared = (0 to firstChunkLength-1).find(currentData(_) == Cleared)
     if (nextCleared.isDefined) {
       // Сюда не влезет закрашенная часть ожидаемой длины. Помечаем ячейки как пустые
-      assert((0 to nextCleared.get - 1) forall(currentData(_) != FILLED))
-      (0 to nextCleared.get - 1) foreach (currentData(_) = CLEARED)
+      assert((0 to nextCleared.get - 1) forall(currentData(_) != new FilledCell(Color.BLACK)))
+      (0 to nextCleared.get - 1) foreach (currentData(_) = Cleared)
       return
     }
 
-    if (((firstChunkLength == currentData.size) || currentData(firstChunkLength) == CLEARED) && ((0 to firstChunkLength - 1) exists (currentData(_) == FILLED))) {
+    if (((firstChunkLength == currentData.size) || currentData(firstChunkLength) == Cleared) && ((0 to firstChunkLength - 1) exists (currentData(_).isFilled))) {
       // Тут мы нашли кусочек по ограничению с правой стороны. Закрашиваем найденное
-      (0 to firstChunkLength-1) foreach (currentData(_) = FILLED)
+      (0 to firstChunkLength-1) foreach (currentData(_) = new FilledCell(Color.BLACK))
       return
     }
 
     // Число закрашенных ячеек после ожидаемого (позволяет закрасить столько же ячеек от начала строки)
     val filledAfter = nextFilledCount(currentData.toList.drop(firstChunkLength))
     if (filledAfter > 0) {
-      (0 to filledAfter-1) foreach (currentData(_) = CLEARED)
+      (0 to filledAfter-1) foreach (currentData(_) = Cleared)
       return
     }
 
     // Находим первую закрашеную ячейку. После нее можем закрасить несколько следующих ячеек,
     // в зависимости от ожидаемого размера закрашенной линии
-    val chunkStartIndex = (0 to firstChunkLength-1).find(currentData(_) == FILLED)
+    val chunkStartIndex = (0 to firstChunkLength-1).find(currentData(_).isFilled)
     if (chunkStartIndex.isEmpty) {
       // Нет возможностей для расчета
       return
@@ -87,10 +88,10 @@ object BorderSolver extends LineSolver {
       // Здесь мы сразу знаем кусочек целиком + завершающий индекс
       (0 to firstChunkLength-1)
         .filter(_ < currentData.size)
-        .foreach(currentData(_) = FILLED)
+        .foreach(currentData(_) = new FilledCell(Color.BLACK))
 
       if(firstChunkLength < currentData.size) {
-        currentData(firstChunkLength) = CLEARED
+        currentData(firstChunkLength) = Cleared
       }
       return
     }
@@ -98,11 +99,11 @@ object BorderSolver extends LineSolver {
     // Заполняем кусочек линии, который перекрывается при любом варианте
     (0 to firstChunkLength-1)
       .filter(_ > chunkStartIndex.get)
-      .foreach(currentData(_) = FILLED)
+      .foreach(currentData(_) = new FilledCell(Color.BLACK))
   }
 
   def nextFilledCount(list: List[Cell]): Int = {
-    if (list.isEmpty || list.head != FILLED) 0
+    if (list.isEmpty || !list.head.isFilled) 0
     else 1 + nextFilledCount(list.tail)
   }
 }

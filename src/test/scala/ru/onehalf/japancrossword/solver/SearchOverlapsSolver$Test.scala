@@ -2,8 +2,9 @@ package ru.onehalf.japancrossword.solver
 
 import org.scalatest.FunSuite
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{Orientation, LineImpl, Model}
-import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.model._
+import java.awt.Color
+import ru.onehalf.japancrossword.model.NotKnownCell
 
 /**
  * <p/>
@@ -13,6 +14,10 @@ import ru.onehalf.japancrossword.model.Cell._
  * @author OneHalf
  */
 class SearchOverlapsSolver$Test extends FunSuite {
+
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val FILLED = new FilledCell(Color.BLACK)
+  val CLEARED = Cleared
 
   test("fitFromLeft") {
     val metadata = parseLine(Orientation.VERTICAL, "2 1 3")

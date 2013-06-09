@@ -4,6 +4,7 @@ import org.scalatest.FunSuite
 import queue.{SolveQueueTask, NonogramSolverQueue}
 import ru.onehalf.japancrossword.CrosswordLoader._
 import ru.onehalf.japancrossword.model._
+import java.awt.Color
 
 /**
  * <p/>
@@ -14,6 +15,10 @@ import ru.onehalf.japancrossword.model._
  */
 class LineSplitterTest extends FunSuite {
 
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val FILLED = new FilledCell(Color.BLACK)
+  val CLEARED = Cleared
+
   test("divideToSublist") {
 
     val metadata = parseLine(Orientation.VERTICAL, "1 4 1")
@@ -22,11 +27,11 @@ class LineSplitterTest extends FunSuite {
       metadata)
 
     val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(0) = Cell.FILLED
-    line(2) = Cell.CLEARED
-    line(5) = Cell.FILLED
-    line(7) = Cell.CLEARED
-    line(9) = Cell.FILLED
+    line(0) = FILLED
+    line(2) = CLEARED
+    line(5) = FILLED
+    line(7) = CLEARED
+    line(9) = FILLED
 
     val splitter = new NonogramSolverQueue(model, "", new ModelSolver(model)).splitter
 
@@ -47,11 +52,11 @@ class LineSplitterTest extends FunSuite {
       metadata)
 
     val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(0) = Cell.CLEARED
-    line(2) = Cell.CLEARED
-    line(5) = Cell.FILLED
-    line(7) = Cell.CLEARED
-    line(9) = Cell.FILLED
+    line(0) = CLEARED
+    line(2) = CLEARED
+    line(5) = FILLED
+    line(7) = CLEARED
+    line(9) = FILLED
 
     val solver = new NonogramSolverQueue(model, "", new ModelSolver(model)).splitter
 
@@ -71,12 +76,12 @@ class LineSplitterTest extends FunSuite {
       metadata)
 
     val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(1) = Cell.FILLED
-    line(3) = Cell.CLEARED
-    line(5) = Cell.FILLED
-    line(7) = Cell.CLEARED
-    line(8) = Cell.CLEARED
-    line(9) = Cell.CLEARED
+    line(1) = FILLED
+    line(3) = CLEARED
+    line(5) = FILLED
+    line(7) = CLEARED
+    line(8) = CLEARED
+    line(9) = CLEARED
 
     val solver = new NonogramSolverQueue(model, "", new ModelSolver(model)).splitter
 
@@ -95,9 +100,9 @@ class LineSplitterTest extends FunSuite {
       metadata)
 
     val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(0) = Cell.CLEARED
-    line(8) = Cell.CLEARED
-    line(9) = Cell.CLEARED
+    line(0) = CLEARED
+    line(8) = CLEARED
+    line(9) = CLEARED
 
     val splitter = new NonogramSolverQueue(model, "", new ModelSolver(model)).splitter
 
@@ -113,10 +118,10 @@ class LineSplitterTest extends FunSuite {
       metadata)
 
     val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(3) = Cell.CLEARED
-    line(4) = Cell.FILLED
-    line(5) = Cell.FILLED
-    line(6) = Cell.CLEARED
+    line(3) = CLEARED
+    line(4) = FILLED
+    line(5) = FILLED
+    line(6) = CLEARED
 
     val solver = new NonogramSolverQueue(model, "", new ModelSolver(model))
     solver.splitter.splitByFirstMaxLength(line, metadata(0), BorderSolver)
@@ -133,10 +138,10 @@ class LineSplitterTest extends FunSuite {
       metadata)
 
     val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(0) = Cell.FILLED
-    line(1) = Cell.FILLED
-    line(2) = Cell.FILLED
-    line(3) = Cell.CLEARED
+    line(0) = FILLED
+    line(1) = FILLED
+    line(2) = FILLED
+    line(3) = CLEARED
 
     val solver = new NonogramSolverQueue(model, "", new ModelSolver(model))
     solver.splitter.dropChanksFromEnds(metadata(0), line, BorderSolver)
@@ -152,9 +157,9 @@ class LineSplitterTest extends FunSuite {
       metadata)
 
     val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(3) = Cell.CLEARED
-    line(4) = Cell.FILLED
-    line(5) = Cell.CLEARED
+    line(3) = CLEARED
+    line(4) = FILLED
+    line(5) = CLEARED
 
     val solver = new NonogramSolverQueue(model, "", new ModelSolver(model))
     solver.splitter.splitByKnownChunk(line, metadata(0), BorderSolver)
@@ -171,12 +176,12 @@ class LineSplitterTest extends FunSuite {
       metadata)
 
     val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(1) = Cell.CLEARED
-    line(2) = Cell.FILLED
-    line(3) = Cell.CLEARED
-    line(4) = Cell.CLEARED
-    line(5) = Cell.FILLED
-    line(6) = Cell.CLEARED
+    line(1) = CLEARED
+    line(2) = FILLED
+    line(3) = CLEARED
+    line(4) = CLEARED
+    line(5) = FILLED
+    line(6) = CLEARED
 
     val solver = new NonogramSolverQueue(model, "", new ModelSolver(model))
     solver.splitter.splitByKnownChunk(line, metadata(0), BorderSolver)

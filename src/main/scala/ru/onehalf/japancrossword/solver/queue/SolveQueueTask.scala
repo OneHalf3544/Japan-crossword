@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword.solver.queue
 
 import com.typesafe.scalalogging.StrictLogging
-import ru.onehalf.japancrossword.model.{LineMetadata, Cell, Line}
+import ru.onehalf.japancrossword.model.{LineMetadata, Line}
 import ru.onehalf.japancrossword.solver.LineSolver
 
 /**
@@ -18,7 +18,7 @@ import ru.onehalf.japancrossword.solver.LineSolver
 case class SolveQueueTask(metadata: LineMetadata, line: Line, solverType: LineSolver, remainingCells: Int) extends StrictLogging {
 
   def this(metadata: LineMetadata, line: Line, solverType: LineSolver) =
-    this(metadata: LineMetadata, line: Line, solverType: LineSolver, line.toList.count(_ == Cell.NOT_KNOWN))
+    this(metadata: LineMetadata, line: Line, solverType: LineSolver, line.toList.count(_.isNotKnown))
 
   override def equals(obj: Any): Boolean = {
     if (!obj.isInstanceOf[SolveQueueTask]) {

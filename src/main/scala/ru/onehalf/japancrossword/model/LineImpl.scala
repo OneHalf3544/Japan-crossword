@@ -29,7 +29,7 @@ class LineImpl(val lineIndex: Int, var orientation: Orientation,
     model(absoluteCoordinate(cellIndex))
   }
 
-  def update(cellIndex: Int, cell: Cell.Cell) {
+  def update(cellIndex: Int, cell: Cell) {
     assert(cellIndex < size, "cellIndex " + cellIndex + " >= " + size)
 
     model(absoluteCoordinate(cellIndex)) = cell
@@ -44,7 +44,7 @@ class LineImpl(val lineIndex: Int, var orientation: Orientation,
     }
   }
 
-  def forall(predicate: (Cell.Cell) => Boolean) = {
+  def forall(predicate: (Cell) => Boolean) = {
     indexes forall(cellIndex => predicate(apply(cellIndex)))
   }
 
@@ -89,19 +89,19 @@ class LineImpl(val lineIndex: Int, var orientation: Orientation,
       original.drop(i).reverse()
     }
 
-    def toList: List[Cell.Cell] = original.toList.reverse
+    def toList: List[Cell] = original.toList.reverse
 
     def nonEmpty(): Boolean = original.nonEmpty()
 
-    def forall(predicate: (Cell.Cell) => Boolean) = original.forall(predicate)
+    def forall(predicate: (Cell) => Boolean) = original.forall(predicate)
 
     def size: Int = original.size
 
-    def update(cellIndex: Int, cell: Cell.Cell) {
+    def update(cellIndex: Int, cell: Cell) {
       original(size - cellIndex - 1) = cell
     }
 
-    def apply(cellIndex: Int): Cell.Cell = {
+    def apply(cellIndex: Int): Cell = {
       original(size - cellIndex - 1)
     }
 

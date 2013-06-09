@@ -1,7 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{LineMetadata, Line}
-import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.model._
 import ru.onehalf.japancrossword.model.Line
 
 /**
@@ -26,42 +25,42 @@ object SearchClearedCellSolver extends LineSolver {
     val indexes = indicesForStat(stat)
     var preResult = currentData.toList
 
-    if (stat.filter(_._1 == FILLED).corresponds(metadata.toList)((a, b) => a._2 == b)) {
+    if (stat.filter(_._1.isFilled).corresponds(metadata.toList)((a, b) => a._2 == b)) {
       // Все уже решено
-      return preResult.map(v => if (v == NOT_KNOWN) CLEARED else v)
+      return preResult.map(v => if (v.isNotKnown) Cleared else v)
     }
 
     for (i <- stat.indices) {
 
-      def prevIsCleared: Boolean = !stat.isDefinedAt(i - 1) || stat(i - 1)._1 == CLEARED
-      def nextIsCleared: Boolean = !stat.isDefinedAt(i + 1) || stat(i + 1)._1 == CLEARED
-      def isNotKnown: Boolean = stat(i)._1 == NOT_KNOWN && stat(i)._2 < metadata.min
+      def prevIsCleared: Boolean = !stat.isDefinedAt(i - 1) || stat(i - 1)._1 == Cleared
+      def nextIsCleared: Boolean = !stat.isDefinedAt(i + 1) || stat(i + 1)._1 == Cleared
+      def isNotKnown: Boolean = stat(i)._1.isNotKnown && stat(i)._2 < metadata.min
 
       if (prevIsCleared && isNotKnown && nextIsCleared) {
         val length = stat(i)._2
-        preResult = preResult.patch(indexes(i), List.fill(length)(CLEARED), length)
+        preResult = preResult.patch(indexes(i), List.fill(length)(Cleared), length)
       }
     }
 
     for (i <- stat.indices) {
-      if (stat(i)._1 == FILLED && stat(i)._2 == metadata.max) {
+      if (stat(i)._1.isFilled && stat(i)._2 == metadata.max) {
         if (indexes.isDefinedAt(i - 1))
-          preResult = preResult.updated(indexes(i) - 1, CLEARED)
+          preResult = preResult.updated(indexes(i) - 1, Cleared)
         if (indexes.isDefinedAt(i + 2))
-          preResult = preResult.updated(indexes(i + 1), CLEARED)
+          preResult = preResult.updated(indexes(i + 1), Cleared)
       }
     }
 
     if (metadata.length == 1) {
-      val filledIndexes = preResult.indices.filter(preResult(_) == FILLED)
+      val filledIndexes = preResult.indices.filter(preResult(_).isFilled)
       if (filledIndexes.nonEmpty) {
         val minIndex = filledIndexes.max - metadata(0)
         val maxIndex = filledIndexes.min + metadata(0)
 
         preResult =
-          List.fill[Cell](minIndex + 1)(CLEARED) :::
+          List.fill[Cell](minIndex + 1)(Cleared) :::
           preResult.slice(minIndex + 1, maxIndex) :::
-          List.fill[Cell](preResult.size - maxIndex)(CLEARED)
+          List.fill[Cell](preResult.size - maxIndex)(Cleared)
       }
     }
     preResult

@@ -1,8 +1,9 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{LineMetadata, Line}
-import ru.onehalf.japancrossword.model.Cell._
-import ru.onehalf.japancrossword.model.Cell.Cell
+import ru.onehalf.japancrossword.model._
+import ru.onehalf.japancrossword.model.FilledCell
+import scala.Some
+import java.awt.Color
 
 /**
   * Searches overlaps of the left and right positions to find filled cells.
@@ -26,9 +27,9 @@ object SearchOverlapsSolver extends LineSolver {
     assert(currentData.size >= length, "wrong length: " + length)
 
     def numerateChunk(v: (Int, Boolean), cell: Cell) = cell match {
-      case FILLED if v._2 => (v._1, true)
-      case FILLED if !v._2 => (v._1 + 1, true)
-      case CLEARED | NOT_KNOWN => (v._1, false)
+      case FilledCell(_) if v._2 => (v._1, true)
+      case FilledCell(_) if !v._2 => (v._1 + 1, true)
+      case Cleared | NotKnownCell(_) => (v._1, false)
     }
 
     val line1 = fitFromLeft(metadata, currentData).get.scanLeft((0, false))(numerateChunk).drop(1).map(v => if (v._2) v._1 else 0)
@@ -36,7 +37,7 @@ object SearchOverlapsSolver extends LineSolver {
 
     (0 until currentData.size)
       .map(i => if (line1(i) == line2(i)) line1(i) else 0)
-      .map(v => if (v == 0) NOT_KNOWN else FILLED).toList
+      .map(v => if (v == 0) new NotKnownCell(Set(Color.BLACK)) else new FilledCell(Color.BLACK)).toList
   }
 
   /**
@@ -51,11 +52,11 @@ object SearchOverlapsSolver extends LineSolver {
     if (metadata.isEmpty) {
       // Нету больше метаданных? Значит остаток строки пустой
       //assert(currentData.forall(_ != FILLED))
-      return Some(List.fill(currentData.size)(CLEARED))
+      return Some(List.fill(currentData.size)(Cleared))
     }
 
     val chunkLength = metadata.head
-    val chunk = List.fill[Cell](chunkLength)(FILLED)
+    val chunk = List.fill[Cell](chunkLength)(new FilledCell(Color.BLACK))
 
     if (currentData.size == chunkLength) {
       // Оставшаяся длина совпадает в оставшимся куском
@@ -65,7 +66,7 @@ object SearchOverlapsSolver extends LineSolver {
     for ( i <- 0 to currentData.size - chunkLength - metadata.tail.map(_ + 1).sum) {
 
       // Заполнение отступом + заполненный участок
-      var lineStart: List[Cell] = List.fill(i)(CLEARED) ::: chunk
+      var lineStart: List[Cell] = List.fill(i)(Cleared) ::: chunk
 
       // Параметр для повтороного вызова метода
       var newCurrentData = currentData.drop(lineStart.size)

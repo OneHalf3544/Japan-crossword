@@ -55,7 +55,7 @@ object SearchOverlapsSolver extends LineSolver {
       return Some(List.fill(currentData.size)(Cleared))
     }
 
-    val chunkLength = metadata.head
+    val chunkLength = metadata.head._1
     val chunk = List.fill[Cell](chunkLength)(new FilledCell(Color.BLACK))
 
     if (currentData.size == chunkLength) {

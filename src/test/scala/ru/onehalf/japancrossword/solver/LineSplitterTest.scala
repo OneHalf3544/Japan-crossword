@@ -127,8 +127,8 @@ class LineSplitterTest extends FunSuite {
     solver.splitter.splitByFirstMaxLength(line, metadata(0), BorderSolver)
 
     assert(solver.queue.size() === 2)
-    assert(solver.queue.take() === new SolveQueueTask(new LineMetadata(1), new LineImpl(0, Orientation.HORIZONTAL, model, 0, 4), BorderSolver))
-    assert(solver.queue.take() === new SolveQueueTask(new LineMetadata(1), new LineImpl(0, Orientation.HORIZONTAL, model, 6, 4), BorderSolver))
+    assert(solver.queue.take() === new SolveQueueTask(new LineMetadata(1, Color.BLACK), new LineImpl(0, Orientation.HORIZONTAL, model, 0, 4), BorderSolver))
+    assert(solver.queue.take() === new SolveQueueTask(new LineMetadata(1, Color.BLACK), new LineImpl(0, Orientation.HORIZONTAL, model, 6, 4), BorderSolver))
   }
 
   test("drop chanks from ends") {

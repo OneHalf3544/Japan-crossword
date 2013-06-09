@@ -40,7 +40,7 @@ object BorderSolver extends LineSolver {
   // todo Проверять соответствие модели, для обнаружения некорректных кросвордов
   def fillLine2(metadata: LineMetadata, currentData: Line) {
 
-    val firstChunkLength = metadata(0)
+    val firstChunkLength = metadata(0)._1
     if (firstChunkLength > currentData.size) {
       // todo кидать исключение, или заполнить всю currentData
       return

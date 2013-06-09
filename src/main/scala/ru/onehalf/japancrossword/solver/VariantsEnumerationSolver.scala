@@ -44,7 +44,7 @@ object VariantsEnumerationSolver extends LineSolver {
         return Option(List.fill[Cell](currentData.size)(Cleared))
     }
 
-    val chunkLength = metadata.head
+    val chunkLength = metadata.head._1
     val chunk = List.fill[Cell](chunkLength)(new FilledCell(Color.BLACK))
     val expectedLength = currentData.size
     val separator = List(Cleared)

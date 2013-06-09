@@ -43,14 +43,20 @@ class MetadataPanel(val CELL_SIZE: Int, val FONT_SIZE: Int, metadata: ModelMetad
       for (j <- 0 until size) {
         val x = xCoordinate(size, lineIndex, j) * CELL_SIZE
         val y = yCoordinate(size, lineIndex, j) * CELL_SIZE
+        val color = metadata(lineIndex)(j)._2
 
-        g.setColor(Color.BLACK)
-        g.drawString(metadata(lineIndex)(j).toString, x + CELL_SIZE / 4, y + CELL_SIZE * 3 / 4)
+        g.setColor(color)
+        g.fillRect(x, y, CELL_SIZE, CELL_SIZE)
 
-        g.setColor(Color.LIGHT_GRAY)
-        g.drawRect(x, y, CELL_SIZE, CELL_SIZE)
+        g.setColor(invertColor(color))
+        g.drawString(metadata(lineIndex)(j)._1.toString, x + CELL_SIZE / 4, y + CELL_SIZE * 3 / 4)
       }
     }
+  }
+
+  def invertColor(color: Color) = {
+    val isBlack = color.getRed * 0.3 + color.getGreen * 0.59 + color.getBlue * 0.11 > 128
+    if (isBlack) Color.BLACK else Color.WHITE
   }
 
 }

@@ -54,8 +54,8 @@ object SearchClearedCellSolver extends LineSolver {
     if (metadata.length == 1) {
       val filledIndexes = preResult.indices.filter(preResult(_).isFilled)
       if (filledIndexes.nonEmpty) {
-        val minIndex = filledIndexes.max - metadata(0)
-        val maxIndex = filledIndexes.min + metadata(0)
+        val minIndex = filledIndexes.max - metadata(0)._1
+        val maxIndex = filledIndexes.min + metadata(0)._1
 
         preResult =
           List.fill[Cell](minIndex + 1)(Cleared) :::

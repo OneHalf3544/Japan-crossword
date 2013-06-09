@@ -94,7 +94,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
     if (countStat(currentData.toList.filterNot(_.isNotKnown)).count(_._1.isFilled) >= metadata.size) {
       val sublists = divideToSublists(currentData, countStat(currentData))
       assert(sublists.size == metadata.size, "size not equals: %s and %s".format(metadata, sublists))
-      sublists.indices map (v => queue ! new SolveQueueTask(new LineMetadata(metadata(v)), sublists(v), solver))
+      sublists.indices map (i => queue ! new SolveQueueTask(new LineMetadata(metadata(i)), sublists(i), solver))
       return true
     }
 
@@ -119,13 +119,13 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
       return false
     }
 
-    if (stat.head == (new FilledCell(Color.BLACK), metadata.head) && stat(1)._1 == Cleared) {
-      queue ! new SolveQueueTask(metadata.tail, line.drop(metadata.head+1), solver)
+    if (stat.head == (new FilledCell(Color.BLACK), metadata.head._1) && stat(1)._1 == Cleared) {
+      queue ! new SolveQueueTask(metadata.tail, line.drop(metadata.head._1 + 1), solver)
       return true
     }
 
-    if (stat.last == (new FilledCell(Color.BLACK), metadata.last) && stat(stat.size-2)._1 == Cleared) {
-      queue ! new SolveQueueTask(metadata.init, line.dropRight(metadata.last+1), solver)
+    if (stat.last == (new FilledCell(Color.BLACK), metadata.last._1) && stat(stat.size-2)._1 == Cleared) {
+      queue ! new SolveQueueTask(metadata.init, line.dropRight(metadata.last._1 + 1), solver)
       return true
     }
 

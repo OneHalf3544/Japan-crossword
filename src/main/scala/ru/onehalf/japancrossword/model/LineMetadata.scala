@@ -1,5 +1,7 @@
 package ru.onehalf.japancrossword.model
 
+import java.awt.Color
+
 
 /**
  * <p/>
@@ -8,13 +10,19 @@ package ru.onehalf.japancrossword.model
  * <p/>
  * @author OneHalf
  */
-class LineMetadata(private val content: Array[Int]) {
+class LineMetadata(private val content: Array[(Int, Color)]) {
+
+  def this(i: Int, c: Color) = this(Array((i, c)))
+
+  def this(v: Int) = this(v, Color.BLACK)
+
+  def this(v: (Int, Color)) = this(Array(v))
+
+  def this(v: Array[Int]) = this(v.map((_, Color.BLACK)).toList.toArray)
 
   def nonEmpty: Boolean = content.nonEmpty
 
-  def this(i: Int) = this(Array(i))
-
-  def count(predicate: (Int) => Boolean) = content.count(predicate)
+  def count(predicate: (Int) => Boolean) = content.map(_._1).count(predicate)
 
   def isEmpty = content.isEmpty
 
@@ -22,13 +30,13 @@ class LineMetadata(private val content: Array[Int]) {
 
   def size = content.size
 
-  def min = content.min
+  def min = content.map(_._1).min
 
-  def max = content.max
+  def max = content.map(_._1).max
 
-  def sum = content.sum
+  def sum = content.map(_._1).sum
 
-  def map[B](f: (Int) => B) = content.map(f)
+  def map[B](f: (Int) => B) = content.map(_._1).map(f)
 
   def head = content.head
   def tail = new LineMetadata(content.tail)
@@ -38,16 +46,16 @@ class LineMetadata(private val content: Array[Int]) {
   def drop(i: Int) = new LineMetadata(content.drop(i))
 
   def splitByFirstChunk(length: Int) = {
-    val s = content.splitAt(content.indexOf(length))
+    val s = content.splitAt(content.map(_._1).indexOf(length))
     (new LineMetadata(s._1), new LineMetadata(s._2))
   }
 
-  def apply(i: Int): Int = content(i)
+  def apply(i: Int): (Int, Color) = content(i)
 
   def toList = content.toList
 
 
-  override def toString: String = content.mkString("[", ",", "]")
+  override def toString: String = content.map(_._1).mkString("[", ",", "]")
 
   def eq(other: LineMetadata): Boolean = {
     other.isInstanceOf[LineMetadata] &&

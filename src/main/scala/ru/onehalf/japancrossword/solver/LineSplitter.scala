@@ -130,13 +130,13 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
       return false
     }
 
-    if (stat.head == (new FilledCell(Color.BLACK), line.metadata.head) && stat(1)._1 == Cleared) {
-      queue ! new SolveQueueTask(line.dropLeft(1, line.metadata.head + 1), solver)
+    if (stat.head == (new FilledCell(Color.BLACK), line.metadata.head._1) && stat(1)._1 == Cleared) {
+      queue ! new SolveQueueTask(line.dropLeft(1, line.metadata.head._1+1), solver)
       return true
     }
 
-    if (stat.last == (new FilledCell(Color.BLACK), line.metadata.last) && stat(stat.size-2)._1 == Cleared) {
-      queue ! new SolveQueueTask(line.dropRight(1, line.metadata.last + 1), solver)
+    if (stat.last == (new FilledCell(Color.BLACK), line.metadata.last._1) && stat(stat.size-2)._1 == Cleared) {
+      queue ! new SolveQueueTask( line.dropRight(1, line.metadata.last._1+1), solver)
       return true
     }
 

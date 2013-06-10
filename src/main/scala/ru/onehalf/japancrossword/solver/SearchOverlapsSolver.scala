@@ -23,7 +23,7 @@ object SearchOverlapsSolver extends LineSolver {
 
     //println("metadata: %s, line: %s".format(metadata.mkString("[", ",", "]"), currentData))
 
-    val length = metadata.sum + metadata.length - 1
+    val length = metadata.minLength + metadata.length - 1
     assert(currentData.size >= length, "wrong length: " + length)
 
     def numerateChunk(v: (Int, Boolean), cell: Cell) = cell match {
@@ -56,7 +56,7 @@ object SearchOverlapsSolver extends LineSolver {
     }
 
     val chunkLength = metadata.head._1
-    val chunk = List.fill[Cell](chunkLength)(new FilledCell(Color.BLACK))
+    val chunk = List.fill[Cell](chunkLength)(new FilledCell(metadata.head._2))
 
     if (currentData.size == chunkLength) {
       // Оставшаяся длина совпадает в оставшимся куском
@@ -72,7 +72,7 @@ object SearchOverlapsSolver extends LineSolver {
       var newCurrentData = currentData.drop(lineStart.size)
 
       // Если какая-то часть строки еще остается, добавляем разделительную ячейку
-      if (newCurrentData.nonEmpty()) {
+      if (newCurrentData.nonEmpty() && metadata.size > 1 && metadata(0)._2 == metadata(1)._2) {
         lineStart = lineStart ::: SEPARATOR
         newCurrentData = newCurrentData.drop(1)
       }

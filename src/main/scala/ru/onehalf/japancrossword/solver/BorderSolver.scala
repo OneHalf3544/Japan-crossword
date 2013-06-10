@@ -46,7 +46,7 @@ object BorderSolver extends LineSolver {
       return
     }
 
-    if ((0 to firstChunkLength - 1) forall(currentData(_) == new FilledCell(Color.BLACK)) ) {
+    if ((0 to firstChunkLength - 1) forall(currentData(_) == new FilledCell(metadata(0)._2)) ) {
       if (firstChunkLength + 1 >= currentData.size)
         // Мы решили строку до конца
         return

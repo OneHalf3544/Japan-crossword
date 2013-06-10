@@ -78,6 +78,10 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
    */
   def splitLine(metadata: LineMetadata, currentData: Line, solver: LineSolver): Boolean = {
 
+    if (true) {
+      return false
+    }
+
     if (currentData(0) == Cleared || currentData.last == Cleared) {
       queue ! new SolveQueueTask(metadata, dropClearedFromEnds(currentData), solver)
       return true

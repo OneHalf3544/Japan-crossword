@@ -68,8 +68,12 @@ class GridPanel(model: Model, CELL_SIZE: Int) extends JPanel {
 
     def drawCell(x: Int, y: Int) {
       model.apply(x, y) match {
-        case FilledCell(_) => g.fillRect(left + x * CELL_SIZE, top + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        case FilledCell(color) => {
+          g.setColor(color)
+          g.fillRect(left + x * CELL_SIZE, top + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        }
         case Cleared => {
+          // Рисуем крестик
           val x1 = left + x * CELL_SIZE
           val y1 = top + y * CELL_SIZE
           g.drawLine(x1, y1, x1 + CELL_SIZE, y1 + CELL_SIZE)

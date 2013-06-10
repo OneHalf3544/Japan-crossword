@@ -2,7 +2,6 @@ package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model._
 import ru.onehalf.japancrossword.model.Cell
-import java.awt.Color
 
 /**
  * Логика решения кроссворда перебором содержимого строк и столбцов.
@@ -45,7 +44,7 @@ object VariantsEnumerationSolver extends LineSolver {
     }
 
     val chunkLength = metadata.head._1
-    val chunk = List.fill[Cell](chunkLength)(new FilledCell(Color.BLACK))
+    val chunk = List.fill[Cell](chunkLength)(new FilledCell(metadata(0)._2))
     val expectedLength = currentData.size
     val separator = List(Cleared)
 
@@ -62,7 +61,7 @@ object VariantsEnumerationSolver extends LineSolver {
 
     var result: Option[List[Cell]] = Option.empty
 
-    for (offset <- 0 to expectedLength - chunkLength - metadata.tail.map(_ + 1).sum) {
+    for (offset <- 0 to expectedLength - metadata.minLength) {
 
       // Заполнение отступом + заполненный участок
       var lineStart: List[Cell] = List.fill[Cell](offset)(Cleared) ::: chunk
@@ -71,7 +70,7 @@ object VariantsEnumerationSolver extends LineSolver {
       var newCurrentData = currentData.drop(lineStart.size)
 
       // Если какая-то часть строки еще остается, добавляем разделительную ячейку
-      if (newCurrentData.nonEmpty()) {
+      if (newCurrentData.nonEmpty() && metadata.size > 1 && metadata(0)._2 == metadata(1)._2) {
         lineStart = lineStart ::: separator
         newCurrentData = newCurrentData.drop(1)
       }

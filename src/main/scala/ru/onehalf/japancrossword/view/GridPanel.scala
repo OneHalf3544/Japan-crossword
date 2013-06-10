@@ -39,9 +39,9 @@ class GridPanel(model: Model, CELL_SIZE: Int) extends JPanel {
 
       val current = model.apply(coordinates._1, coordinates._2)
       model.update(coordinates._1, coordinates._2, (current, e.getButton) match {
-        case (NotKnownCell(_), MouseEvent.BUTTON1) => new FilledCell(Color.BLACK)
-        case (NotKnownCell(_), MouseEvent.BUTTON3) => Cleared
-        case (_, _) => NotKnownCell(model.colors)
+        case (NotKnownCell(_, _), MouseEvent.BUTTON1) => new FilledCell(Color.BLACK)
+        case (NotKnownCell(_, _), MouseEvent.BUTTON3) => Cleared
+        case (_, _) => NotKnownCell(model.colors, true)
       })
     }
 

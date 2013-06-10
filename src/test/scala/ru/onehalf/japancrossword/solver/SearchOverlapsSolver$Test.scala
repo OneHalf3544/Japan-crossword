@@ -17,7 +17,7 @@ class SearchOverlapsSolver$Test extends FlatSpec with Matchers {
   "method 'fitFromLeft'" should "fill the line from the start" in {
     val line = parseLine(2, 1, 3, "..........")
 
-  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK), true)
   val FILLED = new FilledCell(Color.BLACK)
   val CLEARED = Cleared
 

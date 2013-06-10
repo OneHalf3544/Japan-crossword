@@ -30,10 +30,10 @@ trait LineSolver {
     assert(line1.size == line2.size, s"lines: ${line1.size}, ${line2.size}")
     val lineLength = line1.size
 
-    val result = Array.fill[Cell](lineLength)(new NotKnownCell(Set(Color.BLACK)))
+    val result = Array.fill[Cell](lineLength)(null)
 
     // Сохряняем в результат только совпадающие данные
-    0 until lineLength filter (i => line1(i) == line2(i)) foreach(i => result(i) = line2(i))
+    0 until lineLength foreach(Cell.combine(line1(i), line2(i)))
     new LineImpl(line1.metadata, result)
   }
 

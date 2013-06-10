@@ -14,7 +14,7 @@ import ru.onehalf.japancrossword.model.{Cell, Model, Orientation}
  */
 class BorderSolverTest extends FlatSpec with Matchers {
 
-  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK), true)
   val FILLED = new FilledCell(Color.BLACK)
 
   it should "set CLEARED cells status to model" in {

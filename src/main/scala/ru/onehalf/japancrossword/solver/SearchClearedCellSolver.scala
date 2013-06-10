@@ -25,7 +25,7 @@ object SearchClearedCellSolver extends LineSolver {
     val indexes = indicesForStat(stat)
     var preResult = currentData.toList
 
-    if (stat.filter(_._1.isFilled).corresponds(currentData.metadata.toList)((a, b) => a._2 == b)) {
+    if (stat.filter(_._1.isFilled).corresponds(currentData.metadata.toList)((a, b) => a._2 == b._1)) {
       // Все уже решено
       return new LineImpl(currentData.metadata, preResult.map(v => if (v.isNotKnown) Cleared else v))
     }

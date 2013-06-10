@@ -19,7 +19,7 @@ import scala.collection.mutable
  */
 class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimits {
 
-  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK), true)
   val FILLED = new FilledCell(Color.BLACK)
   val CLEARED = Cleared
 

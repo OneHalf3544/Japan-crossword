@@ -17,7 +17,7 @@ import ru.onehalf.japancrossword.solver.queue.{NonogramSolverQueue, SolveQueueTa
  */
 class LineSplitterTest extends FlatSpec with MockFactory {
 
-  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK), true)
   val FILLED = new FilledCell(Color.BLACK)
   val CLEARED = Cleared
 

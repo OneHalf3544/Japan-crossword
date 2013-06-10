@@ -87,7 +87,7 @@ object SearchOverlapsSolver extends LineSolver with StrictLogging {
     }
 
     val chunkLength = currentData.metadata.head
-    val chunk = List.fill[Cell](chunkLength)(new FilledCell(Color.BLACK))
+    val chunk = List.fill[Cell](chunkLength)(new FilledCell(metadata.head._2))
 
     if (currentData.size == chunkLength) {
       // Оставшаяся длина совпадает в оставшимся куском

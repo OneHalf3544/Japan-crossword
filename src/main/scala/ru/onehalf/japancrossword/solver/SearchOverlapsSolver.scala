@@ -63,7 +63,7 @@ object SearchOverlapsSolver extends LineSolver {
       return Some(chunk)
     }
 
-    for ( i <- 0 to currentData.size - chunkLength - metadata.tail.map(_ + 1).sum) {
+    for ( i <- 0 to currentData.size - metadata.minLength) {
 
       // Заполнение отступом + заполненный участок
       var lineStart: List[Cell] = List.fill(i)(Cleared) ::: chunk

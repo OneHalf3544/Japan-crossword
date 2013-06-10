@@ -31,6 +31,26 @@ object Cleared extends Cell(false, true) {
 }
 
 object Cell {
+
+  def hasCommonState(cell1: Cell, cell2: Cell): Boolean = {
+    (cell1, cell2) match {
+      case (Cleared, Cleared) => true
+
+      case (NotKnownCell(_, true), Cleared) => true
+      case (Cleared, NotKnownCell(_, true)) => true
+
+      case (NotKnownCell(colors, _), FilledCell(color)) if (colors.contains(color)) => true
+      case (FilledCell(color), NotKnownCell(colors, _)) if (colors.contains(color)) => true
+
+      case (FilledCell(color1), FilledCell(color2)) if (color1 == color2) => true
+
+      case (NotKnownCell(colors1, mayBeCleared1), NotKnownCell(colors2, mayBeCleared2))
+        if ((mayBeCleared1 == mayBeCleared2) || colors1.intersect(colors2).nonEmpty ) => true
+
+      case _ => false
+    }
+  }
+
   /**
    *
    * @param cell1

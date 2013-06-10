@@ -46,7 +46,7 @@ trait LineSolver {
   def compatibleToCurrentData(currentData: Line, supposeLine: Line): Boolean = {
 
     def cellIsCompatible(i: Int): Boolean = {
-      currentData(i) == supposeLine(i) || currentData(i).isNotKnown || supposeLine(i).isNotKnown
+      currentData(i) == supposeLine(i) || Cell.hasCommonState(currentData(i), (supposeLine(i)))
     }
 
     assert(currentData.size == supposeLine.size)

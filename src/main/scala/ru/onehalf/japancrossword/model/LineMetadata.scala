@@ -45,6 +45,8 @@ class LineMetadata(private val content: Array[(Int, Color)]) {
 
   def drop(i: Int) = new LineMetadata(content.drop(i))
 
+  def minLength: Int = sum + content.map(_._2).sliding(2).filter(v => v.size > 1 && v(0) == v(1)).size
+
   def splitByFirstChunk(length: Int) = {
     val s = content.splitAt(content.map(_._1).indexOf(length))
     (new LineMetadata(s._1), new LineMetadata(s._2))

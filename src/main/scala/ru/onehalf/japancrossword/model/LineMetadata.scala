@@ -12,6 +12,8 @@ import java.awt.Color
  */
 class LineMetadata(private val content: Array[(Int, Color)]) {
 
+  def colors: Set[Color] = content.map(_._2).toSet
+
   def this(i: Int, c: Color) = this(Array((i, c)))
 
   def this(v: Int) = this(v, Color.BLACK)

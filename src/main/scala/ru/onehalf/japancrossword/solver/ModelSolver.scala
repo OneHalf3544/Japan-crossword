@@ -38,7 +38,7 @@ class ModelSolver(model: Model) {
   }
 
   def enqueue(v: (Line, LineMetadata), orientation: Orientation) {
-    //fastQueue.enqueueLineForFastSolver(v)
+    fastQueue.enqueueLineForFastSolver(v)
 
     (if (orientation == VERTICAL) columnQueue else rowQueue ) !
       SolveQueueTask(v._2, v._1, VariantsEnumerationSolver, Int.MaxValue)

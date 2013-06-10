@@ -23,21 +23,20 @@ object SearchOverlapsSolver extends LineSolver {
 
     //println("metadata: %s, line: %s".format(metadata.mkString("[", ",", "]"), currentData))
 
-    val length = metadata.minLength + metadata.length - 1
-    assert(currentData.size >= length, "wrong length: " + length)
+    assert(currentData.size >= metadata.minLength, "wrong length: " + currentData.size)
 
-    def numerateChunk(v: (Int, Boolean), cell: Cell) = cell match {
-      case FilledCell(_) if v._2 => (v._1, true)
-      case FilledCell(_) if !v._2 => (v._1 + 1, true)
-      case Cleared | NotKnownCell(_, _) => (v._1, false)
+    def numerateChunk(v: (Int, Color, Boolean), cell: Cell): (Int, Color, Boolean) = cell match {
+      case FilledCell(color) if v._3 & v._2 == color => (v._1, color, true)
+      case FilledCell(color) if !v._3 || v._2 != color => (v._1 + 1, color,  true)
+      case Cleared => (v._1, null, false)
     }
 
-    val line1 = fitFromLeft(metadata, currentData).get.scanLeft((0, false))(numerateChunk).drop(1).map(v => if (v._2) v._1 else 0)
-    val line2 = fitFromRight(metadata, currentData).get.scanLeft((0, false))(numerateChunk).drop(1).map(v => if (v._2) v._1 else 0)
+    val line1 = fitFromLeft(metadata, currentData).get.scanLeft((0, Color.YELLOW, false))(numerateChunk).drop(1).map(v => if (v._3) v._1 else 0)
+    val line2 = fitFromRight(metadata, currentData).get.scanLeft((0, Color.YELLOW, false))(numerateChunk).drop(1).map(v => if (v._3) v._1 else 0)
 
     (0 until currentData.size)
       .map(i => if (line1(i) == line2(i)) line1(i) else 0)
-      .map(v => if (v == 0) new NotKnownCell(Set(Color.BLACK), true) else new FilledCell(Color.BLACK)).toList
+      .map(v => if (v == 0) new NotKnownCell(metadata.colors, true) else new FilledCell(metadata(v-1)._2)).toList
   }
 
   /**

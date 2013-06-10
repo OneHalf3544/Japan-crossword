@@ -15,7 +15,7 @@ import ru.onehalf.japancrossword.model.NotKnownCell
  */
 class SearchClearedCellSolverTest  extends FunSuite {
 
-  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK), true)
   val FILLED = new FilledCell(Color.BLACK)
   val CLEARED = Cleared
 

@@ -29,7 +29,7 @@ class Model(val name: String, val horizonLine : ModelMetadata, val verticalLine 
   clear()
 
   def clear() {
-    writeAndNotify(() => board = Array.fill(columnNumber, rowNumber)(new NotKnownCell(colors)))
+    writeAndNotify(() => board = Array.fill(columnNumber, rowNumber)(new NotKnownCell(colors, true)))
   }
 
   def apply(coordinate: (Int, Int)): Cell = {

@@ -29,7 +29,7 @@ object SearchOverlapsSolver extends LineSolver {
     def numerateChunk(v: (Int, Boolean), cell: Cell) = cell match {
       case FilledCell(_) if v._2 => (v._1, true)
       case FilledCell(_) if !v._2 => (v._1 + 1, true)
-      case Cleared | NotKnownCell(_) => (v._1, false)
+      case Cleared | NotKnownCell(_, _) => (v._1, false)
     }
 
     val line1 = fitFromLeft(metadata, currentData).get.scanLeft((0, false))(numerateChunk).drop(1).map(v => if (v._2) v._1 else 0)
@@ -37,7 +37,7 @@ object SearchOverlapsSolver extends LineSolver {
 
     (0 until currentData.size)
       .map(i => if (line1(i) == line2(i)) line1(i) else 0)
-      .map(v => if (v == 0) new NotKnownCell(Set(Color.BLACK)) else new FilledCell(Color.BLACK)).toList
+      .map(v => if (v == 0) new NotKnownCell(Set(Color.BLACK), true) else new FilledCell(Color.BLACK)).toList
   }
 
   /**

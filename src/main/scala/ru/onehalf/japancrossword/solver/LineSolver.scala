@@ -1,7 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model._
-import java.awt.Color
 
 /**
   * Represents a strategy to solve one [[Line]] of the crossword.
@@ -29,10 +28,10 @@ trait LineSolver {
     assert(line1.size == line2.size, "lines: " + line1.size + ", " + line2.size)
     val lineLength = line1.size
 
-    val result = Array.fill[Cell](lineLength)(new NotKnownCell(Set(Color.BLACK)))
+    val result = Array.fill[Cell](lineLength)(null)
 
     // Сохряняем в результат только совпадающие данные
-    0 until lineLength filter (i => line1(i) == line2(i)) foreach(i => result(i) = line2(i))
+    0 until lineLength foreach(i => result(i) = Cell.combine(line1(i), line2(i)))
     result.toList
   }
 

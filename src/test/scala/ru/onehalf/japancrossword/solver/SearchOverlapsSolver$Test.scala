@@ -15,7 +15,7 @@ import ru.onehalf.japancrossword.model.NotKnownCell
  */
 class SearchOverlapsSolver$Test extends FunSuite {
 
-  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK))
+  val NOT_KNOWN = new NotKnownCell(Set(Color.BLACK), true)
   val FILLED = new FilledCell(Color.BLACK)
   val CLEARED = Cleared
 

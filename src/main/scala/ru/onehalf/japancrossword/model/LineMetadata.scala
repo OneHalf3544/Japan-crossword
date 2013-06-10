@@ -54,7 +54,6 @@ class LineMetadata(private val content: Array[(Int, Color)]) {
 
   def toList = content.toList
 
-
   override def toString: String = content.map(_._1).mkString("[", ",", "]")
 
   def eq(other: LineMetadata): Boolean = {

@@ -21,7 +21,7 @@ object SearchOverlapsSolver extends LineSolver {
   def fillLine(metadata: LineMetadata, currentData: Line): List[Cell] = {
     assert(metadata.nonEmpty)
 
-    //println("metadata: %s, line: %s".format(metadata.mkString("[", ",", "]"), currentData))
+    //println("metadata: %s, line: %s".format(metadata, currentData))
 
     assert(currentData.size >= metadata.minLength, "wrong length: " + currentData.size)
 
@@ -50,7 +50,9 @@ object SearchOverlapsSolver extends LineSolver {
 
     if (metadata.isEmpty) {
       // Нету больше метаданных? Значит остаток строки пустой
-      //assert(currentData.forall(_ != FILLED))
+      if (currentData.exists(_.isFilled)) {
+        return None
+      }
       return Some(List.fill(currentData.size)(Cleared))
     }
 

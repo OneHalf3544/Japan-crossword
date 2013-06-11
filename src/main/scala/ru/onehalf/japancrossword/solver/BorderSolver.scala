@@ -1,7 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model._
-import java.awt.Color
 import ru.onehalf.japancrossword.model.FilledCell
 
 /**
@@ -41,36 +40,38 @@ object BorderSolver extends LineSolver {
   def fillLine2(metadata: LineMetadata, currentData: Line) {
 
     val firstChunkLength = metadata(0)._1
-    if (firstChunkLength > currentData.size) {
-      // todo кидать исключение, или заполнить всю currentData
-      return
-    }
+    val firstChunkColor = metadata(0)._2
+    val chunkCell = new FilledCell(firstChunkColor)
 
-    if ((0 to firstChunkLength - 1) forall(currentData(_) == new FilledCell(metadata(0)._2)) ) {
-      if (firstChunkLength + 1 >= currentData.size)
+    assert(firstChunkLength <= currentData.size)
+
+    if ((0 to firstChunkLength - 1) forall(currentData(_) == chunkCell) ) {
+      if (firstChunkLength == currentData.size)
         // Мы решили строку до конца
         return
 
-      currentData(firstChunkLength) = Cleared
+      if (metadata.size > 1 && metadata(0)._2 == metadata(1)._2) {
+        currentData(firstChunkLength) = Cleared
+      }
       return
     }
 
-    val nextCleared = (0 to firstChunkLength-1).find(currentData(_) == Cleared)
+    val nextCleared = (0 to firstChunkLength-1).find(i => !Cell.hasCommonState(currentData(i), chunkCell))
     if (nextCleared.isDefined) {
       // Сюда не влезет закрашенная часть ожидаемой длины. Помечаем ячейки как пустые
-      assert((0 to nextCleared.get - 1) forall(currentData(_) != new FilledCell(Color.BLACK)))
       (0 to nextCleared.get - 1) foreach (currentData(_) = Cleared)
       return
     }
 
-    if (((firstChunkLength == currentData.size) || currentData(firstChunkLength) == Cleared) && ((0 to firstChunkLength - 1) exists (currentData(_).isFilled))) {
+    if ((firstChunkLength == currentData.size) || !Cell.hasCommonState(currentData(firstChunkLength), chunkCell)
+      && ((0 to firstChunkLength - 1) exists (currentData(_) == chunkCell))) {
       // Тут мы нашли кусочек по ограничению с правой стороны. Закрашиваем найденное
-      (0 to firstChunkLength-1) foreach (currentData(_) = new FilledCell(Color.BLACK))
+      (0 to firstChunkLength-1) foreach (currentData(_) = chunkCell)
       return
     }
 
     // Число закрашенных ячеек после ожидаемого (позволяет закрасить столько же ячеек от начала строки)
-    val filledAfter = nextFilledCount(currentData.toList.drop(firstChunkLength))
+    val filledAfter = nextFilledCount(currentData.toList.drop(firstChunkLength), chunkCell)
     if (filledAfter > 0) {
       (0 to filledAfter-1) foreach (currentData(_) = Cleared)
       return
@@ -78,7 +79,7 @@ object BorderSolver extends LineSolver {
 
     // Находим первую закрашеную ячейку. После нее можем закрасить несколько следующих ячеек,
     // в зависимости от ожидаемого размера закрашенной линии
-    val chunkStartIndex = (0 to firstChunkLength-1).find(currentData(_).isFilled)
+    val chunkStartIndex = (0 to firstChunkLength-1).find(currentData(_) == chunkCell)
     if (chunkStartIndex.isEmpty) {
       // Нет возможностей для расчета
       return
@@ -86,24 +87,21 @@ object BorderSolver extends LineSolver {
 
     if (chunkStartIndex.get == 0) {
       // Здесь мы сразу знаем кусочек целиком + завершающий индекс
-      (0 to firstChunkLength-1)
-        .filter(_ < currentData.size)
-        .foreach(currentData(_) = new FilledCell(Color.BLACK))
+      (0 to firstChunkLength-1).foreach(currentData(_) = chunkCell)
 
-      if(firstChunkLength < currentData.size) {
+      if(firstChunkLength < currentData.size && metadata.size > 1 && metadata(0)._2 == metadata(1)._2) {
         currentData(firstChunkLength) = Cleared
       }
       return
     }
 
     // Заполняем кусочек линии, который перекрывается при любом варианте
-    (0 to firstChunkLength-1)
-      .filter(_ > chunkStartIndex.get)
-      .foreach(currentData(_) = new FilledCell(Color.BLACK))
+    (0 to firstChunkLength-1).filter(_ > chunkStartIndex.get)
+      .foreach(currentData(_) = chunkCell)
   }
 
-  def nextFilledCount(list: List[Cell]): Int = {
-    if (list.isEmpty || !list.head.isFilled) 0
-    else 1 + nextFilledCount(list.tail)
+  def nextFilledCount(list: List[Cell], chunkCell: Cell): Int = {
+    if (list.isEmpty || list.head != chunkCell) 0
+    else 1 + nextFilledCount(list.tail, chunkCell)
   }
 }

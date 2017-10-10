@@ -1,9 +1,8 @@
 package ru.onehalf.japancrossword.solver
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{FlatSpec, Matchers}
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{Orientation, Cell, LineImpl, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, LineImpl, Orientation}
 
 /**
  * <p/>
@@ -12,7 +11,7 @@ import ru.onehalf.japancrossword.model.{Orientation, Cell, LineImpl, JapanCrossw
  * <p/>
  * @author OneHalf
  */
-class BorderSolverTest extends FlatSpec with ShouldMatchers {
+class BorderSolverTest extends FlatSpec with Matchers {
 
   it should "set CLEARED cells status to model" in {
 

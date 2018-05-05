@@ -24,7 +24,7 @@ class SolveLineQueue(model: JapanCrosswordModel, queueName: String, modelSolver:
   val splitter = new LineSplitter(this)
 
   def startThread() {
-    future {
+    Future {
       println(queueName + " started")
 
       while (!(model.isSolved || Thread.currentThread().isInterrupted)) {
@@ -42,7 +42,7 @@ class SolveLineQueue(model: JapanCrosswordModel, queueName: String, modelSolver:
             modelSolver.addDataToModel(oldData, List.fill(line.size)(CLEARED), line)
           }
 
-          case SolveQueueTask(metadata, line, solver, remindingCells) if (splitter.splitLine(metadata, line, solver)) => {
+          case SolveQueueTask(metadata, line, solver, remindingCells) if splitter.splitLine(metadata, line, solver) => {
             //println("строка была разделена")
           }
 

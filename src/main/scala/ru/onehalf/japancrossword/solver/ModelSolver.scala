@@ -6,12 +6,11 @@ import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.Orientation._
 
 /**
- * <p/>
- * <p/>
- * Created: 05.06.13 22:47
- * <p/>
- * @author OneHalf
- */
+  * Solves a puzzle.
+  *
+  * @since 05.06.13 22:47
+  * @author OneHalf
+  */
 class ModelSolver(model: JapanCrosswordModel) {
 
   val fastQueue: SolveLineQueue = new SolveLineQueue(model, "fast", this)
@@ -24,12 +23,12 @@ class ModelSolver(model: JapanCrosswordModel) {
   def solve() {
 
     // Добавляем все линии в очредь
-    val columns = (0 to model.columnNumber - 1).map(v => model.getColumnLine(v))
+    val columns = (0 until model.columnNumber).map(v => model.getColumnLine(v))
 
-    val rows = (0 to model.rowNumber - 1).map(v => model.getRowLine(v))
+    val rows = (0 until model.rowNumber).map(v => model.getRowLine(v))
 
-    columns.sortBy(_._2.size).foreach(enqueue(_, VERTICAL))
-    rows   .sortBy(_._2.size).foreach(enqueue(_, HORIZONTAL))
+    columns.sortBy(_._2.length).foreach(enqueue(_, VERTICAL))
+    rows   .sortBy(_._2.length).foreach(enqueue(_, HORIZONTAL))
 
     fastQueue.startThread()
     for(i <- 1 to 3) {
@@ -51,7 +50,7 @@ class ModelSolver(model: JapanCrosswordModel) {
    * @param line Кусочек модели, в которую нужно скопировать предлагаемые значения
    */
   def addDataToModel(oldData: List[Cell], variant: List[Cell], line: Line) {
-    0 to variant.size-1 filter (i => line(i) == NOT_KNOWN && variant(i) != NOT_KNOWN) foreach(i => {
+    variant.indices filter (i => line(i) == NOT_KNOWN && variant(i) != NOT_KNOWN) foreach(i => {
       line(i) = variant(i)
 /*      line.orientation match {
         case HORIZONTAL => enqueue(model.getColumnLine(i), VERTICAL)

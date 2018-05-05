@@ -5,12 +5,11 @@ import ru.onehalf.japancrossword.model.{Orientation, Metadata}
 import javax.swing.JPanel
 
 /**
- * <p/>
- * <p/>
- * Created: 11.05.13 11:25
- * <p/>
- * @author OneHalf
- */
+  * A swing element for representing an area with digits (an initial conditions of crossword).
+  *
+  * @since 11.05.13 11:25
+  * @author OneHalf
+  */
 class MetadataPanel(val CELL_SIZE: Int, val FONT_SIZE: Int, metadata: Metadata) extends JPanel {
 
   setPreferredSize(dimension)
@@ -39,9 +38,9 @@ class MetadataPanel(val CELL_SIZE: Int, val FONT_SIZE: Int, metadata: Metadata) 
   }
 
   def drawMarks(g: Graphics, xCoordinate: (Int, Int, Int) => Int, yCoordinate: (Int, Int, Int) => Int) {
-    for (lineIndex <- 0 to metadata.size - 1) {
-      val size = metadata(lineIndex).size
-      for (j <- 0 to size - 1) {
+    for (lineIndex <- 0 until metadata.size) {
+      val size = metadata(lineIndex).length
+      for (j <- 0 until size) {
         val x = xCoordinate(size, lineIndex, j) * CELL_SIZE
         val y = yCoordinate(size, lineIndex, j) * CELL_SIZE
 

@@ -5,14 +5,13 @@ import ru.onehalf.japancrossword.model.Line
 import ru.onehalf.japancrossword.model.Cell._
 
 /**
- * Делитель строки.
- * Ищем последовательность, по которой можно разбить линию на две.
- * <p/>
- * <p/>
- * Created: 26.05.13 22:45
- * <p/>
- * @author OneHalf
- */
+  * Searches any subline what can be spit into two.
+  *
+  * It will improve performance - the sorter line we have the sooner we get a result.
+  *
+  * @since 26.05.13 22:45
+  * @author OneHalf
+  */
 class LineSplitter(queue: SolveLineQueue) extends LineSolver{
 
   // todo Делить линии по точно найденному участку.

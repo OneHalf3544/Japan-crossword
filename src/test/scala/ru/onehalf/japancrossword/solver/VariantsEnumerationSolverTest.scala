@@ -1,8 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import ru.onehalf.japancrossword.model.{Orientation, Cell, LineImpl, JapanCrosswordModel}
+import org.scalatest.{FlatSpec, Matchers}
+import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, LineImpl, Orientation}
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.CrosswordLoader.parseLine
 import org.scalatest.concurrent.Timeouts
@@ -14,7 +13,7 @@ import org.scalatest.concurrent.Timeouts
  * <p/>
  * @author OneHalf
  */
-class VariantsEnumerationSolverTest extends FlatSpec with ShouldMatchers with Timeouts {
+class VariantsEnumerationSolverTest extends FlatSpec with Matchers with Timeouts {
 
   it should "resolve center cells in line" in {
 

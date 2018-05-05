@@ -3,12 +3,11 @@ package ru.onehalf.japancrossword
 import view.JapanCrosswordFrame
 
 /**
- * <p/>
- * <p/>
- * Created: 30.11.12 0:20
- * <p/>
- * @author OneHalf
- */
+  * Starts the application
+  *
+  * @since 30.11.12 0:20
+  * @author OneHalf
+  */
 object Main {
 
   def main(args: Array[String]) {

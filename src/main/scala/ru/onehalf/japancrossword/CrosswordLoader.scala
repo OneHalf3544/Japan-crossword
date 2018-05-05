@@ -8,12 +8,11 @@ import scala.collection.convert.wrapAsScala._
 
 
 /**
- * <p/>
- * <p/>
- * Created: 18.05.13 14:43
- * <p/>
- * @author OneHalf
- */
+  * Loads crosswords descriptions from *.property file.
+  *
+  * @since 18.05.13 14:43
+  * @author OneHalf
+  */
 object CrosswordLoader {
 
   def parseParams(param: String): Array[Int] = (param split "\\s+").map (_.toInt)

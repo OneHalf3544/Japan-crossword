@@ -5,13 +5,12 @@ import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.Cell.Cell
 
 /**
- *
- * <p/>
- * <p/>
- * Created: 12.05.13 22:51
- * <p/>
- * @author OneHalf
- */
+  * Try to find solution in the human style way.
+  * It does not use brute force to find a possible combination, only the common sense.
+  *
+  * @since 12.05.13 22:51
+  * @author OneHalf
+  */
 object FastPreSolver extends LineSolver {
 
   /**

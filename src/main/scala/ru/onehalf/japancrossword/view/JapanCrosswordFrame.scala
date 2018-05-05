@@ -45,7 +45,7 @@ class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FO
   models(0) addListener (repaintListener)
 
   setContentPane(contentPane())
-  setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
+  setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
 
   pack()
 

@@ -21,7 +21,7 @@ object VariantsEnumerationSolver extends LineSolver {
    * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
    * @param currentData Текущие данные
    */
-  def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell] = {
+  override def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell] = {
     fitRemainder(metadata, currentData).get
   }
 
@@ -33,7 +33,7 @@ object VariantsEnumerationSolver extends LineSolver {
    * @param currentData текущее содержимое линии
    * @return Список линий, подходящих под указанные метаданные
    */
-  def fitRemainder(metadata: Array[Int], currentData: Line): Option[List[Cell]] = {
+  private[solver] def fitRemainder(metadata: Array[Int], currentData: Line): Option[List[Cell]] = {
 
     if (metadata.isEmpty) {
       // Нету больше метаданных? Значит остаток строки пустой
@@ -52,7 +52,7 @@ object VariantsEnumerationSolver extends LineSolver {
     }
 
     // Не пересчитывать заведомо неопределяемые ячейки
-    val maxSequenceLength = metadata.sum + metadata.size - 1
+    val maxSequenceLength = metadata.sum + metadata.length - 1
     if (currentData.forall(_ == NOT_KNOWN) && currentData.size >= 2 * maxSequenceLength ) {
       return Option(currentData.toList)
     }
@@ -80,10 +80,10 @@ object VariantsEnumerationSolver extends LineSolver {
         // Доподбираем оставшуюся часть строки
         val subResult = fitRemainder(metadata.tail, newCurrentData)
         if (subResult.isDefined && compatibleToCurrentData(newCurrentData, subResult.get)) {
-          if (result.isEmpty)
-            result = Option(lineStart ::: subResult.get)
+          result = Option(if (result.isEmpty)
+            lineStart ::: subResult.get
           else
-            result = Option(reduceLines(result.get, (lineStart ::: subResult.get)))
+            reduceLines(result.get, lineStart ::: subResult.get))
         }
       }
     }

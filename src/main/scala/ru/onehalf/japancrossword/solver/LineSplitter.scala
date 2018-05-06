@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import queue.{SolveLineQueue, SolveQueueTask}
+import queue.{NonogramSolverQueue, SolveQueueTask}
 import ru.onehalf.japancrossword.model.Line
 import ru.onehalf.japancrossword.model.Cell._
 
@@ -12,7 +12,7 @@ import ru.onehalf.japancrossword.model.Cell._
   * @since 26.05.13 22:45
   * @author OneHalf
   */
-class LineSplitter(queue: SolveLineQueue) extends LineSolver{
+class LineSplitter(queue: NonogramSolverQueue) extends LineSolver {
 
   // todo Делить линии по точно найденному участку.
   // Т.е.:  1 2 3  ......._XX_..... можно поделить по найденному участку независимо от того, что 2 != metadata.max
@@ -40,7 +40,7 @@ class LineSplitter(queue: SolveLineQueue) extends LineSolver{
       }
     }
 
-    val foundedParts = stat.sliding(3).map(searchBoundedParts(_)).filter(_.isDefined).map(_.get).toList
+    val foundedParts = stat.sliding(3).map(searchBoundedParts).filter(_.isDefined).map(_.get).toList
 
     if (foundedParts.isEmpty) {
       return false

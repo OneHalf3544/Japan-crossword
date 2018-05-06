@@ -3,7 +3,7 @@ package ru.onehalf.japancrossword.model
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
 /**
- * Модель японского кроссворда. Содержит метаданные и содержимое сетки
+ * A nonogram model. Contains of two [[Metadata]] and grid content.
  * <p/>
  * <p/>
  * Created: 05.05.13 22:54

@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
-import queue.{SolveQueueTask, SolveLineQueue}
+import queue.{SolveQueueTask, NonogramSolverQueue}
 import ru.onehalf.japancrossword.model.{Line, JapanCrosswordModel}
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.Orientation._
@@ -13,9 +13,9 @@ import ru.onehalf.japancrossword.model.Orientation._
   */
 class ModelSolver(model: JapanCrosswordModel) {
 
-  val fastQueue: SolveLineQueue = new SolveLineQueue(model, "fast", this)
-  val columnQueue: SolveLineQueue = new SolveLineQueue(model, "column", this)
-  val rowQueue: SolveLineQueue = new SolveLineQueue(model, "row", this)
+  private val fastQueue: NonogramSolverQueue = new NonogramSolverQueue(model, "fast", this)
+  private val columnQueue: NonogramSolverQueue = new NonogramSolverQueue(model, "column", this)
+  private val rowQueue: NonogramSolverQueue = new NonogramSolverQueue(model, "row", this)
 
   /**
    * Запуск решения кроссворда
@@ -41,7 +41,7 @@ class ModelSolver(model: JapanCrosswordModel) {
     fastQueue.enqueueLineForFastSolver(v)
 
     (if (orientation == VERTICAL) columnQueue else rowQueue ) !
-      new SolveQueueTask(v._2, v._1, VariantsEnumerationSolver, Int.MaxValue)
+      SolveQueueTask(v._2, v._1, VariantsEnumerationSolver, Int.MaxValue)
   }
 
   /**

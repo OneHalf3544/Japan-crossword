@@ -1,6 +1,7 @@
 package ru.onehalf.japancrossword.model
 
 import Orientation._
+import ru.onehalf.japancrossword.model.Cell.Cell
 
 /**
  * Обертка над моделью для получения доступа к части данных как к массиву
@@ -22,7 +23,7 @@ class LineImpl(val lineIndex: Int, var orientation: Orientation,
   def this(lineIndex: Int, orientation: Orientation, model: JapanCrosswordModel) =
     this(lineIndex, orientation, model, 0)
 
-  def apply(cellIndex: Int) = {
+  def apply(cellIndex: Int): Cell = {
     assert(cellIndex < size)
 
     model(absoluteCoordinate(cellIndex))

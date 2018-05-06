@@ -1,8 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.Line
 import ru.onehalf.japancrossword.model.Cell._
-import java.util.logging.Logger
+import ru.onehalf.japancrossword.model.Line
 
 /**
  * Поиск пустых ячеек
@@ -13,8 +12,6 @@ import java.util.logging.Logger
  * @author OneHalf
  */
 object SearchClearedCellSolver extends LineSolver {
-
-  val logger = Logger.getLogger(getClass.getName)
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
@@ -54,7 +51,7 @@ object SearchClearedCellSolver extends LineSolver {
       }
     }
 
-    if (metadata.size == 1) {
+    if (metadata.length == 1) {
       val filledIndexes = preResult.indices.filter(preResult(_) == FILLED)
       if (filledIndexes.nonEmpty) {
         val minIndex = filledIndexes.max - metadata(0)

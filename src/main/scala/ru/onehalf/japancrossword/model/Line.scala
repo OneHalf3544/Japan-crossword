@@ -26,7 +26,7 @@ trait Line {
 
   def dropRight(i: Int): Line
 
-  def forall(predicate: (Cell.Cell) => Boolean): Boolean
+  def forall(predicate: Cell.Cell => Boolean): Boolean
 
   def size: Int
 
@@ -38,9 +38,9 @@ trait Line {
 
   def absoluteCoordinate(i: Int): (Int, Int)
 
-  def notKnownCount = (1 to size) count(i => apply(i - 1) == Cell.NOT_KNOWN)
+  def notKnownCount: Int = (1 to size) count(i => apply(i - 1) == Cell.NOT_KNOWN)
 
-  override def toString = "Line[%s]".format(toList.map({
+  override def toString: String = "Line[%s]".format(toList.map({
     case FILLED => 'X'
     case CLEARED => '_'
     case NOT_KNOWN => '.'}).mkString)
@@ -53,6 +53,6 @@ trait Line {
     }
 
     val o = obj.asInstanceOf[Line]
-    size == o.size && toList.corresponds(o.toList)((cell1, cell2) => cell1 == cell2)
+    size == o.size && toList == o.toList
   }
 }

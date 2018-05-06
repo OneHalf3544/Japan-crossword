@@ -5,7 +5,7 @@ import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.Cell.Cell
 
 /**
-  * Try to find solution in the human style way.
+  * Tries to find a solution in the human style way.
   * It does not use brute force to find a possible combination, only the common sense.
   *
   * @since 12.05.13 22:51
@@ -23,7 +23,7 @@ object FastPreSolver extends LineSolver {
 
     //println("metadata: %s, line: %s".format(metadata.mkString("[", ",", "]"), currentData))
 
-    val length = metadata.sum + metadata.size - 1
+    val length = metadata.sum + metadata.length - 1
     assert(currentData.size >= length, "wrong length: " + length)
 
     def numerateChunk(v: (Int, Boolean), cell: Cell) = cell match {
@@ -35,7 +35,7 @@ object FastPreSolver extends LineSolver {
     val line1 = fitFromLeft(metadata, currentData).get.scanLeft((0, false))(numerateChunk).drop(1).map(v => if (v._2) v._1 else 0)
     val line2 = fitFromRight(metadata, currentData).get.scanLeft((0, false))(numerateChunk).drop(1).map(v => if (v._2) v._1 else 0)
 
-    (0 to currentData.size -1)
+    (0 until currentData.size)
       .map(i => if (line1(i) == line2(i)) line1(i) else 0)
       .map(v => if (v == 0) NOT_KNOWN else FILLED).toList
   }

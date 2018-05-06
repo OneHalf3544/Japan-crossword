@@ -5,12 +5,11 @@ import ru.onehalf.japancrossword.model.{Cell, Line}
 import ru.onehalf.japancrossword.model.Cell.Cell
 
 /**
- * <p/>
- * <p/>
- * Created: 24.05.13 23:09
- * <p/>
- * @author OneHalf
- */
+  * Represents a strategy to solve one [[Line]] of the crossword.
+  *
+  * @since 24.05.13 23:09
+  * @author OneHalf
+  */
 trait LineSolver {
 
   val SEPARATOR: List[Cell] = List(CLEARED)
@@ -34,7 +33,7 @@ trait LineSolver {
     val result = Array.fill[Cell](lineLength)(NOT_KNOWN)
 
     // Сохряняем в результат только совпадающие данные
-    0 to lineLength -1 filter ((i) => line1(i) == line2(i)) foreach(i => result(i) = line2(i))
+    0 until lineLength filter (i => line1(i) == line2(i)) foreach(i => result(i) = line2(i))
     result.toList
   }
 
@@ -61,7 +60,7 @@ trait LineSolver {
     }
 
     assert(currentData.size == supposeLine.size)
-    0 to supposeLine.size-1 forall (cellIsCompatible(_))
+    supposeLine.indices forall cellIsCompatible
   }
 
   /**
@@ -70,7 +69,7 @@ trait LineSolver {
    * @return
    */
   def countStat(currentData: List[Cell]): List[(Cell, Int)] = {
-    currentData.toList.foldLeft(List.empty[(Cell, Int)])(countCellTypes)
+    currentData.foldLeft(List.empty[(Cell, Int)])(countCellTypes)
   }
 
   /**
@@ -92,5 +91,5 @@ trait LineSolver {
     a :+ (cell, 1)
   }
 
-  override def toString = getClass.getSimpleName
+  override def toString: String = getClass.getSimpleName
 }

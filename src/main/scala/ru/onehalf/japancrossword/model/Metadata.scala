@@ -17,7 +17,7 @@ class Metadata(val orientation: Orientation.Orientation,  content: Array[Array[I
    */
   val size: Int = content.size
 
-  val maxPartsCount: Int = content.map(_.size).max
+  val maxPartsCount: Int = content.map(_.length).max
 
   def apply(i: Int) = content(i)
 }

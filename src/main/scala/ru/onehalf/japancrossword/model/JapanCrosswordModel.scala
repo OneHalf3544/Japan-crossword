@@ -14,13 +14,13 @@ class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val vert
 
   private val readWriteLock = new ReentrantReadWriteLock()
 
-  val columnNumber = horizonLine.size
-  val rowNumber = verticalLine.size
-  val maxTotalUnresolvedCount = columnNumber * rowNumber
+  val columnNumber: Int = horizonLine.size
+  val rowNumber: Int = verticalLine.size
+  val maxTotalUnresolvedCount: Int = columnNumber * rowNumber
 
   private var listeners: List[()=>Unit] = List()
 
-  private var board: Array[Array[Cell.Cell]] = null
+  private var board: Array[Array[Cell.Cell]] = _
 
   clear()
 
@@ -61,18 +61,18 @@ class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val vert
   }
 
   def removeListener(f :() => Unit) {
-    listeners = listeners.filterNot(_ == f).toList
+    listeners = listeners.filterNot(_ == f)
   }
 
-  def totalUnresolvedCount() = {
-    board.map(_.filter(_ == Cell.NOT_KNOWN).size).sum
+  def totalUnresolvedCount(): Int = {
+    board.map(_.count(_ == Cell.NOT_KNOWN)).sum
   }
 
-  def isSolved = {
+  def isSolved: Boolean = {
     totalUnresolvedCount() == 0
   }
 
-  def read[T](func: () => T) = {
+  def read[T](func: () => T): T = {
     readWriteLock.readLock().lock()
     try
       func()

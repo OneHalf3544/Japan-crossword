@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
  * <p/>
  * @author OneHalf
  */
-class SolveLineQueue(model: JapanCrosswordModel, queueName: String, modelSolver: ModelSolver) {
+class SolveLineQueue(model: JapanCrosswordModel, queueName: String, modelSolver: ModelSolver) extends Logging {
 
   // todo При вытаскивании задачи из очереди можно использовать какую-ниюудь
   // систему приоритетов и/млм учитывать, была ли линия изменена после последнего подбора
@@ -66,12 +66,12 @@ class SolveLineQueue(model: JapanCrosswordModel, queueName: String, modelSolver:
 
   def enqueueLineForFastSolver(v: (Line, Array[Int])) {
 
-    List(FastPreSolver, SearchClearedCellSolver).foreach(s => {
-      this ! new SolveQueueTask(v._2, v._1, s, Int.MaxValue)
+    List(SearchOverlapsSolver, SearchClearedCellSolver).foreach(s => {
+      this ! SolveQueueTask(v._2, v._1, s, Int.MaxValue)
     })
 
-    this ! new SolveQueueTask(v._2, v._1, BorderSolver, Int.MaxValue)
-    this ! new SolveQueueTask(v._2.reverse, v._1.reverse(), BorderSolver, Int.MaxValue)
+    this ! SolveQueueTask(v._2, v._1, BorderSolver, Int.MaxValue)
+    this ! SolveQueueTask(v._2.reverse, v._1.reverse(), BorderSolver, Int.MaxValue)
   }
 
 

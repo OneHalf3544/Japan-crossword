@@ -5,13 +5,12 @@ import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.Cell.Cell
 
 /**
-  * Tries to find a solution in the human style way.
-  * It does not use brute force to find a possible combination, only the common sense.
+  * Searches overlaps of the left and right positions to find filled cells.
   *
   * @since 12.05.13 22:51
   * @author OneHalf
   */
-object FastPreSolver extends LineSolver {
+object SearchOverlapsSolver extends LineSolver {
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)

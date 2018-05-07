@@ -1,9 +1,10 @@
 package ru.onehalf.japancrossword.solver
 
-import queue.{SolveQueueTask, NonogramSolverQueue}
-import ru.onehalf.japancrossword.model.{Line, JapanCrosswordModel}
+import queue.{NonogramSolverQueue, SolveQueueTask}
+import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.Orientation._
+import ru.onehalf.japancrossword.model.line.{Line, LineOfModel}
 
 /**
   * Solves a puzzle.
@@ -27,21 +28,21 @@ class ModelSolver(model: JapanCrosswordModel) {
 
     val rows = (0 until model.rowNumber).map(v => model.getRowLine(v))
 
-    columns.sortBy(_._2.length).foreach(enqueue(_, VERTICAL))
-    rows   .sortBy(_._2.length).foreach(enqueue(_, HORIZONTAL))
+    columns.sortBy(_.metadata.size).foreach(enqueue(_, VERTICAL))
+    rows   .sortBy(_.metadata.size).foreach(enqueue(_, HORIZONTAL))
 
     fastQueue.startThread()
-    for(i <- 1 to 3) {
+    for(_ <- 1 to 3) {
       columnQueue.startThread()
       rowQueue   .startThread()
     }
   }
 
-  def enqueue(v: (Line, Array[Int]), orientation: Orientation) {
-    fastQueue.enqueueLineForFastSolver(v)
+  def enqueue(line: LineOfModel, orientation: Orientation) {
+    fastQueue.enqueueLineForFastSolver(line)
 
     (if (orientation == VERTICAL) columnQueue else rowQueue ) !
-      SolveQueueTask(v._2, v._1, VariantsEnumerationSolver, Int.MaxValue)
+      SolveQueueTask(line, VariantsEnumerationSolver, Int.MaxValue)
   }
 
   /**
@@ -49,8 +50,8 @@ class ModelSolver(model: JapanCrosswordModel) {
    * @param variant Вариант расположения ячеек в линии
    * @param line Кусочек модели, в которую нужно скопировать предлагаемые значения
    */
-  def addDataToModel(oldData: List[Cell], variant: List[Cell], line: Line) {
-    variant.indices filter (i => line(i) == NOT_KNOWN && variant(i) != NOT_KNOWN) foreach(i => {
+  def addDataToModel(oldData: List[Cell], variant: Line, line: LineOfModel) {
+    variant.indexes filter (i => line(i) == NOT_KNOWN && variant(i) != NOT_KNOWN) foreach(i => {
       line(i) = variant(i)
 /*      line.orientation match {
         case HORIZONTAL => enqueue(model.getColumnLine(i), VERTICAL)

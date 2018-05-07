@@ -2,8 +2,10 @@ package ru.onehalf.japancrossword.model
 
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
+import ru.onehalf.japancrossword.model.line.{LineOfModel, LineOfModelImpl}
+
 /**
- * A nonogram model. Contains of two [[Metadata]] and grid content.
+ * A nonogram model. Contains of two [[Metadata]] objects and a grid content.
  * <p/>
  * <p/>
  * Created: 05.05.13 22:54
@@ -48,12 +50,12 @@ class JapanCrosswordModel(val name: String, val horizonLine : Metadata, val vert
 
   def getRow(y: Int) = apply(_: Int, y)
 
-  def getRowLine(i: Int): (Line, Array[Int]) = {
-    (new LineImpl(i, Orientation.HORIZONTAL, this), verticalLine(i))
+  def getRowLine(i: Int): LineOfModel = {
+    new LineOfModelImpl(verticalLine(i), i, Orientation.HORIZONTAL, this)
   }
 
-  def getColumnLine(i: Int): (Line, Array[Int]) = {
-    (new LineImpl(i, Orientation.VERTICAL, this), horizonLine(i))
+  def getColumnLine(i: Int): LineOfModel = {
+    new LineOfModelImpl(horizonLine(i), i, Orientation.VERTICAL, this)
   }
 
   def addListener(f :() => Unit) {

@@ -1,10 +1,11 @@
 package ru.onehalf.japancrossword.solver
 
+import org.scalatest.concurrent.TimeLimits
 import org.scalatest.{FlatSpec, Matchers}
-import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, LineImpl, Orientation}
-import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.CrosswordLoader.parseLine
-import org.scalatest.concurrent.Timeouts
+import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.model.line._
+import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, Orientation}
 
 /**
  * <p/>
@@ -13,7 +14,7 @@ import org.scalatest.concurrent.Timeouts
  * <p/>
  * @author OneHalf
  */
-class VariantsEnumerationSolverTest extends FlatSpec with Matchers with Timeouts {
+class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimits {
 
   it should "resolve center cells in line" in {
 
@@ -22,9 +23,9 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with Timeouts
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 1, 1, 0, 0"),  // 10 cells
       metadata)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
 
-    val result = VariantsEnumerationSolver.fitRemainder(metadata(0), line).get
+    val result = VariantsEnumerationSolver.fitRemainder(line).get
 
     assert(result.size === 10)
     assert(result(0) === Cell.NOT_KNOWN)
@@ -55,12 +56,12 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with Timeouts
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
       metadata)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
 
     line(1) = Cell.FILLED // Закрашиваем две клетки:          _X_______X
     line(9) = Cell.FILLED // После подбора строки должно быть _X_...XXXX
 
-    val result = VariantsEnumerationSolver.fitRemainder(metadata(0), line).get
+    val result = VariantsEnumerationSolver.fitRemainder(line).get.toList
 
     assert(result === List(
       Cell.NOT_KNOWN, Cell.FILLED, Cell.NOT_KNOWN, Cell.CLEARED, Cell.CLEARED,
@@ -74,9 +75,9 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with Timeouts
       parseLine(Orientation.HORIZONTAL, "1, 1, 1, 1, 1"),  // 5 cells
       metadata)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
 
-    val result = VariantsEnumerationSolver.fitRemainder(metadata(0), line).get
+    val result = VariantsEnumerationSolver.fitRemainder(line).get.toList
 
     assert(result === List(Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED))
   }
@@ -88,13 +89,13 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with Timeouts
       parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 0, 0"),  // 8 cells
       metadata)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
     // Выставляем две ячейки. Они должны быть соединены, т.к. должно быть только 4 ячейки идущих подряд
     line(3) = Cell.FILLED // Выставляем:     ___X_X__
     line(5) = Cell.FILLED // После решения:  .._XXX_.
 
 
-    val result = VariantsEnumerationSolver.fitRemainder(metadata(0), line).get
+    val result = VariantsEnumerationSolver.fitRemainder(line).get.toList
 
     assert(result === List(
       Cell.CLEARED, Cell.CLEARED,
@@ -111,13 +112,13 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with Timeouts
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0"),
       metadata)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
     line(3) = FILLED
     line(5) = CLEARED
     line(7) = FILLED
 
 
-    val result = VariantsEnumerationSolver.fillLine(metadata(0), line)
+    val result = VariantsEnumerationSolver.fillLine(line).toList
 
     assert(result === List(
       NOT_KNOWN, FILLED, FILLED, FILLED, NOT_KNOWN, CLEARED, NOT_KNOWN, FILLED, FILLED, FILLED, NOT_KNOWN))
@@ -125,28 +126,21 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with Timeouts
 
   "compatibleToCurrentData method" should "filter wrong variants" in {
 
-    val model = new JapanCrosswordModel("test",
-      parseLine(Orientation.HORIZONTAL, "0, 0, 1, 1, 1, 1, 0, 0"),  // 8 cells
-      parseLine(Orientation.VERTICAL, "4"))
+    val line = new LineImpl(new LineMetadata(4), LineImpl.parse("_..X.X.."))
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(0) = Cell.CLEARED
-    line(3) = Cell.FILLED
-    line(5) = Cell.FILLED
-
-    def assertCompatible(list: List[Value]) {
+    def assertCompatible(list: Line) {
       assert(VariantsEnumerationSolver.compatibleToCurrentData(line, list), "line " + line + " not compatible to " + list)
     }
 
-    def assertNotCompatible(list: List[Value]) {
+    def assertNotCompatible(list: Line) {
       assert(!VariantsEnumerationSolver.compatibleToCurrentData(line, list), "line " + line + " is compatible to " + list)
     }
 
-    assertCompatible(List(NOT_KNOWN, NOT_KNOWN, FILLED, FILLED, FILLED, FILLED, CLEARED, CLEARED))
-    assertCompatible(List(NOT_KNOWN, NOT_KNOWN, NOT_KNOWN, FILLED, FILLED, FILLED, NOT_KNOWN, NOT_KNOWN))
-    assertCompatible(List(NOT_KNOWN, NOT_KNOWN, NOT_KNOWN, NOT_KNOWN, NOT_KNOWN, NOT_KNOWN, NOT_KNOWN, NOT_KNOWN))
+    assertCompatible(new LineImpl(line.metadata, LineImpl.parse("..XXXX__")))
+    assertCompatible(new LineImpl(line.metadata, LineImpl.parse("...XXX..")))
+    assertCompatible(new LineImpl(line.metadata, LineImpl.parse("........")))
 
-    assertNotCompatible(List(NOT_KNOWN, NOT_KNOWN, FILLED, FILLED, FILLED, CLEARED, CLEARED, CLEARED))
-    assertNotCompatible(List(FILLED, NOT_KNOWN, FILLED, FILLED, FILLED, FILLED, CLEARED, CLEARED))
+    assertNotCompatible(new LineImpl(line.metadata, LineImpl.parse("..XXX___")))
+    assertNotCompatible(new LineImpl(line.metadata, LineImpl.parse("X.XXXX__")))
   }
 }

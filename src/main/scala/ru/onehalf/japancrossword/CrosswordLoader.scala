@@ -1,9 +1,13 @@
 package ru.onehalf.japancrossword
 
-import model.{Orientation, JapanCrosswordModel, Metadata}
+import model.{JapanCrosswordModel, Metadata, Orientation}
 import Orientation._
+
 import io.Source
 import java.util.Properties
+
+import ru.onehalf.japancrossword.model.line.LineMetadata
+
 import scala.collection.convert.wrapAsScala._
 
 
@@ -15,10 +19,10 @@ import scala.collection.convert.wrapAsScala._
   */
 object CrosswordLoader {
 
-  def parseParams(param: String): Array[Int] = (param split "\\s+").map (_.toInt)
+  def parseParams(param: String): LineMetadata = new LineMetadata((param split "\\s+").map (_.toInt))
 
   def parseLine(orientation: Orientation, string: String) : Metadata = {
-    new Metadata(orientation, (string split ",\\s*").map(parseParams(_)))
+    new Metadata(orientation, (string split ",\\s*").map(parseParams))
   }
 
   def loadCrosswords(propertiesFile: String): Array[JapanCrosswordModel] = {

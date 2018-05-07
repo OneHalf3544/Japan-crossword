@@ -1,11 +1,12 @@
 package ru.onehalf.japancrossword.solver.queue
 
-import ru.onehalf.japancrossword.model.{JapanCrosswordModel, Line}
+import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import ru.onehalf.japancrossword.solver._
 import ru.onehalf.japancrossword.model.Cell._
 import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
 
 import com.typesafe.scalalogging.StrictLogging
+import ru.onehalf.japancrossword.model.line.{Line, LineImpl, LineOfModel}
 
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,21 +37,21 @@ class NonogramSolverQueue(model: JapanCrosswordModel, queueName: String, modelSo
 
         task match {
 
-          case SolveQueueTask(_, line, _, _) if line.isSolved =>
+          case SolveQueueTask(line, _, _) if line.isSolved =>
             logger.trace(s"line solved: $line")
 
-          case SolveQueueTask(metadata, line, solver, _) if metadata.isEmpty =>
+          case SolveQueueTask(line, solver, _) if line.metadata.isEmpty =>
             val oldData = line.toList
-            modelSolver.addDataToModel(oldData, List.fill(line.size)(CLEARED), line)
+            modelSolver.addDataToModel(oldData, LineImpl.empty(line.size), line)
 
-          case SolveQueueTask(metadata, line, solver, remindingCells) if splitter.splitLine(metadata, line, solver) =>
+          case SolveQueueTask(line, solver, remindingCells) if splitter.splitLine(line, solver) =>
             logger.trace("line split")
 
-          case SolveQueueTask(metadata, line, solver, remindingCells) =>
+          case SolveQueueTask(line, solver, remindingCells) =>
             val oldData = line.toList
-            modelSolver.addDataToModel(oldData, solver.fillLine(metadata, line), line)
-            if (!line.forall(_ != NOT_KNOWN))
-              this ! new SolveQueueTask(metadata, line, solver)
+            modelSolver.addDataToModel(oldData, solver.fillLine(line), line)
+            if (!line.isSolved)
+              this ! new SolveQueueTask(line, solver)
         }
       }
       logger.info(s"end: $queueName empty")
@@ -64,14 +65,14 @@ class NonogramSolverQueue(model: JapanCrosswordModel, queueName: String, modelSo
     this.tasksQueue.add(task)
   }
 
-  def enqueueLineForFastSolver(v: (Line, Array[Int])) {
+  def enqueueLineForFastSolver(line: LineOfModel) {
 
-    List(SearchOverlapsSolver, SearchClearedCellSolver).foreach(s => {
-      this ! SolveQueueTask(v._2, v._1, s, Int.MaxValue)
+    List(SearchOverlapsSolver, SearchClearedCellSolver).foreach(solver => {
+      this ! SolveQueueTask(line, solver, Int.MaxValue)
     })
 
-    this ! SolveQueueTask(v._2, v._1, BorderSolver, Int.MaxValue)
-    this ! SolveQueueTask(v._2.reverse, v._1.reverse(), BorderSolver, Int.MaxValue)
+    this ! SolveQueueTask(line, BorderSolver, Int.MaxValue)
+    this ! SolveQueueTask(line.reverse(), BorderSolver, Int.MaxValue)
   }
 
 

@@ -2,92 +2,95 @@ package ru.onehalf.japancrossword.solver
 
 import ru.onehalf.japancrossword.model._
 import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.model.line.LineMetadata.metadata
+import ru.onehalf.japancrossword.model.line.{Line, LineImpl, LineMetadata}
 
 /**
- * Логика решения кроссворда перебором содержимого строк и столбцов.
- * Все линии перебираются независимо (т.е. зависимось одной строки от соседней не прсчитывается)
- * Тем не менее, строки разной направленности (ряд/столбец) считаются параллельно, используюя одни и те же данные.
- * В результате определение состояния ячейки в ряду может упростить перебор соответствующего столбца
- * <p/>
- * <p/>
- * Created: 07.05.13 7:28
- * <p/>
- * @author OneHalf
- */
+  * Логика решения кроссворда перебором содержимого строк и столбцов.
+  * Все линии перебираются независимо (т.е. зависимось одной строки от соседней не прсчитывается)
+  * Тем не менее, строки разной направленности (ряд/столбец) считаются параллельно, используюя одни и те же данные.
+  * В результате определение состояния ячейки в ряду может упростить перебор соответствующего столбца
+  *
+  * @since 07.05.13 7:28
+  * @author OneHalf
+  */
 object VariantsEnumerationSolver extends LineSolver {
 
   /**
    * Заполнить линию (Меняем значение только если оно еще не оперделено в модели)
-   * @param metadata Данные по ожидаемому заполнению линии (цифры с краев кроссворда)
+    *
    * @param currentData Текущие данные
    */
-  override def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell] = {
-    fitRemainder(metadata, currentData).get
+  override def fillLine(currentData: Line): Line = {
+    fitRemainder(currentData).get
   }
 
   /**
-   * Заполнение линии согласно переданным в функцию метаданным.
-   * Функция рекурсивно вызывает саму себя. Выставляет первый элемент,
-   * и для заполнения остатка линии вы зывает этот же метод
-   * @param metadata Метаданные для линии
-   * @param currentData текущее содержимое линии
-   * @return Список линий, подходящих под указанные метаданные
-   */
-  private[solver] def fitRemainder(metadata: Array[Int], currentData: Line): Option[List[Cell]] = {
+    * Заполнение линии согласно переданным в функцию метаданным.
+    * Функция рекурсивно вызывает саму себя. Выставляет первый элемент,
+    * и для заполнения остатка линии вы зывает этот же метод
+    *
+    * @param currentData текущее содержимое линии
+    * @return Список линий, подходящих под указанные метаданные
+    */
+  private[solver] def fitRemainder(currentData: Line): Option[Line] = {
 
-    if (metadata.isEmpty) {
-      // Нету больше метаданных? Значит остаток строки пустой
-      if (currentData.forall(_ != FILLED)) return Option(List.fill[Cell](currentData.size)(CLEARED))
-      else return Option.empty // В случае противоречий говорим, что решения нет
+    if (currentData.metadata.isEmpty) {
+      // Is there no more metadata? It seems the rest of line is empty
+      if (currentData.forall(_ != FILLED))
+        return Option(new LineImpl(LineMetadata.empty(), Array.fill(currentData.size)(CLEARED)))
+      else
+        return None // В случае противоречий говорим, что решения нет
     }
 
-    val chunkLength = metadata.head
-    val chunk = List.fill[Cell](chunkLength)(FILLED)
-    val expectedLength = currentData.size
-    val separator = List(CLEARED)
+    val chunkLength = currentData.metadata.head
+    val chunk = Array.fill[Cell](chunkLength)(FILLED)
 
-    if (expectedLength == chunkLength) {
+    if (currentData.size == chunkLength) {
       // Оставшаяся длина совпадает в оставшимся куском
-      return Option(chunk)
+      return Option(new LineImpl(metadata(chunkLength), chunk))
     }
 
     // Не пересчитывать заведомо неопределяемые ячейки
-    val maxSequenceLength = metadata.sum + metadata.length - 1
+    val maxSequenceLength = currentData.metadata.minimalLineLength
     if (currentData.forall(_ == NOT_KNOWN) && currentData.size >= 2 * maxSequenceLength ) {
-      return Option(currentData.toList)
+      return Option(currentData)
     }
 
-    var result: Option[List[Cell]] = Option.empty
+    var result: Option[Line] = Option.empty
 
-    for (offset <- 0 to expectedLength - chunkLength - metadata.tail.map(_ + 1).sum) {
+    for (offset <- 0 to currentData.size - maxSequenceLength + 1) {
 
-      // Заполнение отступом + заполненный участок
-      var lineStart: List[Cell] = List.fill[Cell](offset)(CLEARED) ::: chunk
-
-      // Параметр для повтороного вызова метода
-      var newCurrentData = currentData.drop(lineStart.size)
-
-      // Если какая-то часть строки еще остается, добавляем разделительную ячейку
-      if (newCurrentData.nonEmpty()) {
-        lineStart = lineStart ::: separator
-        newCurrentData = newCurrentData.drop(1)
-      }
+      var lineStart: Line = createNewLine(currentData, offset, chunk)
 
       // Сразу проверяем на противоречие модели
-      // todo проверять почаще, при подборе оставшейся части строки. (Т.к. другие потоки могут уточнить содержимое)
-      if (compatibleToCurrentData(currentData.toList.take(lineStart.size), lineStart)) {
-
+      if (currentData.canStartsWith(lineStart)) {
         // Доподбираем оставшуюся часть строки
-        val subResult = fitRemainder(metadata.tail, newCurrentData)
+        val newCurrentData: Line = currentData.dropFromBegining(lineStart)
+        val subResult: Option[Line] = fitRemainder(newCurrentData)
         if (subResult.isDefined && compatibleToCurrentData(newCurrentData, subResult.get)) {
           result = Option(if (result.isEmpty)
-            lineStart ::: subResult.get
+            lineStart ++ subResult.get
           else
-            reduceLines(result.get, lineStart ::: subResult.get))
+            reduceLines(result.get, lineStart ++ subResult.get))
         }
       }
     }
 
     result
   }
+
+  private def createNewLine(currentData: Line, offset: Int, chunk: Array[Cell]): Line = {
+    // Заполнение отступом + заполненный участок
+    var lineStart: Array[Cell] = Array.fill[Cell](offset)(CLEARED) ++ chunk
+
+    // Параметр для повтороного вызова метода
+
+    // Если какая-то часть строки еще остается, добавляем разделительную ячейку
+    if (currentData.metadata.size > 1) {
+      lineStart = lineStart :+ CLEARED
+    }
+    new LineImpl(metadata(chunk.length), lineStart)
+  }
+
 }

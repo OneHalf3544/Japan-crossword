@@ -39,7 +39,7 @@ class MetadataPanel(val CELL_SIZE: Int, val FONT_SIZE: Int, metadata: Metadata) 
 
   def drawMarks(g: Graphics, xCoordinate: (Int, Int, Int) => Int, yCoordinate: (Int, Int, Int) => Int) {
     for (lineIndex <- 0 until metadata.size) {
-      val size = metadata(lineIndex).length
+      val size = metadata(lineIndex).size
       for (j <- 0 until size) {
         val x = xCoordinate(size, lineIndex, j) * CELL_SIZE
         val y = yCoordinate(size, lineIndex, j) * CELL_SIZE

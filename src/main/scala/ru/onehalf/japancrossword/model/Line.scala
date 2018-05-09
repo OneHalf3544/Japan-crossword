@@ -11,6 +11,8 @@ import Orientation._
  */
 trait Line {
 
+  def isSolved() = notKnownCount == 0
+
   def exists(predicate: (Cell) => Boolean): Boolean = {
     ! forall(! predicate(_))
   }
@@ -46,7 +48,7 @@ trait Line {
   override def toString: String = "Line[%s]".format(toList.map({
     case FilledCell(_) => 'X'
     case Cleared => '_'
-    case NotKnownCell(_) => '.'}).mkString)
+    case NotKnownCell(_, _) => '.'}).mkString)
 
   override def hashCode(): Int = 0
 

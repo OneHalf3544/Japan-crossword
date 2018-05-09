@@ -1,7 +1,6 @@
 package ru.onehalf.japancrossword.model
 
-import Orientation._
-import ru.onehalf.japancrossword.model.Cell.Cell
+import ru.onehalf.japancrossword.model.Orientation._
 
 /**
  * Обертка над моделью для получения доступа к части данных как к массиву

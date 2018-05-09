@@ -54,7 +54,7 @@ object VariantsEnumerationSolver extends LineSolver {
     }
 
     // Не пересчитывать заведомо неопределяемые ячейки
-    val maxSequenceLength = metadata.sum + metadata.length - 1
+    val maxSequenceLength = metadata.sum + metadata.size - 1
     if (currentData.forall(_.isNotKnown) && currentData.size >= 2 * maxSequenceLength ) {
       return Option(currentData.toList)
     }

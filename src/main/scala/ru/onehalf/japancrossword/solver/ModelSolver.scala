@@ -27,8 +27,8 @@ class ModelSolver(model: Model) {
 
     val rows = (0 until model.rowNumber).map(v => model.getRowLine(v))
 
-    columns.sortBy(_._2.length).foreach(enqueue(_, VERTICAL))
-    rows   .sortBy(_._2.length).foreach(enqueue(_, HORIZONTAL))
+    columns.sortBy(_._2.size).foreach(enqueue(_, VERTICAL))
+    rows   .sortBy(_._2.size).foreach(enqueue(_, HORIZONTAL))
 
     fastQueue.startThread()
     for(i <- 1 to 3) {

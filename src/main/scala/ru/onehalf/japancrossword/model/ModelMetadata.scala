@@ -13,7 +13,7 @@ class ModelMetadata(val orientation: Orientation.Orientation,  content: Array[Li
    */
   val size: Int = content.length
 
-  val maxPartsCount: Int = content.map(_.length).max
+  val maxPartsCount: Int = content.map(_.size).max
 
   /**
     * Get data for n-th line.

@@ -9,3 +9,4 @@ libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0"
 
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+libraryDependencies += "org.scalamock" %% "scalamock" % "4.1.0" % Test

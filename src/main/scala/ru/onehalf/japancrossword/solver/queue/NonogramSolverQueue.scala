@@ -8,8 +8,8 @@ import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
 import com.typesafe.scalalogging.StrictLogging
 import ru.onehalf.japancrossword.model.line.{Line, LineImpl, LineOfModel}
 
-import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent._
 import scala.util.Failure
 
 /**
@@ -19,7 +19,7 @@ import scala.util.Failure
   * @since 23.05.13 22:39
   * @author OneHalf
   */
-class NonogramSolverQueue(model: JapanCrosswordModel, queueName: String, modelSolver: ModelSolver) extends StrictLogging {
+class NonogramSolverQueue(model: Model, queueName: String, modelSolver: ModelSolver) extends StrictLogging {
 
   // todo use priority queue for put shorter lines to the beginning of queue.
 

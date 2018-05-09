@@ -6,30 +6,23 @@ import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import java.awt.event.{ItemEvent, ItemListener}
 
 /**
- * Окошко с кроссвордом
- * <p/>
- * <p/>
- * Created: 02.05.13 0:16
- * <p/>
- * @author OneHalf
- */
+  * A main application window.
+  *
+  * @since 02.05.13 0:16
+  * @author OneHalf
+  */
 class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FONT_SIZE: Int) extends JFrame("Японский кроссворд") {
 
   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName)
 
-  val repaintListener = () => SwingUtilities.invokeLater(new Runnable {
-    def run() {
-      repaint()
-      //println("repaint")
-    }
-  })
+  private val repaintListener = () => SwingUtilities.invokeLater(() =>  repaint())
 
-  var crosswordPanel: JComponent = new JScrollPane(new JapanCrosswordPanel(models(0), CELL_SIZE, FONT_SIZE))
+  private var crosswordPanel: JComponent = new JScrollPane(new JapanCrosswordPanel(models(0), CELL_SIZE, FONT_SIZE))
 
   /**
    * Панелька с кнопками и комбобоксом
    */
-  val modelChoosePanel = new ControlPanel(models, new ItemListener(){
+  private val modelChoosePanel = new ControlPanel(models, new ItemListener(){
     def itemStateChanged(e: ItemEvent) {
       val model = e.getItem.asInstanceOf[JapanCrosswordModel]
       e.getStateChange match {
@@ -42,7 +35,8 @@ class JapanCrosswordFrame(models: Array[JapanCrosswordModel], CELL_SIZE: Int, FO
     }
   })
 
-  models(0) addListener (repaintListener)
+  // Load first model at application start
+  models(0) addListener repaintListener
 
   setContentPane(contentPane())
   setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)

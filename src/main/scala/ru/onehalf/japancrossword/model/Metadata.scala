@@ -1,23 +1,27 @@
 package ru.onehalf.japancrossword.model
 
-import scala.Array
+import ru.onehalf.japancrossword.model.line.LineMetadata
 
 /**
- * Сигнатуры рядов.
- * <p/>
- * <p/>
- * Created: 11.05.13 12:56
- * <p/>
- * @author OneHalf
- */
-class Metadata(val orientation: Orientation.Orientation,  content: Array[Array[Int]]) {
+  * A set of numbers. One nonogram contains two objects of this type.
+  *
+  * @author OneHalf
+  * @since 11.05.13 12:56
+  */
+class Metadata(val orientation: Orientation.Orientation,  content: Array[LineMetadata]) {
 
   /**
-   * Число рядов, описываемых данным классом
+   * A count of lines for current object.
    */
-  val size: Int = content.size
+  val size: Int = content.length
 
-  val maxPartsCount: Int = content.map(_.length).max
+  val maxPartsCount: Int = content.map(_.size).max
 
-  def apply(i: Int) = content(i)
+  /**
+    * Get data for n-th line.
+    *
+    * @param n line index
+    * @return Digits for requested line
+    */
+  def apply(n: Int): LineMetadata = content(n)
 }

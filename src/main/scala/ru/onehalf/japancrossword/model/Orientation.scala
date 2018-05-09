@@ -1,12 +1,11 @@
 package ru.onehalf.japancrossword.model
 
 /**
- * <p/>
- * <p/>
- * Created: 09.05.13 14:14
- * <p/>
- * @author OneHalf
- */
+  * A line orientation.
+  *
+  * @since 09.05.13 14:14
+  * @author OneHalf
+  */
 object Orientation extends Enumeration {
   type Orientation = Value
   val VERTICAL, HORIZONTAL = Value

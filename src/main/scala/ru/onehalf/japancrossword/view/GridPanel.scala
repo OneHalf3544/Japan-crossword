@@ -15,14 +15,14 @@ import javax.swing.JPanel
  */
 class GridPanel(model: JapanCrosswordModel, CELL_SIZE: Int) extends JPanel {
 
-  val left = 0
-  val top = 0
-  val right = model.columnNumber * CELL_SIZE
-  val bottom = model.rowNumber * CELL_SIZE
+  private val left = 0
+  private val top = 0
+  private val right = model.columnNumber * CELL_SIZE
+  private val bottom = model.rowNumber * CELL_SIZE
 
   setPreferredSize(new Dimension(right + 1, bottom + 1))
 
-  def determineCellCoordinate(x: Int, y: Int) = (x / CELL_SIZE, y / CELL_SIZE)
+  private def determineCellCoordinate(x: Int, y: Int) = (x / CELL_SIZE, y / CELL_SIZE)
 
   // todo Заполнение ячеек "протаскиванием"
   addMouseListener(new MouseListener {
@@ -32,13 +32,22 @@ class GridPanel(model: JapanCrosswordModel, CELL_SIZE: Int) extends JPanel {
     def mousePressed(e: MouseEvent) {}
     def mouseReleased(e: MouseEvent) {
       val coordinates = determineCellCoordinate(e.getX, e.getY)
-      val current = model.apply(coordinates._1, coordinates._2)
+      if (!coordinatesInsideOfModel(coordinates)) {
+        return
+      }
 
+      val current = model.apply(coordinates._1, coordinates._2)
       model.update(coordinates._1, coordinates._2, (current, e.getButton) match {
         case (Cell.NOT_KNOWN, MouseEvent.BUTTON1) => Cell.FILLED
         case (Cell.NOT_KNOWN, MouseEvent.BUTTON3) => Cell.CLEARED
         case (_, _) => Cell.NOT_KNOWN
       })
+    }
+
+    def coordinatesInsideOfModel(coordinates: (Int, Int)): Boolean = {
+      val xInside = coordinates._1 >= 0 && coordinates._1 <= model.columnNumber
+      val yInside = coordinates._2 >= 0 && coordinates._2 <= model.rowNumber
+      xInside && yInside
     }
   })
 
@@ -52,8 +61,8 @@ class GridPanel(model: JapanCrosswordModel, CELL_SIZE: Int) extends JPanel {
     val drawHorizonLine = (y: Int) => g.drawLine(left, top + y * CELL_SIZE, right, top + y * CELL_SIZE)
 
     g.setColor(Color.LIGHT_GRAY)
-    1 to (model.columnNumber - 1) foreach drawVerticalLine
-    1 to (model.rowNumber - 1) foreach drawHorizonLine
+    1 until model.columnNumber foreach drawVerticalLine
+    1 until model.rowNumber foreach drawHorizonLine
 
     g.setColor(Color.BLACK)
     5.to(model.columnNumber - 1, 5) foreach drawVerticalLine
@@ -77,8 +86,8 @@ class GridPanel(model: JapanCrosswordModel, CELL_SIZE: Int) extends JPanel {
       }
     }
 
-    for (x <- 0 to model.columnNumber - 1)
-      for (y <- 0 to model.rowNumber - 1)
+    for (x <- 0 until model.columnNumber)
+      for (y <- 0 until model.rowNumber)
         if (model(x, y) != Cell.NOT_KNOWN)
           drawCell(x, y)
   }

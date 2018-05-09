@@ -1,8 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.Cell._
-import ru.onehalf.japancrossword.model.{Cell, Line}
-import ru.onehalf.japancrossword.model.Cell.Cell
+import ru.onehalf.japancrossword.model.Cell.{Cell, _}
+import ru.onehalf.japancrossword.model.line.{Line, LineImpl}
 
 /**
   * Represents a strategy to solve one [[Line]] of the crossword.
@@ -14,9 +13,9 @@ trait LineSolver {
 
   val SEPARATOR: List[Cell] = List(CLEARED)
 
-  def fillLine(metadata: Array[Int], currentData: Line): List[Cell.Cell]
+  def fillLine(currentData: Line): Line
 
-  def indicesForStat(stat: List[(Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
+  protected def indicesForStat(stat: List[(Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
 
   /**
    * Схлопывание строки в одну. Если значение в списках не совпадают,
@@ -26,15 +25,16 @@ trait LineSolver {
    * @param line2 Строка 2
    * @return Результат объединения
    */
-  def reduceLines(line1: List[Cell], line2: List[Cell]): List[Cell] = {
-    assert(line1.size == line2.size, "lines: " + line1.size + ", " + line2.size)
+  protected def reduceLines(line1: Line, line2: Line): Line = {
+    assert(line1.metadata == line2.metadata, s"lines: ${line1.size}, ${line2.size}")
+    assert(line1.size == line2.size, s"lines: ${line1.size}, ${line2.size}")
     val lineLength = line1.size
 
     val result = Array.fill[Cell](lineLength)(NOT_KNOWN)
 
     // Сохряняем в результат только совпадающие данные
     0 until lineLength filter (i => line1(i) == line2(i)) foreach(i => result(i) = line2(i))
-    result.toList
+    new LineImpl(line1.metadata, result)
   }
 
   /**
@@ -43,52 +43,14 @@ trait LineSolver {
    * @param supposeLine Предлагаемая линия (Может содержать NOT_KNOWN)
    * @return true, если вариант приемлим
    */
-  def compatibleToCurrentData(currentData: Line, supposeLine: List[Cell]): Boolean = {
-    compatibleToCurrentData(currentData.toList, supposeLine)
-  }
-
-  /**
-   * Проверка, не противоречит ли предлагаемое значение текущим данным
-   * @param currentData Текущие данные в модели
-   * @param supposeLine Предлагаемая линия (Может содержать NOT_KNOWN)
-   * @return true, если вариант приемлим
-   */
-  def compatibleToCurrentData(currentData: List[Cell], supposeLine: List[Cell]): Boolean = {
+  def compatibleToCurrentData(currentData: Line, supposeLine: Line): Boolean = {
 
     def cellIsCompatible(i: Int): Boolean = {
       currentData(i) == supposeLine(i) || currentData(i) == NOT_KNOWN || supposeLine(i) == NOT_KNOWN
     }
 
     assert(currentData.size == supposeLine.size)
-    supposeLine.indices forall cellIsCompatible
-  }
-
-  /**
-   *
-   * @param currentData
-   * @return
-   */
-  def countStat(currentData: List[Cell]): List[(Cell, Int)] = {
-    currentData.foldLeft(List.empty[(Cell, Int)])(countCellTypes)
-  }
-
-  /**
-   *
-   * @param currentData
-   * @return
-   */
-  def countStat(currentData: Line): List[(Cell, Int)] = {
-    countStat(currentData.toList)
-  }
-
-  def countCellTypes(a: List[(Cell, Int)], cell: Cell): List[(Cell, Int)] = {
-    if (a.isEmpty) {
-      return List((cell, 1))
-    }
-    if (a.last._1 == cell) {
-      return a.init :+ (cell, a.last._2 + 1)
-    }
-    a :+ (cell, 1)
+    supposeLine.toList.indices forall cellIsCompatible
   }
 
   override def toString: String = getClass.getSimpleName

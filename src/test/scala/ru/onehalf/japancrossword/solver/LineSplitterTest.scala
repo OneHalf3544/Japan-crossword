@@ -1,9 +1,11 @@
 package ru.onehalf.japancrossword.solver
 
-import org.scalatest.FunSuite
-import queue.{SolveQueueTask, SolveLineQueue}
+import org.scalamock.scalatest.MockFactory
+import org.scalatest.FlatSpec
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{Orientation, Cell, LineImpl, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.line._
+import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, Metadata, Orientation}
+import ru.onehalf.japancrossword.solver.queue.{NonogramSolverQueue, SolveQueueTask}
 
 /**
  * <p/>
@@ -12,177 +14,120 @@ import ru.onehalf.japancrossword.model.{Orientation, Cell, LineImpl, JapanCrossw
  * <p/>
  * @author OneHalf
  */
-class LineSplitterTest extends FunSuite {
+class LineSplitterTest extends FlatSpec with MockFactory {
 
-  test("divideToSublist") {
+  behavior of "splitter"
 
-    val metadata = parseLine(Orientation.VERTICAL, "1 4 1")
-    val model = new JapanCrosswordModel("test",
-      parseLine(Orientation.HORIZONTAL, "1, 0, 0, 1, 1, 1, 1, 0, 0, 1"),  // 10 cells
-      metadata)
+  it should "divide line into three pieces" in {
+    val model = oneLineModel("X__XXXX_XX")
+    val line  =   createLine("X._..X._.X", model)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(0) = Cell.FILLED
-    line(2) = Cell.CLEARED
-    line(5) = Cell.FILLED
-    line(7) = Cell.CLEARED
-    line(9) = Cell.FILLED
+    val splitter = new LineSplitter(mock[NonogramSolverQueue])
 
-    val splitter = new SolveLineQueue(model, "", new ModelSolver(model)).splitter
-
-    val result = splitter.divideToSublists(line, splitter.countStat(line))
+    val result = splitter.divideToSublists(line, line.countStat())
 
     assert(result === List(
-      new LineImpl(0, Orientation.HORIZONTAL, model, 0, 2),
-      new LineImpl(0, Orientation.HORIZONTAL, model, 2, 5),
-      new LineImpl(0, Orientation.HORIZONTAL, model, 7, 3)))
-
+      new LineOfModelImpl(new LineMetadata(1), 0, Orientation.HORIZONTAL, model, 0, 2),
+      new LineOfModelImpl(new LineMetadata(4), 0, Orientation.HORIZONTAL, model, 2, 5),
+      new LineOfModelImpl(new LineMetadata(2), 0, Orientation.HORIZONTAL, model, 7, 3)))
   }
 
-  test("divideToSublist2") {
+  it should "divide into two lines" in {
 
-    val metadata = parseLine(Orientation.VERTICAL, "4 1")
-    val model = new JapanCrosswordModel("test",
-      parseLine(Orientation.HORIZONTAL, "0, 0, 0, 1, 1, 1, 1, 0, 0, 1"),  // 10 cells
-      metadata)
+    val model = oneLineModel("___XXXX__X")
+    val line  =   createLine("_._..X._.X", model)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(0) = Cell.CLEARED
-    line(2) = Cell.CLEARED
-    line(5) = Cell.FILLED
-    line(7) = Cell.CLEARED
-    line(9) = Cell.FILLED
+    val solver = new LineSplitter(mock[NonogramSolverQueue])
 
-    val solver = new SolveLineQueue(model, "", new ModelSolver(model)).splitter
-
-    val result = solver.divideToSublists(line, solver.countStat(line))
+    val result = solver.divideToSublists(line, line.countStat())
 
     assert(result === List(
-      new LineImpl(0, Orientation.HORIZONTAL, model, 0, 7),
-      new LineImpl(0, Orientation.HORIZONTAL, model, 7, 3)))
+      new LineOfModelImpl(new LineMetadata(4), 0, Orientation.HORIZONTAL, model, 0, 7),
+      new LineOfModelImpl(new LineMetadata(1), 0, Orientation.HORIZONTAL, model, 7, 3)))
 
   }
 
-  test("divideToSublist3") {
+  it should "divide the line into two pieces 2" in {
 
-    val metadata = parseLine(Orientation.VERTICAL, "2 2")
-    val model = new JapanCrosswordModel("test",
-      parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
-      metadata)
+    val model = oneLineModel("_XX_XX____")
+    val line  =   createLine(".X._.X.___", model)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(1) = Cell.FILLED
-    line(3) = Cell.CLEARED
-    line(5) = Cell.FILLED
-    line(7) = Cell.CLEARED
-    line(8) = Cell.CLEARED
-    line(9) = Cell.CLEARED
+    val solver = new LineSplitter(mock[NonogramSolverQueue])
 
-    val solver = new SolveLineQueue(model, "", new ModelSolver(model)).splitter
-
-    val result = solver.divideToSublists(line, solver.countStat(line))
+    val result = solver.divideToSublists(line, line.countStat())
 
     assert(result === List(
-      new LineImpl(0, Orientation.HORIZONTAL, model, 0, 3),
-      new LineImpl(0, Orientation.HORIZONTAL, model, 3, 7)))
+      new LineOfModelImpl(new LineMetadata(2), 0, Orientation.HORIZONTAL, model, 0, 3),
+      new LineOfModelImpl(new LineMetadata(2), 0, Orientation.HORIZONTAL, model, 3, 7)))
 
   }
 
-  test("drop cleared cells from ends") {
-    val metadata = parseLine(Orientation.VERTICAL, "2 2")
-    val model = new JapanCrosswordModel("test",
-      parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
-      metadata)
+  it should "split line by max part" in {
+    val model = oneLineModel("_X__XX_X__")
+    val line  =   createLine("..._XX_...", model)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(0) = Cell.CLEARED
-    line(8) = Cell.CLEARED
-    line(9) = Cell.CLEARED
+    val solver = mock[NonogramSolverQueue]
+    (solver ! _).expects(new SolveQueueTask(new LineOfModelImpl(new LineMetadata(1), 0, Orientation.HORIZONTAL, model, 0, 4), BorderSolver))
+    (solver ! _).expects(new SolveQueueTask(new LineOfModelImpl(new LineMetadata(1), 0, Orientation.HORIZONTAL, model, 6, 4), BorderSolver))
 
-    val splitter = new SolveLineQueue(model, "", new ModelSolver(model)).splitter
-
-    val result = splitter.dropClearedFromEnds(line)
-
-    assert(result === new LineImpl(0, Orientation.HORIZONTAL, model, 1, 7))
+    new LineSplitter(solver).splitByFirstMaxLength(line, BorderSolver)
   }
 
-  test("split line by max part") {
-    val metadata = parseLine(Orientation.VERTICAL, "1 2 1")
-    val model = new JapanCrosswordModel("test",
-      parseLine(Orientation.HORIZONTAL, "0, 1, 0, 0, 1, 1, 0, 1, 0, 0"),  // 10 cells
-      metadata)
+  it should "drop chunks from ends" in {
+    val model = oneLineModel("XXX_XX_X__")
+    val line  =   createLine("XXX_......", model)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(3) = Cell.CLEARED
-    line(4) = Cell.FILLED
-    line(5) = Cell.FILLED
-    line(6) = Cell.CLEARED
+    val solver = mock[NonogramSolverQueue]
+    (solver.! _).expects(new SolveQueueTask(new LineOfModelImpl(new LineMetadata(2, 1), 0, Orientation.HORIZONTAL, model, 4, 6), BorderSolver))
 
-    val solver = new SolveLineQueue(model, "", new ModelSolver(model))
-    solver.splitter.splitByFirstMaxLength(line, metadata(0), BorderSolver)
-
-    assert(solver.queue.size() === 2)
-    assert(solver.queue.take() === new SolveQueueTask(Array(1), new LineImpl(0, Orientation.HORIZONTAL, model, 0, 4), BorderSolver))
-    assert(solver.queue.take() === new SolveQueueTask(Array(1), new LineImpl(0, Orientation.HORIZONTAL, model, 6, 4), BorderSolver))
+    new LineSplitter(solver).dropChanksFromEnds(line, BorderSolver)
   }
 
-  test("drop chanks from ends") {
-    val metadata = parseLine(Orientation.VERTICAL, "3 2 1")
-    val model = new JapanCrosswordModel("test",
-      parseLine(Orientation.HORIZONTAL, "1, 1, 1, 0, 1, 1, 0, 1, 0, 0"),  // 10 cells
-      metadata)
+  it should "split by known chunk" in {
+    val model = oneLineModel("_XX_X__XX_")
+    val line  =   createLine("..._X_....", model)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(0) = Cell.FILLED
-    line(1) = Cell.FILLED
-    line(2) = Cell.FILLED
-    line(3) = Cell.CLEARED
+    val solver = mock[NonogramSolverQueue]
+    (solver ! _).expects(new SolveQueueTask(new LineOfModelImpl(new LineMetadata(2), 0, Orientation.HORIZONTAL, model, 0, 4), BorderSolver))
+    (solver ! _).expects(new SolveQueueTask(new LineOfModelImpl(new LineMetadata(2), 0, Orientation.HORIZONTAL, model, 5, 5), BorderSolver))
 
-    val solver = new SolveLineQueue(model, "", new ModelSolver(model))
-    solver.splitter.dropChanksFromEnds(metadata(0), line, BorderSolver)
-
-    assert(solver.queue.size() === 1)
-    assert(solver.queue.take() === new SolveQueueTask(Array(2, 1), new LineImpl(0, Orientation.HORIZONTAL, model, 4, 6), BorderSolver))
+    new LineSplitter(solver).splitByKnownChunk(line, BorderSolver)
   }
 
-  test("split by known chank") {
-    val metadata = parseLine(Orientation.VERTICAL, "2 1 2")
-    val model = new JapanCrosswordModel("test",
-      parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 1, 0, 0, 1, 1, 0"),  // 10 cells
-      metadata)
+  it should "split by first chunk" in {
+    val model = oneLineModel("__X__X__XX_")
+    val line  =   createLine("._X__X_....", model)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(3) = Cell.CLEARED
-    line(4) = Cell.FILLED
-    line(5) = Cell.CLEARED
+    val solverQueue = mock[NonogramSolverQueue]
+    (solverQueue ! _).expects(new SolveQueueTask(new LineOfModelImpl(new LineMetadata(), 0, Orientation.HORIZONTAL, model, 0, 2), BorderSolver))
+    (solverQueue ! _).expects(new SolveQueueTask(new LineOfModelImpl(new LineMetadata(1, 2), 0, Orientation.HORIZONTAL, model, 3, 8), BorderSolver))
 
-    val solver = new SolveLineQueue(model, "", new ModelSolver(model))
-    solver.splitter.splitByKnownChunk(line, metadata(0), BorderSolver)
-
-    assert(solver.queue.size() === 2)
-    assert(solver.queue.take() === new SolveQueueTask(Array(2), new LineImpl(0, Orientation.HORIZONTAL, model, 0, 4), BorderSolver))
-    assert(solver.queue.take() === new SolveQueueTask(Array(2), new LineImpl(0, Orientation.HORIZONTAL, model, 5, 5), BorderSolver))
+    new LineSplitter(solverQueue).splitByKnownChunk(line, BorderSolver)
   }
 
-  test("split by first chank") {
-    val metadata = parseLine(Orientation.VERTICAL, "1 1 2")
-    val model = new JapanCrosswordModel("test",
-      parseLine(Orientation.HORIZONTAL, "0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0"),  // 11 cells
+  private def createLine(string: String, model: JapanCrosswordModel) = {
+    val line = model.getRowLine(0)
+    LineImpl.parse(string)
+      .zipWithIndex
+      .foreach(tuple => line(tuple._2) = tuple._1)
+
+    line
+  }
+
+  private def oneLineModel(string: String) = {
+    val solvedLine = createSolvedLine(string)
+    val metadata = new Metadata(Orientation.VERTICAL, Array(solvedLine.metadata))
+    val horizontalMetadata = solvedLine.toList
+      .map(i => if (i == Cell.FILLED) 1 else 0)
+      .map(LineMetadata.metadata(_))
+      .toArray
+
+    new JapanCrosswordModel("test",
+      new Metadata(Orientation.HORIZONTAL, horizontalMetadata),
       metadata)
+  }
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
-    line(1) = Cell.CLEARED
-    line(2) = Cell.FILLED
-    line(3) = Cell.CLEARED
-    line(4) = Cell.CLEARED
-    line(5) = Cell.FILLED
-    line(6) = Cell.CLEARED
-
-    val solver = new SolveLineQueue(model, "", new ModelSolver(model))
-    solver.splitter.splitByKnownChunk(line, metadata(0), BorderSolver)
-
-    assert(solver.queue.size() === 2)
-    assert(solver.queue.take() === new SolveQueueTask(Array(), new LineImpl(0, Orientation.HORIZONTAL, model, 0, 2), BorderSolver))
-    assert(solver.queue.take() === new SolveQueueTask(Array(1, 2), new LineImpl(0, Orientation.HORIZONTAL, model, 3, 8), BorderSolver))
+  private def createSolvedLine(string: String) = {
+    LineImpl.solved(LineImpl.parse(string): _*)
   }
 }

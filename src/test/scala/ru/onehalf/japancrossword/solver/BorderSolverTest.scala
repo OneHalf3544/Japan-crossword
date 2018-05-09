@@ -2,7 +2,8 @@ package ru.onehalf.japancrossword.solver
 
 import org.scalatest.{FlatSpec, Matchers}
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, LineImpl, Orientation}
+import ru.onehalf.japancrossword.model.line.{LineImpl, LineOfModelImpl}
+import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, Orientation}
 
 /**
  * <p/>
@@ -20,16 +21,14 @@ class BorderSolverTest extends FlatSpec with Matchers {
       parseLine(Orientation.HORIZONTAL, "0, 1, 1, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
       metadata)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
 
     line(1) = Cell.FILLED // Закрашиваем две клетки:          _X_______X
     line(9) = Cell.FILLED // После подбора строки должно быть _X_...XXXX
 
-    val result = VariantsEnumerationSolver.fitRemainder(metadata(0), line).get
+    val result = VariantsEnumerationSolver.fillLine(line).toList
 
-    assert(result === List(
-      Cell.NOT_KNOWN, Cell.FILLED, Cell.NOT_KNOWN, Cell.CLEARED, Cell.CLEARED,
-      Cell.CLEARED, Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED))
+    assert(result === LineImpl.parse(".X.___XXXX"))
   }
 
 }

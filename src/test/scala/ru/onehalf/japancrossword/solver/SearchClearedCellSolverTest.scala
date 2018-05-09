@@ -2,8 +2,9 @@ package ru.onehalf.japancrossword.solver
 
 import org.scalatest.FunSuite
 import ru.onehalf.japancrossword.CrosswordLoader._
-import ru.onehalf.japancrossword.model.{Orientation, Cell, LineImpl, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, Orientation}
 import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.model.line.{LineImpl, LineOfModelImpl}
 
 /**
  * <p/>
@@ -21,17 +22,12 @@ class SearchClearedCellSolverTest  extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "1, 0, 0, 1, 1, 1, 1, 0, 0, 1"),  // 10 cells
       metadata)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
     3 to 6 foreach (line(_) = Cell.FILLED)
 
-    val result = SearchClearedCellSolver.fillLine(metadata(0), line)
+    val result = SearchClearedCellSolver.fillLine(line).toList
 
-    assert(result === List(
-      Cell.NOT_KNOWN, Cell.NOT_KNOWN,
-      Cell.CLEARED,
-      Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED,
-      Cell.CLEARED,
-      Cell.NOT_KNOWN, Cell.NOT_KNOWN))
+    assert(result === LineImpl.parse(".._XXXX_.."))
   }
 
   test("search cleared cells at border") {
@@ -41,15 +37,12 @@ class SearchClearedCellSolverTest  extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "0, 0, 0, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
       metadata)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
     line(4) = Cell.FILLED
 
-    val result = SearchClearedCellSolver.fillLine(metadata(0), line)
+    val result = SearchClearedCellSolver.fillLine(line).toList
 
-    assert(result === List(
-      CLEARED, CLEARED, CLEARED,
-      NOT_KNOWN, FILLED, NOT_KNOWN,
-      CLEARED, CLEARED, CLEARED, CLEARED))
+    assert(result === LineImpl.parse("___.X.____"))
   }
 
   test("fill already solved") {
@@ -59,12 +52,12 @@ class SearchClearedCellSolverTest  extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "0, 1, 0, 0, 1, 1, 0, 0, 0, 0"),  // 10 cells
       metadata)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
     line(1) = Cell.FILLED
     line(4) = Cell.FILLED
     line(5) = Cell.FILLED
 
-    val result = SearchClearedCellSolver.fillLine(metadata(0), line)
+    val result = SearchClearedCellSolver.fillLine(line).toList
 
     assert(result === List(
       CLEARED,
@@ -81,15 +74,13 @@ class SearchClearedCellSolverTest  extends FunSuite {
       parseLine(Orientation.HORIZONTAL, "0, 0, 0, 0, 0, 0, 1, 1, 1, 1"),  // 10 cells
       metadata)
 
-    val line = new LineImpl(0, Orientation.HORIZONTAL, model)
+    val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
     line(2) = Cell.CLEARED
     line(5) = Cell.CLEARED
 
-    val result = SearchClearedCellSolver.fillLine(metadata(0), line)
+    val result = SearchClearedCellSolver.fillLine(line).toList
 
-    assert(result === List(
-      CLEARED, CLEARED, CLEARED, CLEARED, CLEARED, CLEARED,
-      NOT_KNOWN, NOT_KNOWN, NOT_KNOWN, NOT_KNOWN))
+    assert(result === LineImpl.parse("______...."))
   }
 
 }

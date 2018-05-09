@@ -32,13 +32,22 @@ class GridPanel(model: JapanCrosswordModel, CELL_SIZE: Int) extends JPanel {
     def mousePressed(e: MouseEvent) {}
     def mouseReleased(e: MouseEvent) {
       val coordinates = determineCellCoordinate(e.getX, e.getY)
-      val current = model.apply(coordinates._1, coordinates._2)
+      if (!coordinatesInsideOfModel(coordinates)) {
+        return
+      }
 
+      val current = model.apply(coordinates._1, coordinates._2)
       model.update(coordinates._1, coordinates._2, (current, e.getButton) match {
         case (Cell.NOT_KNOWN, MouseEvent.BUTTON1) => Cell.FILLED
         case (Cell.NOT_KNOWN, MouseEvent.BUTTON3) => Cell.CLEARED
         case (_, _) => Cell.NOT_KNOWN
       })
+    }
+
+    def coordinatesInsideOfModel(coordinates: (Int, Int)): Boolean = {
+      val xInside = coordinates._1 >= 0 && coordinates._1 <= model.columnNumber
+      val yInside = coordinates._2 >= 0 && coordinates._2 <= model.rowNumber
+      xInside && yInside
     }
   })
 

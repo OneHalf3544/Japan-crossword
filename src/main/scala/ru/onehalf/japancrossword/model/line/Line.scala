@@ -1,5 +1,7 @@
 package ru.onehalf.japancrossword.model.line
 
+import java.util.Objects
+
 import ru.onehalf.japancrossword.model.Cell
 import ru.onehalf.japancrossword.model.Cell._
 
@@ -99,7 +101,7 @@ trait Line {
     case CLEARED => '_'
     case NOT_KNOWN => '.'}).mkString)
 
-  override def hashCode(): Int = 0
+  override def hashCode(): Int = Objects.hash(metadata, toList)
 
   override def equals(obj: Any): Boolean = {
     if (!obj.isInstanceOf[Line]) {

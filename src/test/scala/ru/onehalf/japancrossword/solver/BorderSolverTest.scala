@@ -26,7 +26,7 @@ class BorderSolverTest extends FlatSpec with Matchers {
     line(1) = Cell.FILLED // Закрашиваем две клетки:          _X_______X
     line(9) = Cell.FILLED // После подбора строки должно быть _X_...XXXX
 
-    val result = VariantsEnumerationSolver.fitRemainder(line).get.toList
+    val result = VariantsEnumerationSolver.fillLine(line).toList
 
     assert(result === LineImpl.parse(".X.___XXXX"))
   }

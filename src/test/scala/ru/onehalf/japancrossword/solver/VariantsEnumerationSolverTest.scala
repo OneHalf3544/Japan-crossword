@@ -7,6 +7,8 @@ import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.line._
 import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel, Orientation}
 
+import scala.collection.mutable
+
 /**
  * <p/>
  * <p/>
@@ -25,7 +27,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
 
-    val result = VariantsEnumerationSolver.fitRemainder(line).get
+    val result = VariantsEnumerationSolver.fillLine(line)
 
     assert(result.size === 10)
     assert(result(0) === Cell.NOT_KNOWN)
@@ -61,7 +63,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
     line(1) = Cell.FILLED // Закрашиваем две клетки:          _X_______X
     line(9) = Cell.FILLED // После подбора строки должно быть _X_...XXXX
 
-    val result = VariantsEnumerationSolver.fitRemainder(line).get.toList
+    val result = VariantsEnumerationSolver.fillLine(line).toList
 
     assert(result === List(
       Cell.NOT_KNOWN, Cell.FILLED, Cell.NOT_KNOWN, Cell.CLEARED, Cell.CLEARED,
@@ -77,7 +79,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
 
     val line = new LineOfModelImpl(metadata(0), 0, Orientation.HORIZONTAL, model)
 
-    val result = VariantsEnumerationSolver.fitRemainder(line).get.toList
+    val result = VariantsEnumerationSolver.fillLine(line).toList
 
     assert(result === List(Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED, Cell.FILLED))
   }
@@ -95,7 +97,7 @@ class VariantsEnumerationSolverTest extends FlatSpec with Matchers with TimeLimi
     line(5) = Cell.FILLED // После решения:  .._XXX_.
 
 
-    val result = VariantsEnumerationSolver.fitRemainder(line).get.toList
+    val result = VariantsEnumerationSolver.fillLine(line).toList
 
     assert(result === List(
       Cell.CLEARED, Cell.CLEARED,

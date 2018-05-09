@@ -1,9 +1,10 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model._
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.line.LineMetadata.metadata
 import ru.onehalf.japancrossword.model.line.{Line, LineImpl, LineMetadata}
+
+import scala.collection.mutable
 
 /**
   * Логика решения кроссворда перебором содержимого строк и столбцов.
@@ -21,9 +22,8 @@ object VariantsEnumerationSolver extends LineSolver {
     *
    * @param currentData Текущие данные
    */
-  override def fillLine(currentData: Line): Line = {
-    fitRemainder(currentData).get
-  }
+  override def fillLine(currentData: Line): Line =
+    getResultFromCache(currentData, mutable.HashMap.empty).get
 
   /**
     * Заполнение линии согласно переданным в функцию метаданным.
@@ -33,8 +33,7 @@ object VariantsEnumerationSolver extends LineSolver {
     * @param currentData текущее содержимое линии
     * @return Список линий, подходящих под указанные метаданные
     */
-  private[solver] def fitRemainder(currentData: Line): Option[Line] = {
-
+  private[solver] def getResultFromCache(currentData: Line, cache: mutable.HashMap[Line, Option[Line]]): Option[Line] = {
     if (currentData.metadata.isEmpty) {
       // Is there no more metadata? It seems the rest of line is empty
       if (currentData.forall(_ != FILLED))
@@ -42,6 +41,20 @@ object VariantsEnumerationSolver extends LineSolver {
       else
         return None // В случае противоречий говорим, что решения нет
     }
+
+    val cachedResult: Option[Option[Line]] = cache.get(currentData)
+    if (cachedResult.isDefined) {
+      return cachedResult.get
+    }
+
+    val result = calculateRemainderWithCache(currentData, cache)
+    cache.put(currentData, result)
+    result
+  }
+
+  private[solver] def calculateRemainderWithCache(currentData: Line,
+                                                  cache: mutable.HashMap[Line, Option[Line]]): Option[Line] = {
+    assert(currentData.metadata.nonEmpty)
 
     val chunkLength = currentData.metadata.head
     val chunk = Array.fill[Cell](chunkLength)(FILLED)
@@ -67,7 +80,7 @@ object VariantsEnumerationSolver extends LineSolver {
       if (currentData.canStartsWith(lineStart)) {
         // Доподбираем оставшуюся часть строки
         val newCurrentData: Line = currentData.dropFromBegining(lineStart)
-        val subResult: Option[Line] = fitRemainder(newCurrentData)
+        val subResult: Option[Line] = getResultFromCache(newCurrentData, cache)
         if (subResult.isDefined && compatibleToCurrentData(newCurrentData, subResult.get)) {
           result = Option(if (result.isEmpty)
             lineStart ++ subResult.get
@@ -76,7 +89,6 @@ object VariantsEnumerationSolver extends LineSolver {
         }
       }
     }
-
     result
   }
 

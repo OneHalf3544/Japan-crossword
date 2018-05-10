@@ -1,7 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
 import queue.{SolveQueueTask, NonogramSolverQueue}
-import ru.onehalf.japancrossword.model.{LineMetadata, Line, Model}
+import ru.onehalf.japancrossword.model.{Line, Model}
 import ru.onehalf.japancrossword.model.Cell
 import ru.onehalf.japancrossword.model.Orientation._
 import ru.onehalf.japancrossword.model.line.{Line, LineOfModel}

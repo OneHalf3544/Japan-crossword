@@ -1,8 +1,7 @@
 package ru.onehalf.japancrossword.model.line
 
-import ru.onehalf.japancrossword.model.Cell.Cell
 import ru.onehalf.japancrossword.model.Orientation.{HORIZONTAL, Orientation, VERTICAL}
-import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Cell, Model}
 
 /**
   * Обертка над моделью для получения доступа к части данных как к массиву.
@@ -12,7 +11,7 @@ import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
   */
 trait LineOfModel extends Line {
 
-  private[line] val model: JapanCrosswordModel
+  private[line] val model: Model
   private[line] def orientation: Orientation
   private[line] val fromIndex: Int
 

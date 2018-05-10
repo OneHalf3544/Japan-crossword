@@ -1,7 +1,9 @@
 package ru.onehalf.japancrossword.solver
 
-import ru.onehalf.japancrossword.model.{LineMetadata, Line}
+import java.awt.Color
+
 import ru.onehalf.japancrossword.model.Cell._
+import ru.onehalf.japancrossword.model.{Cell, Cleared, FilledCell}
 import ru.onehalf.japancrossword.model.line.Line
 
 /**
@@ -39,6 +41,7 @@ object BorderSolver extends LineSolver {
    */
   // todo Проверять соответствие модели, для обнаружения некорректных кросвордов
   def fillLine2(currentData: Line) {
+    val metadata = currentData.metadata
 
     val firstChunkLength = currentData.metadata(0)
     val firstChunkColor = metadata(0)._2

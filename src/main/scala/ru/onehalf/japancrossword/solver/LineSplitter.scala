@@ -1,8 +1,10 @@
 package ru.onehalf.japancrossword.solver
 
+import java.awt.Color
+
 import com.typesafe.scalalogging.StrictLogging
 import queue.{NonogramSolverQueue, SolveQueueTask}
-import ru.onehalf.japancrossword.model.Cell
+import ru.onehalf.japancrossword.model.{Cell, Cleared, FilledCell}
 import ru.onehalf.japancrossword.model.line.{Line, LineImpl, LineMetadata, LineOfModel}
 import ru.onehalf.japancrossword.model.Cell._
 
@@ -18,7 +20,7 @@ import scala.collection.immutable
   */
 class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLogging {
 
-  private val clearedLine = new LineImpl(new LineMetadata(Array.emptyIntArray), Array(Cell.CLEARED))
+  private val clearedLine = new LineImpl(new LineMetadata(Array.emptyIntArray), Array(Cleared))
 
   // todo Делить линии по точно найденному участку.
   // Т.е.:  1 2 3  ......._XX_..... можно поделить по найденному участку независимо от того, что 2 != metadata.max
@@ -26,7 +28,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
   override def fillLine(currentData: Line): Line = {throw new UnsupportedOperationException}
 
   def splitByKnownChunk(line: LineOfModel, solver: LineSolver): Boolean = {
-    if (!line.contains(Cell.FILLED)) {
+    if (!line.contains(_.isFilled)) {
       return false
     }
 
@@ -65,7 +67,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
                                      length: Int) = {
     val i = stat.indices
       .drop(1).dropRight(1)
-      .filter(i => stat(i) == (FILLED, length) && stat(i - 1)._1 == CLEARED && stat(i + 1)._1 == CLEARED)
+      .filter(i => stat(i) == (FILLED, length) && stat(i - 1)._1 == Cleared && stat(i + 1)._1 == Cleared)
       .head
 
     val m = line.metadata.splitByFirstChunk(length)
@@ -146,7 +148,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
   def splitByFirstMaxLength(line: LineOfModel, solver: LineSolver): Boolean = {
     def setClearedAt(i: Int) {
       if (i >= 0 && i < line.size) {
-        line(i) = CLEARED
+        line(i) = Cleared
       }
     }
 
@@ -164,8 +166,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
     setClearedAt(indexes(indexOfFirstMaxChunk) - 1)
     setClearedAt(indexes(indexOfFirstMaxChunk + 1))
 
-    val m = metadata.splitByFirstChunk(maxLength)
-    val m = line.metadata.splitAt(line.metadata.indexOf(maxLength))
+    val m = line.metadata.splitByFirstChunk(maxLength)
 
     val line1 = line.dropRight(m._2.size, line.size - indexes(indexOfFirstMaxChunk))
     val line2 = line.dropLeft(m._1.size + 1, indexes(indexOfFirstMaxChunk + 1))

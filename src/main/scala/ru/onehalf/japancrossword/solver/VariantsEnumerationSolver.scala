@@ -1,5 +1,6 @@
 package ru.onehalf.japancrossword.solver
 
+import ru.onehalf.japancrossword.model.Cell
 import ru.onehalf.japancrossword.model.Cell._
 import ru.onehalf.japancrossword.model.line.LineMetadata.metadata
 import ru.onehalf.japancrossword.model.line.{Line, LineImpl, LineMetadata}

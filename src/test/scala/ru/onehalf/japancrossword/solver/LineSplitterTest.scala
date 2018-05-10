@@ -110,7 +110,7 @@ class LineSplitterTest extends FlatSpec with MockFactory {
     new LineSplitter(solverQueue).splitByKnownChunk(line, BorderSolver)
   }
 
-  private def createLine(string: String, model: JapanCrosswordModel) = {
+  private def createLine(string: String, model: Model) = {
     val line = model.getRowLine(0)
     LineImpl.parse(string)
       .zipWithIndex
@@ -123,12 +123,12 @@ class LineSplitterTest extends FlatSpec with MockFactory {
     val solvedLine = createSolvedLine(string)
     val metadata = new ModelMetadata()(Orientation.VERTICAL, Array(solvedLine.metadata))
     val horizontalMetadata = solvedLine.toList
-      .map(i => if (i == Cell.FILLED) 1 else 0)
+      .map(i => if (i.isFilled) 1 else 0)
       .map(LineMetadata.metadata(_))
       .toArray
 
     new Model("test",
-      new Metadata(Orientation.HORIZONTAL, horizontalMetadata),
+      new ModelMetadata(Orientation.HORIZONTAL, horizontalMetadata),
       metadata)
   }
 

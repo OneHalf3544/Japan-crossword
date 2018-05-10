@@ -1,6 +1,6 @@
 package ru.onehalf.japancrossword
 
-import model.{LineMetadata, Orientation, Model, ModelMetadata}
+import model.{Orientation, Model, ModelMetadata}
 import Orientation._
 
 import io.Source

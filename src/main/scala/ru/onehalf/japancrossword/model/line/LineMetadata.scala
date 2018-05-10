@@ -47,6 +47,11 @@ class LineMetadata(private val digits: Array[Int]) extends Traversable[Int] {
   }
 
   override def foreach[U](f: Int => U): Unit = digits.foreach(f)
+
+  def splitByFirstChunk(length: Int) = {
+    val s = digits.splitAt(digits.map(_._1).indexOf(length))
+    (new LineMetadata(s._1), new LineMetadata(s._2))
+  }
 }
 
 object LineMetadata {

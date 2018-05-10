@@ -1,6 +1,7 @@
 package ru.onehalf.japancrossword.solver
 
 import com.typesafe.scalalogging.StrictLogging
+import ru.onehalf.japancrossword.model.{Cell, Cleared}
 import ru.onehalf.japancrossword.model.Cell.{Cell, _}
 import ru.onehalf.japancrossword.model.line.LineMetadata.metadata
 import ru.onehalf.japancrossword.model.line.{Line, LineImpl}
@@ -104,7 +105,7 @@ object SearchOverlapsSolver extends LineSolver with StrictLogging {
       var lineArray: List[Cell] = List.fill(i)(Cleared) ++ chunk
       // Если какая-то часть строки еще остается, добавляем разделительную ячейку
       if (currentData.metadata.size > 1) {
-        lineArray = lineArray :+ CLEARED
+        lineArray = lineArray :+ Cleared
       }
 
       val lineImpl = new LineImpl(metadata(currentData.metadata.head), lineArray)

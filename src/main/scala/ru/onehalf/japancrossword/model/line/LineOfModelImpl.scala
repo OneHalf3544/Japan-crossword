@@ -1,8 +1,7 @@
 package ru.onehalf.japancrossword.model.line
 
-import ru.onehalf.japancrossword.model.Cell.Cell
 import ru.onehalf.japancrossword.model.Orientation.{HORIZONTAL, Orientation, VERTICAL}
-import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
+import ru.onehalf.japancrossword.model.{Cell, Model}
 
 /**
   * Обертка над моделью для получения доступа к части данных как к массиву.
@@ -13,14 +12,14 @@ import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
 class LineOfModelImpl(override val metadata: LineMetadata,
                       override val lineIndex: Int,
                       override val orientation: Orientation,
-                      override val model: JapanCrosswordModel,
+                      override val model: Model,
                       override val fromIndex: Int,
                       override val size :Int) extends LineOfModel {
 
   def this(lineMetadata: LineMetadata,
            lineIndex: Int,
            orientation: Orientation,
-           model: JapanCrosswordModel,
+           model: Model,
            fromIndex: Int) =
     this(lineMetadata, lineIndex, orientation, model, fromIndex, orientation match {
       case HORIZONTAL => model.columnNumber - fromIndex
@@ -30,7 +29,7 @@ class LineOfModelImpl(override val metadata: LineMetadata,
   def this(lineMetadata: LineMetadata,
            lineIndex: Int,
            orientation: Orientation,
-           model: JapanCrosswordModel) =
+           model: Model) =
     this(lineMetadata, lineIndex, orientation, model, 0)
 
   override def apply(cellIndex: Int): Cell = {

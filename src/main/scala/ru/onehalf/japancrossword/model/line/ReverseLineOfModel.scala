@@ -1,8 +1,7 @@
 package ru.onehalf.japancrossword.model.line
 
-import ru.onehalf.japancrossword.model.Cell.Cell
-import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import ru.onehalf.japancrossword.model.Orientation.Orientation
+import ru.onehalf.japancrossword.model.{Cell, Model}
 
 /**
   * Декоратор для имитации развернутого списка
@@ -11,7 +10,7 @@ import ru.onehalf.japancrossword.model.Orientation.Orientation
   */
 private[line] class ReverseLineOfModel(original: LineOfModel) extends LineOfModel {
 
-  override private[line] val model: JapanCrosswordModel = original.model
+  override private[line] val model: Model = original.model
 
   override private[line] def orientation: Orientation = original.orientation
 

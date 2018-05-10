@@ -1,10 +1,7 @@
 package ru.onehalf.japancrossword.model.line
-import java.util.stream
+import java.awt.Color
 
-import ru.onehalf.japancrossword.model
-import ru.onehalf.japancrossword.model.Cell
-import ru.onehalf.japancrossword.model.Cell.{CLEARED, Cell, FILLED, NOT_KNOWN}
-import ru.onehalf.japancrossword.model.Orientation.Orientation
+import ru.onehalf.japancrossword.model.{Cell, Cleared, FilledCell, NotKnownCell}
 import ru.onehalf.japancrossword.model.line.LineMetadata.metadata
 
 class LineImpl(override val metadata: LineMetadata, val array: Array[Cell]) extends Line {
@@ -16,7 +13,7 @@ class LineImpl(override val metadata: LineMetadata, val array: Array[Cell]) exte
 
   override def dropClearedFromEnds(): Line = new LineImpl(
     metadata,
-    array.dropWhile(_ == CLEARED).reverse.dropWhile(_ == CLEARED).reverse)
+    array.dropWhile(_.isCleared).reverse.dropWhile(_.isCleared).reverse)
 
   override def reverse(): Line = new LineImpl(metadata.reverse(), array.reverse)
 
@@ -54,15 +51,15 @@ object LineImpl {
     string
       .toCharArray
       .map {
-        case 'X' => Cell.FILLED
-        case '_' => Cell.CLEARED
-        case _ => Cell.NOT_KNOWN
+        case 'X' => FilledCell(Color.BLACK)
+        case '_' => Cleared
+        case _ => NotKnownCell
       }
       .toList
   }
 
   def solved(cells: Cell*): Line = {
-    assert(!cells.contains(NOT_KNOWN))
+    assert(!cells.contains(_.isNotKnown))
     new LineImpl(
       new LineMetadata(Line.countStat(cells).filter(_._1 == FILLED).map(_._2)),
       cells.toList
@@ -71,7 +68,7 @@ object LineImpl {
 
 
   def empty(size: Int): LineImpl = {
-    new LineImpl(LineMetadata.empty(), Array.fill(size)(CLEARED))
+    new LineImpl(LineMetadata.empty(), Array.fill(size)(Cleared))
   }
 
   def parseLine(metadata: LineMetadata, string: String): LineImpl = {

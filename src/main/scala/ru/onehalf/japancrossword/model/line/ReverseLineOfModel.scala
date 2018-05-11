@@ -13,7 +13,7 @@ private[line] class ReverseLineOfModel(original: LineOfModel) extends LineOfMode
 
   override private[line] val model: JapanCrosswordModel = original.model
 
-  override private[line] def orientation: Orientation = original.orientation
+  override def orientation: Orientation = original.orientation
 
   override private[line] val fromIndex: Int = original.fromIndex
 

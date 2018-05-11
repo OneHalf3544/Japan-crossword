@@ -13,8 +13,8 @@ import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
 trait LineOfModel extends Line {
 
   private[line] val model: JapanCrosswordModel
-  private[line] def orientation: Orientation
   private[line] val fromIndex: Int
+  def orientation: Orientation
 
   def absoluteCoordinate(cellIndex: Int): (Int, Int) = {
     orientation match {

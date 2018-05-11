@@ -47,16 +47,22 @@ class ModelSolver(model: JapanCrosswordModel) {
 
   /**
    * Копируем данные из массива в модель
-   * @param variant Вариант расположения ячеек в линии
-   * @param line Кусочек модели, в которую нужно скопировать предлагаемые значения
+   * @param solvingResult Вариант расположения ячеек в линии
+   * @param lineInModel Кусочек модели, в которую нужно скопировать предлагаемые значения
    */
-  def addDataToModel(oldData: List[Cell], variant: Line, line: LineOfModel) {
-    variant.indexes filter (i => line(i) == NOT_KNOWN && variant(i) != NOT_KNOWN) foreach(i => {
-      line(i) = variant(i)
-/*      line.orientation match {
-        case HORIZONTAL => enqueue(model.getColumnLine(i), VERTICAL)
-        case VERTICAL   => enqueue(model.getRowLine(i),    HORIZONTAL)
-      }*/
-    })
+  def addDataToModel(solvingResult: Line, lineInModel: LineOfModel) {
+    for (i <- solvingResult.indexes) {
+      if (solvingResult(i) != NOT_KNOWN) {
+        if (lineInModel(i) == NOT_KNOWN) {
+          lineInModel(i) = solvingResult(i)
+//          lineInModel.orientation match {
+//            case HORIZONTAL => enqueue(model.getColumnLine(i), VERTICAL)
+//            case VERTICAL => enqueue(model.getRowLine(i), HORIZONTAL)
+//          }
+        } else {
+          assert(lineInModel(i) == solvingResult(i))
+        }
+      }
+    }
   }
 }

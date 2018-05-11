@@ -72,7 +72,7 @@ object VariantsEnumerationSolver extends LineSolver {
 
     var result: Option[Line] = Option.empty
 
-    for (offset <- 0 to currentData.size - maxSequenceLength + 1) {
+    for (offset <- 0 to currentData.size - maxSequenceLength) {
 
       var lineStart: Line = createNewLine(currentData, offset, chunk)
 
@@ -80,12 +80,14 @@ object VariantsEnumerationSolver extends LineSolver {
       if (currentData.canStartsWith(lineStart)) {
         // Доподбираем оставшуюся часть строки
         val newCurrentData: Line = currentData.dropFromBegining(lineStart)
-        val subResult: Option[Line] = getResultFromCache(newCurrentData, cache)
-        if (subResult.isDefined && compatibleToCurrentData(newCurrentData, subResult.get)) {
-          result = Option(if (result.isEmpty)
-            lineStart ++ subResult.get
-          else
-            reduceLines(result.get, lineStart ++ subResult.get))
+        if (newCurrentData.lineContentViolation().isEmpty) {
+          val subResult: Option[Line] = getResultFromCache(newCurrentData, cache)
+          if (subResult.isDefined && compatibleToCurrentData(newCurrentData, subResult.get)) {
+            result = Option(if (result.isEmpty)
+              lineStart ++ subResult.get
+            else
+              reduceLines(result.get, lineStart ++ subResult.get))
+          }
         }
       }
     }

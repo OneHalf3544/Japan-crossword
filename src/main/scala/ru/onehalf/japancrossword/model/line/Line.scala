@@ -64,6 +64,26 @@ trait Line {
 
   def isEmpty: Boolean = size == 0
 
+  def lineContentViolation(): Option[String] = {
+    val errors = List(
+      (
+        metadata.minimalLineLength <= size,
+        s"incorrect line: metadata $metadata requires a longer content than $size"
+      ),
+      (
+        countStat().filter(_._1 == FILLED).map(_._2).sum <= metadata.sum,
+        s"line already contains more filled elements, than allowed"
+      ),
+      (
+        countStat().filter(_._1 == CLEARED).map(_._2).sum <= size - metadata.sum,
+        s"line already contains more empty elements, than allowed"
+      )
+    ).filter(!_._1)
+    .map(_._2)
+
+    if (errors.isEmpty ) None else Some(s"line: $this, errors: ${errors.mkString(",")}")
+  }
+
   def nonEmpty(): Boolean = !isEmpty
 
   def forall(predicate: Cell => Boolean): Boolean = {

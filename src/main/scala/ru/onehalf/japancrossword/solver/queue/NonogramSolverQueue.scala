@@ -37,20 +37,21 @@ class NonogramSolverQueue(model: JapanCrosswordModel, queueName: String, modelSo
 
         task match {
 
-          case SolveQueueTask(line, _, _) if line.isSolved =>
-            logger.trace(s"line solved: $line")
-
           case SolveQueueTask(line, solver, _) if line.metadata.isEmpty =>
             val oldData = line.toList
-            modelSolver.addDataToModel(oldData, LineImpl.empty(line.size), line)
+            modelSolver.addDataToModel(LineImpl.empty(line.size), line)
+
+          case SolveQueueTask(line, _, _) if line.isSolved =>
+            logger.trace(s"line was solved: $line")
 
           case SolveQueueTask(line, solver, remindingCells) if splitter.splitLine(line, solver) =>
-            logger.trace("line split")
+            logger.trace("line was split")
 
           case SolveQueueTask(line, solver, remindingCells) =>
-            val oldData = line.toList
-            modelSolver.addDataToModel(oldData, solver.fillLine(line), line)
+            val solvedLine = solver.fillLine(LineImpl.copy(line))
+            modelSolver.addDataToModel(solvedLine, line)
             if (!line.isSolved)
+              // reenqueue line.
               this ! new SolveQueueTask(line, solver)
         }
       }

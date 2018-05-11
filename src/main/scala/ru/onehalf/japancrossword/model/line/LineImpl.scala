@@ -8,9 +8,6 @@ import ru.onehalf.japancrossword.model.Orientation.Orientation
 import ru.onehalf.japancrossword.model.line.LineMetadata.metadata
 
 class LineImpl(override val metadata: LineMetadata, val array: Array[Cell]) extends Line {
-  assert(
-    metadata.minimalLineLength <= array.length,
-    s"cannot create line: metadata $metadata requires a longer content than ${array.length}")
 
   def this(metadata: LineMetadata, list: List[Cell]) = this(metadata, list.toArray)
 
@@ -49,6 +46,8 @@ class LineImpl(override val metadata: LineMetadata, val array: Array[Cell]) exte
 }
 
 object LineImpl {
+  def copy(line: Line): Line = new LineImpl(line.metadata, line.toList)
+
 
   def parse(string: String): List[Cell] = {
     string

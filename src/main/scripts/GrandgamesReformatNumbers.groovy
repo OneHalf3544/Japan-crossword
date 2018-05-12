@@ -45,7 +45,7 @@ def reformatLeftMetadata(String string) {
     def (int width, int height) = [matrix*.size().max(), matrix.size()]
     println "left metadata: width=$width, height=$height"
 
-    reformatMetadata(matrix.collect { it.join(" ") })
+    reformatMetadata(matrix.collect { it.join(" ").trim() })
 }
 
 def reformatMetadata(List<String> strings) {
@@ -56,6 +56,7 @@ def reformatMetadata(List<String> strings) {
             builder.append("\\\n ")
         }
     }
+
     builder.setLength(builder.size() - ", ".size())
     builder
 }
@@ -63,8 +64,8 @@ def reformatMetadata(List<String> strings) {
 
 
 def translit(String name) {
-    def cyr = "абвгдеёжзийклмнопрстуфхцчшщъюьэюя"
-    def lat = "abvgdeegziiklmnoprctufhc4ss_u_euy"
+    def cyr = "абвгдеёжзийклмнопрстуфхцчшщъюьэюя 1234567890"
+    def lat = "abvgdeegziiklmnoprctufhc4ss_u_euy_1234567890"
 
     name.toLowerCase()
             .collect {cyr.indexOf(it)}
@@ -187,5 +188,6 @@ def init() {
 3	9	6	1	21	3	7
 13	4	47
 """
+
     return [name, topMetadata, leftMetadata]
 }

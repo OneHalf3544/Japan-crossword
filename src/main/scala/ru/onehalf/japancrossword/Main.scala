@@ -11,8 +11,8 @@ import view.JapanCrosswordFrame
 object Main {
 
   def main(args: Array[String]) {
-    val CELL_SIZE = 15
-    val FONT_SIZE = 9
+    val CELL_SIZE = 14
+    val FONT_SIZE = 8
     val crosswords = CrosswordLoader.loadCrosswords("/crosswords.properties")
 
     new JapanCrosswordFrame(crosswords, CELL_SIZE, FONT_SIZE).setVisible(true)

@@ -22,7 +22,7 @@ object SearchClearedCellSolver extends LineSolver {
   override def fillLine(currentData: Line): Line = {
     val stat: List[(Cell, Int)] = currentData.countStat()
 
-    val indexes = indicesForStat(stat)
+    val indexes = Line.indicesForStat(stat)
     var preResult = currentData.toList
 
     if (stat.filter(_._1 == FILLED).corresponds(currentData.metadata.toList)((a, b) => a._2 == b)) {

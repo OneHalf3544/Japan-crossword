@@ -36,11 +36,8 @@ class NonogramSolverQueue(model: JapanCrosswordModel, queueName: String, modelSo
     Future {
       logger.info(queueName + " started")
 
-      while (!Thread.currentThread().isInterrupted) {
+      while (!tasksQueue.isEmpty && !Thread.currentThread().isInterrupted) {
         val task = tasksQueue.take
-        if (task == null) {
-          return
-        }
         processTask(task)
         tasksProcessed.incrementAndGet()
         cellsProcessed.addAndGet(Option(task.line).map(_.size.toLong).getOrElse(0))
@@ -55,7 +52,7 @@ class NonogramSolverQueue(model: JapanCrosswordModel, queueName: String, modelSo
     })
   }
 
-  private def processTask(task: SolveQueueTask) = {
+  private def processTask(task: SolveQueueTask): Unit = {
     logger.trace(s"$queueName: task=$task")
     task match {
       case statTask: StatisticsPill => printStatsToLog(statTask)

@@ -8,8 +8,7 @@ import ru.onehalf.japancrossword.model.Cell._
 
 import scala.collection.immutable
 
-/**
-  * Searches any subline what can be spit into two.
+/** Searches whether we can be split a line into two ones.
   *
   * It will improve performance - the sorter line we have the sooner we get a result.
   *
@@ -115,10 +114,9 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
     splitByKnownChunk(currentData, solver)
   }
 
-  /**
-    * Отрезаем решенные кусочки от линии
+  /** Отрезаем решенные кусочки от линии
     *
-    * @param line Заполняемая линия
+    * @param line the split line
     * @param solver Решатель для строки
     * @return true, если строка была разделена
     */
@@ -182,7 +180,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
     * @param stat
     * @return
     */
-  def divideToSublists(line: LineOfModel, stat: List[(Cell, Int)]): List[LineOfModel] = {
+  private[solver] def divideToSublists(line: LineOfModel, stat: List[(Cell, Int)]): List[LineOfModel] = {
     val statIndicies = Line.indicesForStat(stat)
 
     /**

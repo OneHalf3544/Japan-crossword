@@ -2,13 +2,12 @@ package ru.onehalf.japancrossword
 
 import model.{JapanCrosswordModel, Metadata, Orientation}
 import Orientation._
-
-import io.Source
 import java.util.Properties
 
 import ru.onehalf.japancrossword.model.line.LineMetadata
 
 import scala.collection.convert.wrapAsScala._
+import scala.io.Source
 
 
 /**

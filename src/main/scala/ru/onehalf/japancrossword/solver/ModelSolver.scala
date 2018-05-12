@@ -1,5 +1,8 @@
 package ru.onehalf.japancrossword.solver
 
+import java.time.Instant
+
+import com.typesafe.scalalogging.StrictLogging
 import queue.{NonogramSolverQueue, SolveQueueTask}
 import ru.onehalf.japancrossword.model.JapanCrosswordModel
 import ru.onehalf.japancrossword.model.Cell._
@@ -12,7 +15,7 @@ import ru.onehalf.japancrossword.model.line.{Line, LineOfModel}
   * @since 05.06.13 22:47
   * @author OneHalf
   */
-class ModelSolver(model: JapanCrosswordModel) {
+class ModelSolver(model: JapanCrosswordModel) extends StrictLogging {
 
   private val fastQueue: NonogramSolverQueue = new NonogramSolverQueue(model, "fast", this)
   private val columnQueue: NonogramSolverQueue = new NonogramSolverQueue(model, "column", this)
@@ -22,7 +25,7 @@ class ModelSolver(model: JapanCrosswordModel) {
    * Запуск решения кроссворда
    */
   def solve() {
-
+    logger.info(s"start solving nonogram '${model.name}'")
     // Добавляем все линии в очредь
     val columns = (0 until model.columnNumber).map(v => model.getColumnLine(v))
 
@@ -31,7 +34,7 @@ class ModelSolver(model: JapanCrosswordModel) {
     columns.sortBy(_.metadata.size).foreach(enqueue(_, VERTICAL))
     rows   .sortBy(_.metadata.size).foreach(enqueue(_, HORIZONTAL))
 
-    fastQueue.startThread()
+    fastQueue.startThread(Some((model.name, Instant.now())))
     for(_ <- 1 to 3) {
       columnQueue.startThread()
       rowQueue   .startThread()

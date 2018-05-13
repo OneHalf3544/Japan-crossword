@@ -8,8 +8,7 @@ import ru.onehalf.japancrossword.model.Cell._
 
 import scala.collection.immutable
 
-/**
-  * Searches any subline what can be spit into two.
+/** Searches whether we can be split a line into two ones.
   *
   * It will improve performance - the sorter line we have the sooner we get a result.
   *
@@ -31,7 +30,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
     }
 
     val stat: List[(Cell, Int)] = (CLEARED, 0) +: line.countStat() :+ (CLEARED, 0)
-    val indexes: Seq[Int] = indicesForStat(stat)
+    val indexes: Seq[Int] = Line.indicesForStat(stat)
 
     def searchBoundParts(statWindow: List[(Cell, Int)]): Option[Int] = {
       statWindow match {
@@ -115,10 +114,9 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
     splitByKnownChunk(currentData, solver)
   }
 
-  /**
-    * Отрезаем решенные кусочки от линии
+  /** Отрезаем решенные кусочки от линии
     *
-    * @param line Заполняемая линия
+    * @param line the split line
     * @param solver Решатель для строки
     * @return true, если строка была разделена
     */
@@ -150,7 +148,7 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
     }
 
     val stat = line.countStat()
-    val indexes = indicesForStat(stat)
+    val indexes = Line.indicesForStat(stat)
     val maxLength = line.metadata.max
 
     // if we don't find all chunks with max length, we cannot split line correctly
@@ -182,8 +180,8 @@ class LineSplitter(queue: NonogramSolverQueue) extends LineSolver with StrictLog
     * @param stat
     * @return
     */
-  def divideToSublists(line: LineOfModel, stat: List[(Cell, Int)]): List[LineOfModel] = {
-    val statIndicies = indicesForStat(stat)
+  private[solver] def divideToSublists(line: LineOfModel, stat: List[(Cell, Int)]): List[LineOfModel] = {
+    val statIndicies = Line.indicesForStat(stat)
 
     /**
      *

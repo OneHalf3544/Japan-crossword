@@ -143,6 +143,8 @@ object Line {
     currentData.foldLeft(List.empty[(Cell, Int)])(countCellTypes)
   }
 
+  def indicesForStat(stat: List[(Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
+
   /**
     * Adds info about a cell into {{{accumulator}}}.
     *

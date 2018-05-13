@@ -15,8 +15,6 @@ trait LineSolver {
 
   def fillLine(currentData: Line): Line
 
-  protected def indicesForStat(stat: List[(Cell, Int)]): List[Int] = stat.scanLeft(0)((res, o) => o._2 + res)
-
   /**
    * Схлопывание строки в одну. Если значение в списках не совпадают,
    * то в результате по соответсвующему индексу будет NOT_KNOWN.

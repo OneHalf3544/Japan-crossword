@@ -20,8 +20,8 @@ object CrosswordLoader {
 
   def parseParams(param: String): LineMetadata = new LineMetadata((param split "\\s+").map (_.toInt))
 
-  def parseLine(orientation: Orientation, string: String) : Metadata = {
-    new Metadata(orientation, (string split ",\\s*").map(parseParams))
+  def parseLine(orientation: Orientation, metadataAsString: String) : Metadata = {
+    new Metadata(orientation, (metadataAsString split ",\\s*").map(parseParams))
   }
 
   def loadCrosswords(propertiesFile: String): Array[JapanCrosswordModel] = {

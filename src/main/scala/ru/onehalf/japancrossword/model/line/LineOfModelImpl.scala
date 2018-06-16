@@ -11,21 +11,26 @@ import ru.onehalf.japancrossword.model.{Cell, JapanCrosswordModel}
   * @author OneHalf
   */
 class LineOfModelImpl(override val metadata: LineMetadata,
-                      override val lineIndex: Int,
-                      override val orientation: Orientation,
-                      override val model: JapanCrosswordModel,
-                      override val fromIndex: Int,
-                      override val size :Int) extends LineOfModel {
+                      override val linePosition: LinePosition,
+                      override val model: JapanCrosswordModel) extends LineOfModel {
 
   def this(lineMetadata: LineMetadata,
            lineIndex: Int,
            orientation: Orientation,
            model: JapanCrosswordModel,
            fromIndex: Int) =
-    this(lineMetadata, lineIndex, orientation, model, fromIndex, orientation match {
+    this(lineMetadata, new LinePosition(orientation, false, fromIndex, lineIndex, orientation match {
       case HORIZONTAL => model.columnNumber - fromIndex
       case VERTICAL => model.rowNumber - fromIndex
-    })
+    }), model)
+
+  def this(lineMetadata: LineMetadata,
+           lineIndex: Int,
+           orientation: Orientation,
+           model: JapanCrosswordModel,
+           fromIndex: Int,
+           size: Int) =
+    this(lineMetadata, new LinePosition(orientation, false, fromIndex, lineIndex, size), model)
 
   def this(lineMetadata: LineMetadata,
            lineIndex: Int,
@@ -36,20 +41,13 @@ class LineOfModelImpl(override val metadata: LineMetadata,
   override def apply(cellIndex: Int): Cell = {
     assert(cellIndex < size, s"expected cellIndex ($cellIndex) < size ($size)")
 
-    model(absoluteCoordinate(cellIndex))
+    model(linePosition.absoluteCoordinate(cellIndex))
   }
 
   override def update(cellIndex: Int, cell: Cell) {
     assert(cellIndex < size, "cellIndex " + cellIndex + " >= " + size)
 
-    model.update(absoluteCoordinate(cellIndex), cell)
-  }
-
-  override def absoluteCoordinate(cellIndex: Int): (Int, Int) = {
-    orientation match {
-      case HORIZONTAL => (cellIndex + fromIndex, lineIndex)
-      case VERTICAL => (lineIndex, cellIndex + fromIndex)
-    }
+    model.update(linePosition.absoluteCoordinate(cellIndex), cell)
   }
 
   override def toList: List[Cell] = {
@@ -64,11 +62,15 @@ class LineOfModelImpl(override val metadata: LineMetadata,
 
   override def dropLeft(metadataDropCount: Int, dropCount: Int): LineOfModel = new LineOfModelImpl(
     new LineMetadata(metadata.drop(metadataDropCount)),
-    lineIndex, orientation, model, fromIndex + dropCount, size - dropCount
+    linePosition.dropLeft(dropCount),
+    model
   )
 
   override def dropRight(metadataDropCount: Int, dropCount: Int): LineOfModel = new LineOfModelImpl(
     new LineMetadata(metadata.take(metadata.size - metadataDropCount)),
-    lineIndex, orientation, model, fromIndex, size - dropCount
+    linePosition.dropRight(dropCount),
+    model
   )
+
+  override def size: Int = linePosition.size
 }

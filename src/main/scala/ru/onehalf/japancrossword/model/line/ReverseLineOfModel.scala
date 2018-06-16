@@ -13,15 +13,9 @@ private[line] class ReverseLineOfModel(original: LineOfModel) extends LineOfMode
 
   override private[line] val model: JapanCrosswordModel = original.model
 
-  override def orientation: Orientation = original.orientation
+  override val linePosition: LinePosition = original.linePosition.reverse()
 
-  override private[line] val fromIndex: Int = original.fromIndex
-
-  override def reverse(): LineOfModel = {
-    original
-  }
-
-  def lineIndex: Int = original.lineIndex
+  override def reverse(): LineOfModel = original
 
   override def toList: List[Cell] = original.toList.reverse
 
@@ -36,8 +30,6 @@ private[line] class ReverseLineOfModel(original: LineOfModel) extends LineOfMode
   def apply(cellIndex: Int): Cell = {
     original(size - cellIndex - 1)
   }
-
-  override def absoluteCoordinate(i: Int): (Int, Int) = original.absoluteCoordinate(size - i - 1)
 
   override def metadata: LineMetadata = original.metadata.reverse()
 
